@@ -9,11 +9,8 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     with CustomAppBar, CustomWidgets, FormInputFields {
-
-
   final TextEditingController _oldPasswordController = TextEditingController();
-  final TextEditingController _newPasswordController =
-      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final bool _isHidden = true;
   bool passwordMatch = false;
@@ -63,9 +60,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
 
   Future<void> changePwdRequest(context) async {
     await AuthBackend().updatePassword(context,
-      oldPassword:_oldPasswordController.text,
-      newPassword:_newPasswordController.text
-      );
+        oldPassword: _oldPasswordController.text,
+        newPassword: _newPasswordController.text);
   }
 
   @override
@@ -102,8 +98,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                             cursorWidth: 1,
                             cursorColor: Colors.black,
                             decoration: InputDecoration(
-                                filled: true,
-                                fillColor: AppColors.lightGrey,
+                           
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 20),
                                 //labelStyle: const TextStyle(color: Colors.black54),
@@ -112,18 +107,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                     color: AppColors.grey200),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1.w, color: AppColors.formGrey),
                                     borderRadius: BorderRadius.circular(8.r)),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.r),
-                                  borderSide: BorderSide.none,
+                                  borderSide:
+                                      BorderSide(color: AppColors.appGold),
                                 ),
-                                prefixIcon: SvgPicture.asset(lockIcon,
-                                    height: 14,
-                                    width: 14,
-                                    fit: BoxFit.scaleDown,
-                                    color: AppColors.baseBlack),
                                 suffixIcon: GestureDetector(
                                   onTap: _togglePasswordView,
                                   child: Icon(
@@ -135,13 +127,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                                   ),
                                 )),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           TextFormField(
                             controller: _newPasswordController,
                             onChanged: (value) {
-                             // _checkPassword(value);
+                              // _checkPassword(value);
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -155,8 +147,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                             cursorWidth: 1,
                             cursorColor: Colors.black,
                             decoration: InputDecoration(
-                                filled: true,
-                                fillColor: AppColors.lightGrey,
+                                // filled: true,
+                                // fillColor: AppColors.lightGrey,
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 12),
                                 hintText: 'Enter new password',
@@ -165,17 +157,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                                     fontWeight: FontWeight.w400,
                                     color: AppColors.grey200),
                                 border: OutlineInputBorder(
-                                    borderSide: BorderSide.none,
+                                    borderSide: BorderSide(
+                                        width: 1.w, color: AppColors.formGrey),
                                     borderRadius: BorderRadius.circular(8.r)),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.r),
-                                  borderSide: BorderSide.none,
+                                  borderSide:
+                                      BorderSide(color: AppColors.appGold),
                                 ),
-                                prefixIcon: SvgPicture.asset(lockIcon,
-                                    height: 14,
-                                    width: 14,
-                                    fit: BoxFit.scaleDown,
-                                    color: AppColors.baseBlack),
+                                // prefixIcon: SvgPicture.asset(lockIcon,
+                                //     height: 14,
+                                //     width: 14,
+                                //     fit: BoxFit.scaleDown,
+                                    //color: AppColors.baseBlack),
                                 suffixIcon: GestureDetector(
                                   onTap: _togglePasswordView,
                                   child: Icon(
@@ -188,7 +182,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                                 )),
                           ),
                           _strength == 0
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : Padding(
                                   padding: EdgeInsets.fromLTRB(
                                       0,
@@ -212,8 +206,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                           const SizedBox(
                             height: 20.0,
                           ),
-                         
-                     
                         ]),
                   ),
                   persistentFooterAlignment: AlignmentDirectional.bottomCenter,

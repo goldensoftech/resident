@@ -45,7 +45,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                             fontWeight: FontWeight.w500,
                             color: AppColors.baseBlack),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       ListView.builder(
@@ -57,17 +57,17 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                                     widget.showIsW == false) &&
                                 gateWay['gateway_type'] ==
                                     PaymentGateway.interswitch) {
-                              return SizedBox.shrink();
+                              return const SizedBox.shrink();
                             }
                             if ((widget.showRemitta == null ||
                                     widget.showRemitta == false) &&
                                 gateWay['gateway_type'] ==
                                     PaymentGateway.remita) {
-                              return SizedBox.shrink();
+                              return const SizedBox.shrink();
                             }
 
                             return Card(
-                              margin: EdgeInsets.symmetric(vertical: 10),
+                              margin: const EdgeInsets.symmetric(vertical: 10),
                               elevation: 0,
                               child: ListTile(
                                   onTap: () async {
@@ -84,7 +84,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   tileColor: AppColors.lightGrey,
-                                  contentPadding: EdgeInsets.symmetric(
+                                  contentPadding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 10),
                                   leading: Container(
                                     width: 40,
@@ -96,7 +96,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                                         fit: BoxFit.contain),
                                   ),
                                   title: Text(gateWay['name'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                             );

@@ -99,8 +99,8 @@ class Pay with ErrorSnackBar, CustomAlerts {
       )
       ..canGoBack()
       ..loadRequest(Uri.parse(authUrl));
-    navigatePush(context,
-        WebScreen(webTitle: "Remita Payment", controller: _controller));
+    navigatePush(
+        context, WebScreen(webTitle: "Payment", controller: _controller));
   }
 
   Future<void> withISW(context, {required PaymentDetails details}) async {

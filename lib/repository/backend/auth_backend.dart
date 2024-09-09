@@ -95,8 +95,8 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
           onPageStarted: (String url) {},
           onPageFinished: (String url) {},
           onWebResourceError: (WebResourceError error) {
-            navigateBack(context);
-            sendErrorMessage("Error", "An Error Occurred", context);
+            // navigateBack(context);
+            // sendErrorMessage("Error", "An Error Occurred", context);
           },
           onNavigationRequest: (NavigationRequest request) async {
             if (request.url.contains('failed')) {
@@ -109,8 +109,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
 
               return NavigationDecision.navigate;
             } else if (request.url.contains("success") ||
-                request.url.contains("verified") ||
-                request.url.contains("auth")) {
+                request.url.contains("verified")) {
               print("Url Finished ${request.url}");
               sendErrorMessage(
                   isSuccess: true,
@@ -131,11 +130,11 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               return NavigationDecision.navigate;
             } else if (request.url.contains("login)") ||
                 request.url.contains("signin")) {
-              sendErrorMessage(
-                  isSuccess: true,
-                  "Success",
-                  "Verification Successful",
-                  context);
+              // sendErrorMessage(
+              //     isSuccess: true,
+              //     "Success",
+              //     "Verification Successful",
+              //     context);
               Navigator.of(context).pop();
               return NavigationDecision.prevent;
             }

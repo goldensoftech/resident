@@ -21,14 +21,14 @@ class _AccountScreenState extends State<AccountScreen>
                     const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
                 children: [
                   profileTile(
-                      title: "ID Verification",
+                      title: "KYC Verification",
                       isVerification: true,
                       pageToGo: KycScreen()),
                   profileTile(
                       title: "Account Profile",
-                      pageToGo: AccountProfileScreen()),
+                      pageToGo: const AccountProfileScreen()),
                   profileTile(
-                      title: "Reset Password", pageToGo: ResetPasswordScreen()),
+                      title: "Reset Password", pageToGo: const ResetPasswordScreen()),
                 ])));
   }
 }
