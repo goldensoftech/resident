@@ -43,3 +43,17 @@ class UserLocation {
   String latitude;
   UserLocation({required this.longitude, required this.latitude});
 }
+
+class UserBankDetails {
+  String bankName;
+  int accountNumber;
+  String accountName;
+  String? bankCode;
+
+  UserBankDetails({
+    required this.bankName,
+    required this.accountNumber,
+    required this.accountName,
+    this.bankCode,
+  });
+}

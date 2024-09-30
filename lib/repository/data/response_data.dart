@@ -8,8 +8,9 @@ class ResponseData {
   static List<BettingPlatform> bettingPlatforms = [];
   static List<ElectricityBillers> electricityPlatforms = [];
   static List<TransactionModel> txHistory = [];
-  static List<RemitaCategory> remitaCategories=[];
+  static List<RemitaCategory> remitaCategories = [];
+  static List<UserBankDetails> userBanks = [];
+  static List<Bank> bankList = [];
   static UserAccountDetails? userBankDetails;
   static UserLocation? userLocation;
-  
 }

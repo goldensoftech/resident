@@ -100,7 +100,7 @@ class LookupDetails {
             amount: double.parse(json['amount'].toString()),
             customerMobile: json['phoneNumber'],
             payerName: json['name'],
-            surcharge:(json['fee'] as double).ceil(),
+            surcharge: (json['fee'] as double).ceil(),
             serviceName: json['billerName'],
             serviceId: json['billerId'],
             paymentCode: json['billerId'],
@@ -203,4 +203,10 @@ FieldType getFieldType(String type) {
     return FieldType.singleselect;
   } else
     return FieldType.alphanumeric;
+}
+
+class Bank {
+  String name;
+  String code;
+  Bank({required this.name, required this.code});
 }

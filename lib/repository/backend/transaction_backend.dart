@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:resident/app_export.dart';
 import 'package:http/http.dart' as client;
 import 'package:resident/constants/api.dart';
+import 'package:resident/repository/model/user_response_model.dart';
 
 import '../model/nqr_model.dart';
 import 'payment_gateways.backend.dart';
@@ -186,6 +187,20 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       logger.e(e);
     }
   }
+
+  Future<List<UserBankDetails>> getUserBanks(context) async {
+    return [];
+  }
+
+  Future<List<Bank>> getBankList(context) async {
+    return [];
+  }
+
+  Future<void> addUserBank(context) async {}
+
+  Future<void> fetchBankDetails(
+    context,
+  ) async {}
 
   Future<ElectricityItem?> getElectricityBillerDetails(context,
       {required int id}) async {

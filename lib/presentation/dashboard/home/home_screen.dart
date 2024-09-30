@@ -182,31 +182,34 @@ class _HomeScreenState extends State<HomeScreen>
                                         childAspectRatio: 1,
                                         crossAxisSpacing: 1,
                                         mainAxisSpacing: 1,
-                                        crossAxisCount:
-                                            ((AuthBackend.isLoggedIn() &&
-                                                    ResponseData.loginResponse!
-                                                            .user!.bvnStatus ==
-                                                        true))
-                                                ? 4
-                                                : 3),
+                                        crossAxisCount:4,
+                                            // ((AuthBackend.isLoggedIn() &&
+                                            //         ResponseData.loginResponse!
+                                            //                 .user!.bvnStatus ==
+                                            //             true))
+                                            //     ? 4
+                                            //     : 3),
+                                    ),
                                 shrinkWrap: true,
-                                itemCount: ((AuthBackend.isLoggedIn() &&
-                                        ResponseData.loginResponse!.user!
-                                                .bvnStatus ==
-                                            true))
-                                    ? 4
-                                    : 3,
+                                itemCount:4,
+                                // itemCount: ((AuthBackend.isLoggedIn() &&
+                                //         ResponseData.loginResponse!.user!
+                                //                 .bvnStatus ==
+                                //             true))
+                                //     ? 4
+                                //     : 3,
+                                    
                                 itemBuilder: (ctx, index) {
                                   final shortCut =
                                       DummyData().shortcutItems[index];
-                                  if (shortCut['title'] == "QR Scan") {
-                                    if (!(AuthBackend.isLoggedIn() &&
-                                        ResponseData.loginResponse!.user!
-                                                .bvnStatus ==
-                                            true)) {
-                                      return SizedBox.shrink();
-                                    }
-                                  }
+                                  // if (shortCut['title'] == "QR Scan") {
+                                  //   if (!(AuthBackend.isLoggedIn() &&
+                                  //       ResponseData.loginResponse!.user!
+                                  //               .bvnStatus ==
+                                  //           true)) {
+                                  //     return SizedBox.shrink();
+                                  //   }
+                                  // }
 
                                   return ShortCutItem(
                                     isIconBlack: index == 0 ? true : false,

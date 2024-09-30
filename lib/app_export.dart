@@ -22,6 +22,7 @@ export 'package:image_picker/image_picker.dart';
 export 'package:webview_flutter/webview_flutter.dart';
 export 'package:currency_symbols/currency_symbols.dart';
 export 'package:dropdown_button2/dropdown_button2.dart';
+export 'package:mobile_scanner/mobile_scanner.dart';
 
 //pages
 export 'package:resident/presentation/dashboard/bills/payement_gateway_screen.dart';
@@ -64,6 +65,9 @@ export 'package:resident/presentation/dashboard/bills/Remita/rrr_tx_history.dart
 export 'package:resident/repository/model/notification_response_model.dart';
 export 'package:resident/repository/model/rrr_tx_response_model.dart';
 export 'package:resident/utils/enums.dart';
+export 'package:resident/presentation/dashboard/profile/Account/add_account_screen.dart';
+
+
 
 //utils
 export 'package:resident/utils/navigators.dart';
@@ -95,6 +99,8 @@ export 'package:resident/repository/model/utilities_response_model.dart';
 export 'package:resident/repository/model/transaction_response_model.dart';
 export 'package:resident/repository/model/billers_response_model.dart';
 export 'package:resident/repository/model/token_response_mode.dart';
+export 'package:resident/repository/model/nqr_model.dart';
+export 'package:resident/repository/model/user_response_model.dart';
 
 //backends
 export 'package:resident/repository/backend/auth_backend.dart';
