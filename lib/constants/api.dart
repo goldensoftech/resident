@@ -12,6 +12,7 @@ const String baseUrl = "prodints.residentfintech.com";
 const String appPathUrl = "/api/account/v1/";
 const String iswPathUrl = "/api/isw/v1/";
 const String isRemitaUrl = "/api/remita/v1/";
+const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
 
 //Remita
@@ -42,4 +43,10 @@ String headerAuthorization = 'Bearer ${ResponseData.tokenResponseModel!.token}';
 Map<String, String> headersContent = {
   HttpHeaders.contentTypeHeader: headerType,
   HttpHeaders.authorizationHeader: headerAuthorization
+};
+
+Map<String, String> pkContent = {
+  HttpHeaders.contentTypeHeader: headerType,
+  HttpHeaders.authorizationHeader:
+      'Bearer sk_test_80e25716abe72da4a42a82bd13906450bd708757'
 };

@@ -4,6 +4,7 @@ String assetsUrl = "assets/images";
 String logoL = "$assetsUrl/logoSvg.svg";
 String logoSvg = "$assetsUrl/logo.svg";
 String logoAnim = "$assetsUrl/logo.gif";
+String logoPng = "$assetsUrl/logo.png";
 
 //OnboardingR
 String slideBg = "$assetsUrl/OnboardingBg.png";
@@ -45,8 +46,8 @@ String electricIcon = "$assetsUrl/electricityIcon.svg";
 String cableTvIcon = "$assetsUrl/cableTvIcon.svg";
 String flightIcon = "$assetsUrl/airplaneIcon.svg";
 String wifiIcon = "$assetsUrl/wifi.svg";
-String betIcon="$assetsUrl/bet.svg";
-String remitaIcon="$assetsUrl/remita.svg";
+String betIcon = "$assetsUrl/bet.svg";
+String remitaIcon = "$assetsUrl/remita.svg";
 String calenderIcon = "$assetsUrl/calendar.svg";
 String airplaneIcon = "$assetsUrl/airplane.svg";
 

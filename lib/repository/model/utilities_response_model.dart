@@ -207,6 +207,7 @@ FieldType getFieldType(String type) {
 
 class Bank {
   String name;
+  String? logoUrl;
   String code;
-  Bank({required this.name, required this.code});
+  Bank({this.logoUrl, required this.name, required this.code});
 }

@@ -45,15 +45,25 @@ class UserLocation {
 }
 
 class UserBankDetails {
-  String bankName;
-  int accountNumber;
+  String accountNumber;
   String accountName;
-  String? bankCode;
+  String bankCode;
 
-  UserBankDetails({
-    required this.bankName,
-    required this.accountNumber,
-    required this.accountName,
-    this.bankCode,
-  });
+  String kycLevel;
+  String channelCode;
+
+  UserBankDetails(
+      {required this.accountNumber,
+      required this.accountName,
+      required this.bankCode,
+      required this.kycLevel,
+      required this.channelCode});
+  factory UserBankDetails.fromJson(Map<String, dynamic> json) {
+    return UserBankDetails(
+        accountNumber: json['accountNumber'],
+        accountName: json['accountName'],
+        kycLevel: json['KYCLevel'],
+        bankCode: json['bankCode'],
+        channelCode: json['channelCode']);
+  }
 }

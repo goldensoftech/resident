@@ -32,7 +32,9 @@ class _QRScanScreenState extends State<QRScanScreen>
 
   void getUserBanks(context) async {
     if (ResponseData.userBanks.isEmpty) {
-      ResponseData.userBanks = await TransactionBackend().getUserBanks(context);
+      ResponseData.userBanks = await TransactionBackend().getUserBanks(
+        context,
+      );
     }
   }
 
@@ -113,13 +115,13 @@ class _QRScanScreenState extends State<QRScanScreen>
                                               navigateBack(context);
                                             },
                                             title: Text(
-                                              data.accountNumber.toString(),
+                                              data.accountNumber,
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             subtitle: Text(
-                                              "${data.accountName} -${data.bankName}",
+                                              "${data.accountName} ",
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w600),
@@ -261,13 +263,13 @@ class _QRScanScreenState extends State<QRScanScreen>
                                     )
                                   ],
                                 ),
-                                Text(
-                                  selectedAccount!.bankName.toString(),
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.baseBlack),
-                                ),
+                                // Text(
+                                //   selectedAccount!.bankName.toString(),
+                                //   style: TextStyle(
+                                //       fontSize: 14,
+                                //       fontWeight: FontWeight.w600,
+                                //       color: AppColors.baseBlack),
+                                // ),
                                 Text(
                                   selectedAccount!.accountName.toString(),
                                   style: TextStyle(
@@ -437,7 +439,15 @@ class _QRScanScreenState extends State<QRScanScreen>
 
 List<UserBankDetails> ResUser = [
   UserBankDetails(
-      bankName: "Uba", accountNumber: 2089988434, accountName: "Adubuola Femi"),
+      bankCode: "222",
+      channelCode: "89292",
+      kycLevel: "1",
+      accountNumber: "2089988434",
+      accountName: "Adubuola Femi"),
   UserBankDetails(
-      bankName: "Kuda", accountNumber: 1111111111, accountName: "Adubuola Femi")
+      bankCode: "222",
+      channelCode: "89292",
+      kycLevel: "1",
+      accountNumber: "1111111111",
+      accountName: "Adubuola Femi")
 ];

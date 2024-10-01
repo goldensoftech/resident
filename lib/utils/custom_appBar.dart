@@ -89,19 +89,19 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
     );
   }
 
-  AppBar profileAppBar({String? title}) {
+  AppBar profileAppBar({String? title, Color? bgColor}) {
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: true,
       centerTitle: true,
       forceMaterialTransparency: false,
 
-      backgroundColor: AppColors.gold100,
+      backgroundColor: bgColor ?? AppColors.gold100,
 
       scrolledUnderElevation: 0.0,
-      foregroundColor: AppColors.gold100,
+      foregroundColor: bgColor ?? AppColors.gold100,
       systemOverlayStyle: SystemUiOverlayStyle(
-        statusBarColor: AppColors.gold100,
+        statusBarColor: bgColor ?? AppColors.gold100,
         statusBarBrightness: Brightness.dark,
         statusBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: Colors.transparent,

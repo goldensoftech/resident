@@ -188,7 +188,41 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     }
   }
 
-  Future<List<UserBankDetails>> getUserBanks(context) async {
+  Future<List<UserBankDetails>> getUserBanks(
+    context,
+  ) async {
+    const url = "$host$baseUrl${nqrUrl}nqr_getaccount";
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({"userEmail": DummyData.emailAddress}))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnectionApi.body);
+        print(resBody);
+        if (resBody["code"] == "92") {
+          sendErrorMessage("Error", resBody['description'], context);
+        } else {
+          final List<dynamic> items = [resBody];
+          return items.map((item) => UserBankDetails.fromJson(item)).toList();
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+
     return [];
   }
 
@@ -196,11 +230,50 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     return [];
   }
 
-  Future<void> addUserBank(context) async {}
+  Future<void> addBankDetails(context, {required UserBankDetails, }) async {
+    
+  }
 
-  Future<void> fetchBankDetails(
-    context,
-  ) async {}
+  Future<UserBankDetails?> fetchBankDetails(context,
+      {required String accountNumber, required String bankNumber}) async {
+    var url =
+        "https://api.paystack.co/bank/resolve?account_number=$accountNumber&bank_code=$bankNumber";
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnectionApi = await client
+          .get(Uri.parse(url), headers: pkContent)
+          .timeout(Duration(seconds: 60));
+     
+      if (httpConnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnectionApi.body);
+        print(resBody);
+        if (resBody["status"] == true) {
+          var data = resBody["data"];
+          return UserBankDetails(
+              accountNumber: (data['account_number']).toString(),
+              accountName: data['account_name'],
+              bankCode: bankNumber,
+              kycLevel: "1",
+              channelCode: "1");
+        } else {
+          sendErrorMessage("Error", resBody['message'], context);
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return null;
+  }
 
   Future<ElectricityItem?> getElectricityBillerDetails(context,
       {required int id}) async {
