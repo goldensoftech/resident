@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:resident/app_export.dart';
 
 class QRScanScreen extends StatefulWidget {
@@ -13,15 +14,45 @@ class _QRScanScreenState extends State<QRScanScreen>
     with CustomAppBar, CustomAlerts, ErrorSnackBar {
   String? _scanResult;
   UserBankDetails? selectedAccount;
+  final TextEditingController _mechantNameController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   Future<void>? _request;
   String demo =
-      "0002010102121531*999166999166*M000388764026710018NG.COM.NIBSSPLC.QR0111S000308541502301100132408202220597679531513345204000053035665406200.005802NG5911MTN NIGERIA6007Nigeria6304EFAE";
-  //NibssQRModel? nqrData;
-  Future<void> getMerchantDetails(context, String qrdata) async {
-    await AuthBackend().setDefaultUser();
-    NIBSSQRCodeData data = decryptNIBSSQRCode(qrdata);
-    await TransactionBackend().payWithNQR(context, data: data);
+      "0002010102121531**999166**999166****M000000000126720019NG.COM.NIBSS-PLC.QR0111S000000000102309991662005210922520163783561015204000053035665402105802NG5913Test Merchant6007Nigeria6304A54A"; //NibssQRModel? nqrData;
+  Future<NqrCodeData> getMerchantDetails(context, String qrdata) async {
+    // await AuthBackend().setDefaultUser();
+    String rawData =
+        "0002010102121531**999166**999166****M000388764026710018NG.COM.NIBSSPLC.QR0111S000308541502301100132408202220597679531513345204000053035665406200.005802NG5911MTN NIGERIA6007Nigeria6304EFAE";
+    // Restructure the raw data
+    String formattedData = restructureRawData(demo);
+
+    // Now you can pass this formatted data to your NQR model parser
+    print("Formatted Data: $formattedData");
+    NqrCodeData nqrData = NqrCodeData.fromQrString(formattedData);
+
+    print("Institution No: ${nqrData.institutionNumber}");
+    print("Order Amount: ${nqrData.orderAmount}");
+    print("Order SN: ${nqrData.orderSn}");
+    print("Merchant No: ${nqrData.merchantNo}");
+    print("Sub Merchant No: ${nqrData.subMerchantNo}");
+    print("Is Dynamic Transaction: ${nqrData.isDynamic}");
+
+    print("Merchant Name: ${nqrData.merchantName}");
+    _mechantNameController.text = nqrData.merchantName;
+    _amountController.text = nqrData.orderAmount;
+    setState(() {});
+    //await TransactionBackend().payWithNQR(context, data: data);
+    return nqrData;
+  }
+
+  makeNQRPayment(context, {required NqrCodeData data}) async {
+    if (data.isDynamic) {
+      await TransactionBackend().payWithDynamicNQR(context, data: data);
+    } else {
+      await TransactionBackend().payWithStaticNQR(context, data: data);
+    }
   }
 
   @override
@@ -30,9 +61,9 @@ class _QRScanScreenState extends State<QRScanScreen>
     super.initState();
   }
 
-  void getUserBanks(context) async {
+  getUserBanks(context) async {
     if (ResponseData.userBanks.isEmpty) {
-      ResponseData.userBanks = await TransactionBackend().getUserBanks(
+      await TransactionBackend().getUserBanks(
         context,
       );
     }
@@ -54,7 +85,11 @@ class _QRScanScreenState extends State<QRScanScreen>
                   alignment: Alignment.topRight,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
-                    onTap: () {
+                    onTap: () async {
+                      setState(() {
+                        _request = getUserBanks(context);
+                      });
+                      await _request;
                       showModalBottomSheet(
                           context: context,
                           backgroundColor: AppColors.whiteA700,
@@ -93,7 +128,8 @@ class _QRScanScreenState extends State<QRScanScreen>
                                       height: 10,
                                     ),
                                     ListView.separated(
-                                        itemCount: ResUser.length,
+                                        itemCount:
+                                            ResponseData.userBanks.length,
                                         shrinkWrap: true,
                                         physics: const ScrollPhysics(),
                                         separatorBuilder:
@@ -102,29 +138,120 @@ class _QRScanScreenState extends State<QRScanScreen>
                                                     height: 1,
                                                     color: AppColors.grey200),
                                         itemBuilder: (ctx, index) {
-                                          final data = ResUser[index];
-                                          return ListTile(
-                                            tileColor: AppColors.whiteA700,
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                            onTap: () {
-                                              setState(() {
-                                                selectedAccount = data;
-                                              });
-                                              navigateBack(context);
-                                            },
-                                            title: Text(
-                                              data.accountNumber,
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600),
+                                          final data =
+                                              ResponseData.userBanks[index];
+                                          return Dismissible(
+                                            key: Key(data.accountNumber),
+                                            direction: DismissDirection
+                                                .endToStart, // Swipe from right to left
+                                            background: Container(
+                                              color: Colors.red,
+                                              alignment: Alignment.centerRight,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
+                                              child: const Icon(
+                                                  CupertinoIcons.delete,
+                                                  color: Colors.white),
                                             ),
-                                            subtitle: Text(
-                                              "${data.accountName} ",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600),
+                                            confirmDismiss: (DismissDirection
+                                                direction) async {
+                                              selectedAccount = null;
+                                              return await showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    backgroundColor:
+                                                        AppColors.whiteA700,
+                                                    insetPadding:
+                                                        EdgeInsets.zero,
+                                                    contentPadding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 13.w,
+                                                            vertical: 20.h),
+
+                                                    //   children: [],
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.r)),
+
+                                                    title:
+                                                        Text("Confirm Delete"),
+
+                                                    content: Text(
+                                                        "Are you sure you want to delete this account?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () => Navigator
+                                                                .of(context)
+                                                            .pop(
+                                                                false), // Cancel
+                                                        child: Text("Cancel"),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          setState(() {
+                                                            _request = TransactionBackend()
+                                                                .deleteAccount(
+                                                                    context,
+                                                                    accountNumber:
+                                                                        data.accountNumber);
+                                                          });
+                                                          await _request;
+                                                          Navigator.of(context)
+                                                              .pop(true);
+                                                        },
+                                                        child: Text(
+                                                          "Delete",
+                                                          style: TextStyle(
+                                                              color: AppColors
+                                                                  .red),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            // onDismissed: (DismissDirection
+                                            //     direction) async {
+                                            //   // // Optionally show a snackbar
+                                            //   // ScaffoldMessenger.of(context)
+                                            //   //     .showSnackBar(
+                                            //   //   SnackBar(
+                                            //   //       content: Text(
+                                            //   //           "Account deleted")),
+                                            //   // );
+                                            // },
+                                            child: ListTile(
+                                              tileColor: AppColors.whiteA700,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedAccount = data;
+                                                });
+                                                navigateBack(context);
+                                              },
+                                              title: Text(
+                                                data.accountNumber,
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              subtitle: Text(
+                                                "${data.accountName} ",
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
                                           );
                                         }),
@@ -133,8 +260,9 @@ class _QRScanScreenState extends State<QRScanScreen>
                                     ),
                                     GestureDetector(
                                       onTap: () {
+                                        navigateBack(context);
                                         navigatePush(
-                                            context, const AddAccountScreen());
+                                            context, AddAccountScreen());
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -303,95 +431,336 @@ class _QRScanScreenState extends State<QRScanScreen>
                   onPressed: selectedAccount == null
                       ? null
                       : () async {
-                          showDialog(
-                              barrierDismissible: true,
-                              context: context,
-                              builder: (ctx) {
-                                return BackdropFilter(
-                                  filter:
-                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                  child: SimpleDialog(
-                                    insetPadding: EdgeInsets.zero,
-                                    contentPadding: EdgeInsets.zero,
+                          final nqrdata =
+                              await getMerchantDetails(context, demo);
 
-                                    //   children: [],
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.r)),
-                                    children: [
-                                      Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 13.w, vertical: 20.h),
-                                          decoration: BoxDecoration(
-                                              color: AppColors.whiteA700,
-                                              borderRadius:
-                                                  BorderRadius.circular(10.r)),
-                                          // height: displaySize.height * .6,
-                                          width: displaySize.width * .9,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    const Spacer(),
-                                                    Text(
-                                                      'Scan QRCode',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: AppColors
-                                                              .black900),
-                                                    ),
-                                                    const Spacer(),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              right: 20.0),
-                                                      child: InkWell(
-                                                          onTap: () {
-                                                            navigateBack(
-                                                                context);
-                                                          },
-                                                          child: Icon(
-                                                            Icons
-                                                                .cancel_outlined,
-                                                            color: AppColors
-                                                                .black900,
-                                                          )),
-                                                    ),
-                                                  ]),
-                                              const SizedBox(
-                                                height: 20,
-                                              ),
-                                              SizedBox(
-                                                height: displaySize.height * .4,
-                                                width: displaySize.width * .8,
-                                                child: MobileScanner(
-                                                  onDetect: (value) async {
-                                                    setState(() {
-                                                      _scanResult =
-                                                          value.raw.toString();
-                                                      if (_scanResult != null ||
-                                                          _scanResult!.length >
-                                                              20) {
-                                                        _request =
-                                                            getMerchantDetails(
-                                                                context,
-                                                                _scanResult!);
-                                                      }
-                                                    });
-                                                    await _request;
-                                                  },
+                          showModalBottomSheet(
+                              context: context,
+                              backgroundColor: AppColors.whiteA700,
+                              showDragHandle: true,
+                              enableDrag: true,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10),
+                                      topRight: Radius.circular(10))),
+                              builder: (context) {
+                                return Container(
+                                    color: AppColors.whiteA700,
+                                    constraints: BoxConstraints(
+                                        maxHeight:
+                                            MediaQuery.of(context).size.height *
+                                                0.5),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0, vertical: 10),
+                                    child: Scrollbar(
+                                        radius: const Radius.circular(5),
+                                        child: Form(
+                                          key: _formKey,
+                                          child: ListView(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 0,
+                                                      horizontal: 10),
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    "Making payment to",
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        color:
+                                                            AppColors.baseBlack,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
-                                          )),
-                                    ],
-                                  ),
-                                );
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                Text(
+                                                  "Merchant Name",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          AppColors.baseBlack,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                TextFormField(
+                                                  controller:
+                                                      _mechantNameController,
+                                                  readOnly: true,
+                                                  keyboardType: TextInputType
+                                                      .emailAddress,
+                                                  onChanged: (value) {
+                                                    setState(() {});
+                                                  },
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please enter your name';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  style: const TextStyle(
+                                                      height: 1),
+                                                  cursorOpacityAnimates: true,
+                                                  cursorWidth: 1,
+                                                  cursorColor: Colors.black,
+                                                  decoration: InputDecoration(
+                                                    contentPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 12),
+                                                    //labelStyle: const TextStyle(color: Colors.black54),
+                                                    hintText: 'Payer Name',
+                                                    filled: true,
+                                                    fillColor:
+                                                        AppColors.lightGrey,
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            AppColors.grey700),
+
+                                                    border: OutlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide.none,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.r)),
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r),
+                                                      borderSide:
+                                                          BorderSide.none,
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 20,
+                                                ),
+                                                Text(
+                                                  "Amount",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          AppColors.baseBlack,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                TextFormField(
+                                                  controller: _amountController,
+                                                  readOnly: !nqrdata.isDynamic,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  onChanged: (value) {
+                                                    setState(() {});
+                                                  },
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please amount';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  style: const TextStyle(
+                                                      height: 1),
+                                                  cursorOpacityAnimates: true,
+                                                  cursorWidth: 1,
+                                                  cursorColor: Colors.black,
+                                                  decoration: InputDecoration(
+                                                    contentPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 12),
+                                                    //labelStyle: const TextStyle(color: Colors.black54),
+                                                    hintText: 'Amount',
+                                                    filled: nqrdata.isDynamic,
+                                                    fillColor:
+                                                        AppColors.lightGrey,
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color:
+                                                            AppColors.grey700),
+
+                                                    border: OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                            width: 1.w,
+                                                            color: AppColors
+                                                                .formGrey),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.r)),
+                                                    focusedBorder:
+                                                        OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r),
+                                                      borderSide: BorderSide(
+                                                          color: AppColors
+                                                              .appGold),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 30,
+                                                ),
+                                                SizedBox(
+                                                    width:
+                                                        displaySize.width * 0.7,
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            elevation: 0,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        14),
+                                                            backgroundColor:
+                                                                AppColors
+                                                                    .appGold,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            12))),
+                                                        onPressed: () async {
+                                                          if (!_formKey
+                                                              .currentState!
+                                                              .validate()) {
+                                                            return;
+                                                          }
+
+                                                          setState(() {
+                                                            // _request =
+                                                            //     makeNQRPayment(
+                                                            //         context);
+                                                          });
+                                                          await _request;
+
+                                                          // showTxConfirmationAlert(
+                                                          //   context,
+                                                          //   type: TransactionType.data,
+                                                          // ),
+                                                        },
+                                                        child: Text(
+                                                          'Make Payment',
+                                                          style: TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: AppColors
+                                                                  .whiteA700),
+                                                        )))
+                                              ]),
+                                        )));
                               });
+
+                          // showDialog(
+                          //     barrierDismissible: true,
+                          //     context: context,
+                          //     builder: (ctx) {
+                          //       return BackdropFilter(
+                          //         filter:
+                          //             ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          //         child: SimpleDialog(
+                          //           insetPadding: EdgeInsets.zero,
+                          //           contentPadding: EdgeInsets.zero,
+
+                          //           //   children: [],
+                          //           shape: RoundedRectangleBorder(
+                          //               borderRadius:
+                          //                   BorderRadius.circular(10.r)),
+                          //           children: [
+                          //             Container(
+                          //                 padding: EdgeInsets.symmetric(
+                          //                     horizontal: 13.w, vertical: 20.h),
+                          //                 decoration: BoxDecoration(
+                          //                     color: AppColors.whiteA700,
+                          //                     borderRadius:
+                          //                         BorderRadius.circular(10.r)),
+                          //                 // height: displaySize.height * .6,
+                          //                 width: displaySize.width * .9,
+                          //                 child: Column(
+                          //                   children: [
+                          //                     Row(
+                          //                         mainAxisAlignment:
+                          //                             MainAxisAlignment.center,
+                          //                         children: [
+                          //                           const Spacer(),
+                          //                           Text(
+                          //                             'Scan Payment QR',
+                          //                             style: TextStyle(
+                          //                                 fontSize: 16,
+                          //                                 fontWeight:
+                          //                                     FontWeight.w700,
+                          //                                 color: AppColors
+                          //                                     .black900),
+                          //                           ),
+                          //                           const Spacer(),
+                          //                           Padding(
+                          //                             padding:
+                          //                                 const EdgeInsets.only(
+                          //                                     right: 20.0),
+                          //                             child: InkWell(
+                          //                                 onTap: () {
+                          //                                   navigateBack(
+                          //                                       context);
+                          //                                 },
+                          //                                 child: Icon(
+                          //                                   Icons
+                          //                                       .cancel_outlined,
+                          //                                   color: AppColors
+                          //                                       .black900,
+                          //                                 )),
+                          //                           ),
+                          //                         ]),
+                          //                     const SizedBox(
+                          //                       height: 20,
+                          //                     ),
+                          //                     SizedBox(
+                          //                       height: displaySize.height * .4,
+                          //                       width: displaySize.width * .8,
+                          //                       child: MobileScanner(
+                          //                         onDetect: (value) async {
+                          //                           setState(() {
+                          //                             _scanResult =
+                          //                                 value.raw.toString();
+                          //                             if (_scanResult != null ||
+                          //                                 _scanResult!.length >
+                          //                                     20) {
+                          //                               _request =
+                          //                                   getMerchantDetails(
+                          //                                       context,
+                          //                                       _scanResult!);
+                          //                             }
+                          //                           });
+                          //                           await _request;
+                          //                         },
+                          //                       ),
+                          //                     ),
+                          //                   ],
+                          //                 )),
+                          //           ],
+                          //         ),
+                          //       );
+                          //     });
 
                           // await Navigator.push(
                           //     context,
@@ -437,17 +806,17 @@ class _QRScanScreenState extends State<QRScanScreen>
   }
 }
 
-List<UserBankDetails> ResUser = [
-  UserBankDetails(
-      bankCode: "222",
-      channelCode: "89292",
-      kycLevel: "1",
-      accountNumber: "2089988434",
-      accountName: "Adubuola Femi"),
-  UserBankDetails(
-      bankCode: "222",
-      channelCode: "89292",
-      kycLevel: "1",
-      accountNumber: "1111111111",
-      accountName: "Adubuola Femi")
-];
+// List<UserBankDetails> ResUser = [
+//   UserBankDetails(
+//       bankCode: "222",
+//       channelCode: "89292",
+//       kycLevel: "1",
+//       accountNumber: "2089988434",
+//       accountName: "Adubuola Femi"),
+//   UserBankDetails(
+//       bankCode: "222",
+//       channelCode: "89292",
+//       kycLevel: "1",
+//       accountNumber: "1111111111",
+//       accountName: "Adubuola Femi")
+// ];

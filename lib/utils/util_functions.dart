@@ -309,3 +309,13 @@ bool isSameDay(DateTime date1, DateTime date2) {
 String formatNumber(double number) {
   return NumberFormat.decimalPattern().format(number);
 }
+String? getFieldValue(String data, String tag) {
+  int index = data.indexOf(tag);
+  if (index != -1 && index + 4 < data.length) {
+    // Extract the length of the field from the data (2 digits after the tag)
+    int length = int.parse(data.substring(index + 2, index + 4));
+    // Return the value based on the tag and length
+    return data.substring(index + 4, index + 4 + length);
+  }
+  return null;
+}

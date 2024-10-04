@@ -1,125 +1,113 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
-class NIBSSQRCodeData {
-  final String merchantId;
-  final String institutionNo;
-  final String amount;
-  final String subMerchantId;
-  final String timestamp;
+class NqrCodeData {
+  final String institutionNumber;
+  final String orderAmount;
+  final String orderSn; // Full Order SN (Part 1 + Part 2)
+  final String merchantNo;
+  final String subMerchantNo;
   final String merchantName;
-  final String orderNo;
+  final bool isDynamic;
 
-  NIBSSQRCodeData({
-    required this.merchantId,
-    required this.institutionNo,
-    required this.amount,
-    required this.subMerchantId,
-    required this.timestamp,
+  NqrCodeData({
+    required this.institutionNumber,
+    required this.orderAmount,
+    required this.orderSn,
+    required this.merchantNo,
+    required this.subMerchantNo,
     required this.merchantName,
-    required this.orderNo,
+    required this.isDynamic,
   });
+
+  factory NqrCodeData.fromQrString(String qrData) {
+    String institutionNumber = '';
+    String orderAmount = '';
+    String orderSn = '';
+    String merchantNo = '';
+    String subMerchantNo = '';
+    String merchantName = '';
+    bool isDynamic = false;
+
+    int i = 0;
+    while (i < qrData.length) {
+      String tag = qrData.substring(i, i + 2); // Tag is always 2 digits
+      String lengthStr = qrData.substring(i + 2, i + 4);
+      int length;
+
+      try {
+        length = int.parse(lengthStr); // Attempt to parse length
+      } catch (e) {
+        print("Error parsing length at position $i: $lengthStr");
+        break;
+      }
+
+      String value =
+          qrData.substring(i + 4, i + 4 + length); // Value based on the length
+
+      // Check the tag and assign the value accordingly
+      if (tag == "01") {
+        isDynamic = value == "12"; // QR Type: Static (11) or Dynamic (12)
+      } else if (tag == "15") {
+        // Extract Institution Number and Merchant Number
+        institutionNumber =
+            value.substring(0, 12); // First 12 characters: Institution number
+
+        // Find the position of "M" in the remaining string
+        int mIndex = value.indexOf(
+            "M", 12); // Start search after the first 12 characters
+        if (mIndex != -1 && value.length >= mIndex + 11) {
+          merchantNo = value.substring(
+              mIndex, mIndex + 11); // Extract 11 characters starting from "M"
+        }
+      } else if (tag == "26") {
+        // Sub-merchant Number + Order SN
+        if (value.contains("QR0111")) {
+          // Find the position where "QR0111" appears
+          int start =
+              value.indexOf("QR0111") + 6; // Skip "QR0111" (7 characters)
+
+          // Extract the Sub-Merchant Number (next 11 characters after "QR0111")
+          subMerchantNo = value.substring(start, start + 11);
+
+          // Skip the next 4 characters ("0230")
+          start += 11 + 4;
+
+          // Extract the Order SN (next 30 characters)
+          orderSn = value.substring(start, start + 30);
+        }
+      } else if (tag == "54") {
+        // Extract Order Amount for dynamic QR codes
+        orderAmount = value;
+        isDynamic =
+            orderAmount.isEmpty; // If there's an amount, it's not dynamic
+      } else if (tag == "59") {
+        // Extract Merchant Name (variable length, up to 99 characters)
+        merchantName = value; // Merchant name
+      }
+
+      // Move to the next tag (4 + length characters)
+      i += 4 + length;
+    }
+
+    return NqrCodeData(
+      institutionNumber: institutionNumber,
+      orderAmount: orderAmount,
+      orderSn: orderSn, // Full Order SN
+      merchantNo: merchantNo,
+      subMerchantNo: subMerchantNo,
+      merchantName: merchantName,
+      isDynamic: isDynamic,
+    );
+  }
 }
 
-NIBSSQRCodeData decryptNIBSSQRCode(String qrCode) {
-  String merchantId = '';
-  String institutionNo = '';
-  String amount = '';
-  String subMerchantId = '';
-  String timestamp = '';
-  String merchantName = '';
-  String orderNo = '';
+String restructureRawData(String rawData) {
+  // Step 1: Clean the data by removing or replacing unnecessary characters
+  String formattedData = rawData
+      .replaceAll("**999166**999166", "4434056600520446")
+      .replaceAll('', ''); // Remove any unwanted control characters
 
-  // Sample raw data:
-  // "0002010102121531**999166**999166****M000388764026710018NG.COM.NIBSSPLC.QR0111S000308541502301100132408202220597679531513345204000053035665406200.005802NG5911MTN NIGERIA6007Nigeria6304EFAE";
+  // Step 2: Ensure proper structure in key areas (if necessary)
+  // You may need additional logic here if there are more patterns to replace
 
-  // Extract Merchant ID
-  RegExp merchantIdRegex = RegExp(r'\*\*(\d{6})\*\*');
-  RegExpMatch? merchantIdMatch = merchantIdRegex.firstMatch(qrCode);
-  if (merchantIdMatch != null) {
-    merchantId = merchantIdMatch.group(1) ?? '';
-  }
-
-  // Extract SubMerchant ID (Assumed to be similar to Merchant ID)
-  RegExp subMerchantIdRegex = RegExp(r'\*\*(\d{6})\*\*');
-  RegExpMatch? subMerchantIdMatch = subMerchantIdRegex.firstMatch(qrCode);
-  if (subMerchantIdMatch != null) {
-    subMerchantId = subMerchantIdMatch.group(1) ?? '';
-  }
-
-  // Extract Institution No (Based on the structure provided)
-  RegExp institutionNoRegex = RegExp(r'M(\d{6})');
-  RegExpMatch? institutionNoMatch = institutionNoRegex.firstMatch(qrCode);
-  if (institutionNoMatch != null) {
-    institutionNo = institutionNoMatch.group(1) ?? '';
-  }
-
-  // Extract Amount
-  RegExp amountRegex = RegExp(r'5406(\d+\.\d{2})');
-  RegExpMatch? amountMatch = amountRegex.firstMatch(qrCode);
-  if (amountMatch != null) {
-    amount = amountMatch.group(1) ?? '';
-  }
-
-  // Extract Timestamp (Assumed position based on provided data)
-  RegExp timestampRegex = RegExp(r'(\d{8})');
-  RegExpMatch? timestampMatch = timestampRegex.firstMatch(qrCode);
-  if (timestampMatch != null) {
-    timestamp = timestampMatch.group(1) ?? '';
-  }
-
-  // Extract Merchant Name (Assumed to follow the pattern '5911[merchantName]')
-  RegExp merchantNameRegex = RegExp(r'5911([A-Z\s]+)');
-  RegExpMatch? merchantNameMatch = merchantNameRegex.firstMatch(qrCode);
-  if (merchantNameMatch != null) {
-    merchantName = merchantNameMatch.group(1) ?? '';
-  }
-
-  // Extract Order No (Assumed to be a sequence of digits right after the merchant ID)
-  RegExp orderNoRegex = RegExp(r'999166(\d{14})');
-  RegExpMatch? orderNoMatch = orderNoRegex.firstMatch(qrCode);
-  if (orderNoMatch != null) {
-    orderNo = orderNoMatch.group(1) ?? '';
-  }
-
-  return NIBSSQRCodeData(
-    merchantId: merchantId,
-    institutionNo: institutionNo,
-    amount: amount,
-    subMerchantId: subMerchantId,
-    timestamp: timestamp,
-    merchantName: merchantName,
-    orderNo: orderNo,
-  );
-}
-
-String generateSignature({
-  required String amount,
-  required String authCode,
-  required String institutionNumber,
-  required String merchantNumber,
-  required String merchantName,
-  required String orderSN,
-  required String subMerchantNumber,
-  required String timestamp,
-  required String apiKey,
-}) {
-  // Concatenate the parameters according to the required format
-  String concatenatedString = 'amount=$amount' +
-      '&auth_code=$authCode' +
-      '&institution_number=$institutionNumber' +
-      '&mch_no=$merchantNumber' +
-      '&mer_name=$merchantName' +
-      '&order_sn=$orderSN' +
-      '&sub_mch_no=$subMerchantNumber' +
-      '&timestamp=$timestamp' +
-      apiKey;
-
-  // Convert the concatenated string to bytes
-  List<int> bytes = utf8.encode(concatenatedString);
-
-  // Generate the SHA-256 hash of the bytes
-  Digest sha256Hash = sha256.convert(bytes);
-
-  // Return the hash as a hexadecimal string
-  return sha256Hash.toString().toUpperCase();
+  // Step 3: Return the cleaned-up data
+  return formattedData;
 }

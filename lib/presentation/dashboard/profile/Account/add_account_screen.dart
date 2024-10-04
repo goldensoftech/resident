@@ -1,8 +1,11 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:resident/app_export.dart';
 import 'package:resident/constants/api.dart';
 
 class AddAccountScreen extends StatefulWidget {
-  const AddAccountScreen({super.key});
+  AddAccountScreen({super.key});
 
   @override
   State<AddAccountScreen> createState() => _AddAccountScreenState();
@@ -14,13 +17,36 @@ class _AddAccountScreenState extends State<AddAccountScreen>
   UserBankDetails? bankDetails;
   Bank? selectedBank;
   bool isReadyToCheck = false;
+  bool isAccountAdded = false;
   final TextEditingController _bankController = TextEditingController();
   TextEditingController _accountNumberController = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  List<Bank> filteredBankList = [];
+  List<Bank> bankList = DummyData().bankList.map((data) {
+    return Bank(name: data['name'], logoUrl: data['url'], code: data['code']);
+  }).toList();
+
   @override
   void initState() {
-    //  getUserBanks(context);
+    filteredBankList = bankList;
     super.initState();
+  }
+
+  void filterBanks(String query) {
+    setState(() {
+      // If the search query is not empty, filter the bank list
+      if (query.isNotEmpty) {
+        filteredBankList = bankList
+            .where(
+                (bank) => bank.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      } else {
+        // If the search query is empty, show all banks
+        filteredBankList = bankList;
+      }
+    });
   }
 
   validateCustomer(context) async {
@@ -34,8 +60,12 @@ class _AddAccountScreenState extends State<AddAccountScreen>
   }
 
   addBankDetails(context) async {
-    await TransactionBackend().addBankDetails(context,
-        userBankDetails: bankDetails, bankCode: selectedBank!.code);
+    FocusScope.of(context).unfocus();
+    isAccountAdded = await TransactionBackend().addBankDetails(context,
+        userBankDetails: bankDetails!, bankCode: selectedBank!.code);
+    setState(() {
+      isAccountAdded;
+    });
   }
 
   @override
@@ -64,6 +94,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                       controller: _bankController,
                       readOnly: true,
                       onTap: () {
+                        filteredBankList = bankList;
                         showModalBottomSheet(
                             context: context,
                             backgroundColor: AppColors.whiteA700,
@@ -130,8 +161,9 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10.0),
                                         child: TextFormField(
+                                          controller: _searchController,
                                           onChanged: (value) {
-                                            setState(() {});
+                                            filterBanks(value);
                                           },
                                           style: const TextStyle(height: 1),
                                           cursorOpacityAnimates: true,
@@ -159,6 +191,19 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                   BorderRadius.circular(8.r),
                                               borderSide: BorderSide.none,
                                             ),
+                                            suffixIcon: _searchController
+                                                    .text.isNotEmpty
+                                                ? IconButton(
+                                                    onPressed: () {
+                                                      _searchController.clear();
+                                                      filterBanks("");
+                                                    },
+                                                    icon: Icon(
+                                                      CupertinoIcons
+                                                          .clear_circled_solid,
+                                                      color: AppColors.grey500,
+                                                    ))
+                                                : const SizedBox.shrink(),
                                           ),
                                         ),
                                       ),
@@ -175,7 +220,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                             radius: const Radius.circular(5),
                                             child: ListView.separated(
                                                 itemCount:
-                                                    DummyData().bankList.length,
+                                                    filteredBankList.length,
                                                 physics: const ScrollPhysics(),
                                                 separatorBuilder:
                                                     (BuildContext context,
@@ -185,12 +230,12 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                             color: AppColors
                                                                 .grey200),
                                                 itemBuilder: (context, index) {
-                                                  final data = DummyData()
-                                                      .bankList[index];
-                                                  Bank newBank = Bank(
-                                                      name: data['name'],
-                                                      logoUrl: data['url'],
-                                                      code: data['code']);
+                                                  final data =
+                                                      filteredBankList[index];
+                                                  // Bank newBank = Bank(
+                                                  //     name: data['name'],
+                                                  //     logoUrl: data['url'],
+                                                  //     code: data['code']);
                                                   return ListTile(
                                                     tileColor:
                                                         AppColors.whiteA700,
@@ -200,9 +245,9 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                             vertical: 10),
                                                     onTap: () {
                                                       setState(() {
-                                                        selectedBank = newBank;
+                                                        selectedBank = data;
                                                         _bankController.text =
-                                                            newBank.name;
+                                                            data.name;
                                                         _accountNumberController
                                                             .text = "";
                                                       });
@@ -219,11 +264,9 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                       ),
                                                       child: ClipOval(
                                                         child:
-                                                            newBank.logoUrl !=
-                                                                    null
+                                                            data.logoUrl != null
                                                                 ? Image.network(
-                                                                    newBank
-                                                                        .logoUrl!,
+                                                                    data.logoUrl!,
                                                                     height: 40,
                                                                     width: 40,
                                                                     fit: BoxFit
@@ -245,7 +288,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                       ),
                                                     ),
                                                     title: Text(
-                                                      newBank.name,
+                                                      data.name,
                                                       style: const TextStyle(
                                                           fontSize: 14,
                                                           fontWeight:
@@ -362,7 +405,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter phone number';
+                          return 'Please enter account number';
                         }
                         return null;
                       },
@@ -374,7 +417,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 0, horizontal: 12),
                         //labelStyle: const TextStyle(color: Colors.black54),
-                        hintText: 'Recipient Number',
+                        hintText: 'Account Number',
                         hintStyle: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -563,7 +606,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                   const SizedBox(height: 40),
                                                   SizedBox(
                                                     width:
-                                                        displaySize.width * 0.7,
+                                                        displaySize.width * 0.6,
                                                     child: ElevatedButton(
                                                       style: ElevatedButton.styleFrom(
                                                           elevation: 0,
@@ -579,15 +622,94 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                                       .circular(
                                                                           12))),
                                                       onPressed: () async {
-                                                        navigateBack(context);
                                                         setState(() {
                                                           _request =
                                                               addBankDetails(
                                                                   context);
                                                         });
+                                                        // navigateBack(context);
+                                                        FocusScope.of(context)
+                                                            .unfocus();
                                                         await _request;
-                                                        if (bankDetails !=
-                                                            null) {}
+                                                        if (isAccountAdded) {
+                                                          showDialog(
+                                                              context: context,
+                                                              barrierColor: Colors
+                                                                  .transparent
+                                                                  .withOpacity(
+                                                                      .5),
+                                                              barrierDismissible:
+                                                                  false,
+                                                              builder: (ctx) {
+                                                                return BackdropFilter(
+                                                                  filter: ImageFilter
+                                                                      .blur(
+                                                                          sigmaX:
+                                                                              10,
+                                                                          sigmaY:
+                                                                              10),
+                                                                  child: SimpleDialog(
+                                                                      backgroundColor: AppColors.whiteA700,
+                                                                      insetPadding: EdgeInsets.zero,
+
+                                                                      //  scrollable: true,
+                                                                      contentPadding: EdgeInsets.symmetric(horizontal: 13.w, vertical: 20.h),
+                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+                                                                      children: [
+                                                                        Container(
+                                                                          height:
+                                                                              displaySize.height * .4,
+                                                                          width:
+                                                                              displaySize.width * .7,
+                                                                          child:
+                                                                              Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.center,
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.center,
+                                                                            children: [
+                                                                              Text('Successful', textAlign: TextAlign.center, style: TextStyle(fontSize: 18, color: AppColors.baseBlack, fontWeight: FontWeight.w700)),
+                                                                              Padding(
+                                                                                  padding: EdgeInsets.symmetric(
+                                                                                    vertical: 10,
+                                                                                  ),
+                                                                                  child: Text("Bank Information added sucessfully", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.grey200, fontWeight: FontWeight.w400))),
+                                                                              SizedBox(
+                                                                                height: displaySize.height * .02,
+                                                                              ),
+                                                                              SvgPicture.asset(
+                                                                                successImg,
+                                                                              ),
+                                                                              Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                                                children: [
+                                                                                  TextButton(
+                                                                                    onPressed: () {
+                                                                                      navigateBack(context);
+                                                                                      navigateBack(context);
+                                                                                    }, // Cancel
+                                                                                    child: Text("Add Another"),
+                                                                                  ),
+                                                                                  TextButton(
+                                                                                    onPressed: () async {
+                                                                                      navigateBack(context);
+                                                                                      navigateBack(context);
+                                                                                      navigateBack(context);
+                                                                                    },
+                                                                                    child: Text(
+                                                                                      "Exit",
+                                                                                      style: TextStyle(color: AppColors.red),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ]),
+                                                                );
+                                                              });
+                                                        }
                                                       },
                                                       child: Text(
                                                         'Add Account',

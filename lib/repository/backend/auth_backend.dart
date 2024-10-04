@@ -174,6 +174,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
                   email: email,
                   startDate: DateTime.now().subtract(const Duration(days: 30)),
                   endDate: DateTime.now());
+          await TransactionBackend().getUserBanks(context);
           navigateRemoveAll(context, const Dashboard());
         } else {
           sendErrorMessage("Error", resBody['description'], context);
@@ -223,6 +224,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
                   email: email,
                   startDate: DateTime.now().subtract(const Duration(days: 30)),
                   endDate: DateTime.now());
+          await TransactionBackend().getUserBanks(context);
           navigateRemoveAll(context, const Dashboard());
         } else {
           sendErrorMessage("Error", resBody['description'], context);
