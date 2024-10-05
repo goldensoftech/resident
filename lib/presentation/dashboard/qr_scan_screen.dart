@@ -516,7 +516,7 @@ class _QRScanScreenState extends State<QRScanScreen>
                                                 height: displaySize.height * .4,
                                                 width: displaySize.width * .8,
                                                 child: MobileScanner(
-                                                  startDelay: true,
+                                                //  startDelay: true,
                                                   onDetect: (value) async {
                                                     if (value
                                                         .barcodes.isNotEmpty) {

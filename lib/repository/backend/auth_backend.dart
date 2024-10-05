@@ -186,12 +186,14 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     } on SocketException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
+      navigateRemoveAll(context, ErrorScreen());
     } on NoSuchMethodError catch (_) {
       sendErrorMessage(
           "error", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
+      navigateRemoveAll(context, ErrorScreen());
       //navigateReplace(context, const Dashboard());
     } on Exception catch (e) {
       logger.e(e);
@@ -236,12 +238,14 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     } on SocketException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
+      navigateRemoveAll(context,  ErrorScreen());
     } on NoSuchMethodError catch (_) {
       sendErrorMessage(
           "error", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
+      navigateRemoveAll(context,  ErrorScreen());
       //navigateReplace(context, const Dashboard());
     } on Exception catch (e) {
       logger.e(e);
@@ -494,7 +498,6 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     final loginResponse = LoginResponseModel(isLoggedIn: false, user: null);
 
     ResponseData.loginResponse = loginResponse;
- 
   }
 
   static bool isLoggedIn() {

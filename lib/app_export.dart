@@ -23,6 +23,7 @@ export 'package:webview_flutter/webview_flutter.dart';
 export 'package:currency_symbols/currency_symbols.dart';
 export 'package:dropdown_button2/dropdown_button2.dart';
 export 'package:mobile_scanner/mobile_scanner.dart';
+export 'package:flutter_phoenix/flutter_phoenix.dart';
 
 //pages
 export 'package:resident/presentation/dashboard/bills/payement_gateway_screen.dart';
@@ -66,8 +67,7 @@ export 'package:resident/repository/model/notification_response_model.dart';
 export 'package:resident/repository/model/rrr_tx_response_model.dart';
 export 'package:resident/utils/enums.dart';
 export 'package:resident/presentation/dashboard/profile/Account/add_account_screen.dart';
-
-
+export 'package:resident/presentation/error_screen.dart';
 
 //utils
 export 'package:resident/utils/navigators.dart';

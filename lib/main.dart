@@ -1,7 +1,5 @@
-
-
 import 'package:resident/app_export.dart';
-import 'package:resident/repository/backend/payment_gateways.backend.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +13,9 @@ void main() {
   ));
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
-    
     runApp(
-      
-      const MyApp(),
+      Phoenix(child:
+       MyApp(),)
     );
   });
 }
@@ -33,6 +30,18 @@ class MyApp extends StatelessWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
+          ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+            Widget error =
+                Text('......rendering error....: ${errorDetails.summary}');
+            if (child is Scaffold || child is Navigator) {
+              error = Scaffold(
+                body: Center(
+                  child: error,
+                ),
+              );
+            }
+            return ErrorScreen();
+          };
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Resident',
