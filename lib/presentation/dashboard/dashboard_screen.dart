@@ -39,6 +39,7 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: AppColors.whiteA700,
             type: BottomNavigationBarType.fixed,
             currentIndex: _currentIndex,
             elevation: 0,

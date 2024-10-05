@@ -125,11 +125,41 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     return null;
   }
 
-  Future<void> payWithDynamicNQR(context, {required NqrCodeData data}) async {
+  Future<void> payWithDynamicNQR(context,
+      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
     const url = "$host$baseUrl${nqrUrl}nqr_createdynamicqr_transaction";
     try {
       await AuthBackend().checkAndUpdateToken(context);
-      // final httpConnnectionApi = await client.post(url);
+      final httpConnnectionApi = await client.post(Uri.parse(url),
+          body: json.encode({
+            "institution_number": data.institutionNumber,
+            "order_amount": data.orderAmount,
+            "order_sn": data.orderSn,
+            "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            "user_account_name": bankDetails.accountName,
+            "user_account_number": bankDetails.accountNumber,
+            "user_bank_no": bankDetails.bankCode,
+            "user_bank_verification_number":
+                ResponseData.loginResponse!.user!.bvn ?? "22480965970",
+            "user_gps":
+                "${ResponseData.userLocation!.latitude ?? " 9.55679"},${ResponseData.userLocation!.longitude ?? "9.692809"}",
+            "user_kyc_level": "1",
+            "sign": "A5668858DA5D05A74DC362FAD2DCF323"
+          }));
+
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          sendErrorMessage("Error", resBody['error'], context);
+        } else {
+          showSuccessAlert(context,
+              title: "Payment",
+              description:
+                  "${data.merchantName} is currently processing your transaction",
+              goToPage: const Dashboard());
+        }
+      }
     } on SocketException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
@@ -146,7 +176,68 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     // return false;
   }
 
-  Future<void> payWithStaticNQR(context, {required NqrCodeData data}) async {}
+  Future<void> payWithStaticNQR(context,
+      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
+    const url = "$host$baseUrl${nqrUrl}nqr_createstaticqr_transaction";
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnnectionApi = await client.post(Uri.parse(url),
+          body: json.encode({
+            "amount": data.orderAmount,
+            "channel": "1",
+            "institution_number": data.institutionNumber,
+            "mch_no": data.merchantNo,
+            "order_no": data.orderSn,
+            "sub_mch_no": data.subMerchantNo,
+            "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            "user_account_name": bankDetails.accountName,
+            "user_account_number": bankDetails.accountNumber,
+            "user_bank_no": bankDetails.bankCode,
+            "user_bank_verification_number":
+                ResponseData.loginResponse!.user!.bvn ?? "22480965970",
+            "user_gps":
+                "${ResponseData.userLocation!.latitude},${ResponseData.userLocation!.longitude}",
+            "user_kyc_level": "1",
+            "sign": "A5668858DA5D05A74DC362FAD2DCF323"
+          }));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          print("ERroororor");
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else {
+          showSuccessAlert(context,
+              title: "Payment",
+              description:
+                  "${data.merchantName} is currently processing your transaction",
+              goToPage: const Dashboard());
+        }
+        // if (resBody["code"] == "00") {
+        //   // final accounts = resBody['Accounts'] as Map<String, dynamic>;
+        //   // logger.i(accounts);
+        //   // ResponseData.userBanks = accounts.values
+        //   //     .map<UserBankDetails>((json) => UserBankDetails.fromJson(json))
+        //   //     .toList();
+        //   // print("Banks Done");
+        // } else {
+        //   sendErrorMessage("Error", resBody['description'], context);
+        // }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+  }
 
   // Future<void> payWithNQR(context, {required NIBSSQRCodeData data}) async {
   //   String getSign = generateSignature(

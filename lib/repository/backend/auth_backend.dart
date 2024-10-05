@@ -213,7 +213,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
       print(httpConnectionApi);
       if (httpConnectionApi.statusCode == 200) {
         var resBody = jsonDecode(httpConnectionApi.body.toString());
-        logger.i("Code ${resBody['code']}");
+        logger.i(resBody);
         if (resBody['code'] == "00") {
           ResponseData.loginResponse = LoginResponseModel.fromJson(resBody);
 
@@ -494,7 +494,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     final loginResponse = LoginResponseModel(isLoggedIn: false, user: null);
 
     ResponseData.loginResponse = loginResponse;
-    await UtilFunctions().getLocation();
+ 
   }
 
   static bool isLoggedIn() {

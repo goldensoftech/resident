@@ -6,7 +6,7 @@ copyText(String text) async {
   await Clipboard.setData(new ClipboardData(text: text));
 }
 
-class UtilFunctions {
+class UtilFunctions with ErrorSnackBar, CustomAlerts {
   /// The function `formatDate` takes a string representation of a date and an optional pattern, and
   /// returns the formatted date according to the specified pattern and date pattern can be modified.
   /// Returns:
@@ -23,24 +23,29 @@ class UtilFunctions {
     }
   }
 
-  Future<void> getLocation() async {
+  Future<void> getLocation(context) async {
     // Check if location permission is granted
+    ResponseData.userLocation =
+        UserLocation(latitude: "9.55679", longitude: " 9.692809");
+
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings();
-      return Future.error('Location services are disabled.');
+      sendErrorMessage("Error", "Location services are disabled", context);
+      throw Future.error('Location services are disabled.');
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        throw Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location permissions are permanently denied.');
+      sendErrorMessage("Error", "Location access is disabled", context);
+      throw Future.error('Location permissions are permanently denied.');
     }
 
     // Get the current location
@@ -309,6 +314,7 @@ bool isSameDay(DateTime date1, DateTime date2) {
 String formatNumber(double number) {
   return NumberFormat.decimalPattern().format(number);
 }
+
 String? getFieldValue(String data, String tag) {
   int index = data.indexOf(tag);
   if (index != -1 && index + 4 < data.length) {
