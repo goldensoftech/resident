@@ -18,15 +18,28 @@ class _SplashScreenState extends State<SplashScreen>
     _loadingPage = AnimationController(vsync: this);
 
     super.initState();
-    checkUser(context);
+    Future.delayed(Duration.zero, () {
+      checkUser(context);
+    });
   }
 
-  checkUser(context) {
+  checkUser(context) async {
+    //await AuthBackend().verifyAppVersion(context);
+    // await AppVersionUpdate.checkForUpdates(
+    //         appleId: appleId, playStoreId: playStoreId)
+    //     .then((data) async {
+    //   print(data.storeUrl);
+    //   print(data.storeVersion);
+    //   if (data.canUpdate! || !data.canUpdate!) {
+    //     AppVersionUpdate.showAlertUpdate(
+    //         mandatory: true, appVersionResult: data, context: context);
+    //   }
+    // });
     initData().then((onValue) async {
       //navigateReplace(context, const OnboardingScreen());
       try {
         displaySize = MediaQuery.of(context).size;
-        await AuthBackend().getAuthToken(context);
+
         sharedPreferences = await SharedPreferences.getInstance();
         DummyData.firstTimeOnApp = sharedPreferences.getBool("firstTimeOnApp");
         logger.t("First time on App? : ${DummyData.firstTimeOnApp}");
@@ -39,6 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
           //         endDate: DateTime.now());
           navigateReplace(context, const OnboardingScreen());
         } else {
+        //  await AuthBackend().getAuthToken(context);
           logger.i("Check User");
           DummyData.emailAddress = sharedPreferences.getString("Email");
           DummyData.password = sharedPreferences.getString("Password");

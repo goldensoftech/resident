@@ -33,7 +33,7 @@ class ErrorScreen extends StatelessWidget {
               const Text(
                 "If App dosen't start after few minutes. Click the button below.",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
@@ -59,7 +59,7 @@ class ErrorScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12))),
               onPressed: () async {
-               Phoenix.rebirth(context);
+                Phoenix.rebirth(context);
               },
               child: Text(
                 'Try again',
@@ -106,12 +106,11 @@ class NoConnectionScreen extends StatelessWidget {
               const Text(
                 "Please check your connection and try again",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
 
               // ElevatedButton(
               //   onPressed: () {
@@ -133,8 +132,7 @@ class NoConnectionScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12))),
               onPressed: () async {
-                 Phoenix.rebirth(context);
-               
+                Phoenix.rebirth(context);
               },
               child: Text(
                 'Try again',

@@ -141,6 +141,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 15),
                       onTap: () {
+                        if (data['title'] == "Privacy Policy") {
+                          AuthBackend().toPrivacyPolicy(context);
+                          return;
+                        }
                         navigatePush(context, data['gotoPage']);
                       },
                       leading: Icon(
@@ -236,7 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       onTap: () {
                         ResponseData.loginResponse = null;
                         AuthBackend().setDefaultUser();
-                        
+
                         navigateRemoveAll(context, const LoginScreen());
                         // AuthHelper().clearUserData();
                         // clearAll(context);

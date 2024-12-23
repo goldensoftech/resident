@@ -1,11 +1,11 @@
 class NqrCodeData {
-  final String institutionNumber;
-  final String orderAmount;
-  final String orderSn; // Full Order SN (Part 1 + Part 2)
-  final String merchantNo;
-  final String subMerchantNo;
-  final String merchantName;
-  final bool isDynamic;
+   String institutionNumber;
+   String orderAmount;
+  String orderSn; // Full Order SN (Part 1 + Part 2)
+   String merchantNo;
+   String subMerchantNo;
+   String merchantName;
+   bool isDynamic;
 
   NqrCodeData({
     required this.institutionNumber,

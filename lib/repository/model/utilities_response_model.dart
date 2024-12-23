@@ -211,3 +211,50 @@ class Bank {
   String code;
   Bank({this.logoUrl, required this.name, required this.code});
 }
+
+class MerchantResponse {
+  String institutionNumber;
+  String mchNo;
+  String merchantName;
+  String merchantTin;
+  String merchantAddress;
+  String merchantContantName;
+  String merchantPhoneNumber;
+  String merchantEmail;
+  MerchantResponse({
+    required this.institutionNumber,
+    required this.mchNo,
+    required this.merchantName,
+    required this.merchantAddress,
+    required this.merchantContantName,
+    required this.merchantEmail,
+    required this.merchantPhoneNumber,
+    required this.merchantTin,
+  });
+}
+
+class SubMchResponse {
+  String institutionNumber;
+  String mchNo;
+  String subName;
+  String subMchNo;
+  String envcoCode;
+  SubMchResponse(
+      {required this.institutionNumber,
+      required this.mchNo,
+      required this.envcoCode,
+      required this.subMchNo,
+      required this.subName});
+}
+
+class DynamicQRResponse {
+  String orderSn;
+  String codeUrl;
+  DynamicQRResponse({required this.codeUrl, required this.orderSn});
+}
+
+class BindMchResponse {
+  String institutionNumber;
+  String mchNo;
+  BindMchResponse({required this.institutionNumber, required this.mchNo});
+}

@@ -15,15 +15,21 @@ const String isRemitaUrl = "/api/remita/v1/";
 const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
 
+const appleId = '284882215';
+const playStoreId = 'com.facebook.katana';
+
 //Remita
 const String remitaKey =
     "U09MRHw0MDgxOTUzOHw2ZDU4NGRhMmJhNzVlOTRiYmYyZjBlMmM1YzUyNzYwZTM0YzRjNGI4ZTgyNzJjY2NjYTBkMDM0ZDUyYjZhZWI2ODJlZTZjMjU0MDNiODBlMzI4YWNmZGY2OWQ2YjhiYzM2N2RhMmI1YWEwYTlmMTFiYWI2OWQxNTc5N2YyZDk4NA==";
 
 //Paystack
-const String paystackKey = "sk_test_71f5f04fc1b65f02a56f5746c0e0fa484b0bc234";
+const String paystackKey = "sk_live_ee7a54c6ef156ec43efb7a1187bfead2bbc6ad86";
+//"sk_test_71f5f04fc1b65f02a56f5746c0e0fa484b0bc234";
 
 //NIBSS
-const String apiKey = "";
+// Institution_Number - I0000001154
+const String institutionNumber = "I0000000001";
+const String apiKey = "QER5HKWePAFeFRM7RD8wPjwdWAfWPQHR";
 const String authCode = "";
 const String verificationURL =
     "https://prodints.residentfintech.com/api/igree/v1/initialize";

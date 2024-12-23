@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_version_update/data/models/app_version_result.dart';
 import 'package:http/http.dart' as client;
 
 import 'package:resident/app_export.dart';
@@ -25,25 +26,99 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               TokenResponseModel.fromJson(resBody);
         } else {
           sendErrorMessage("Error", "Session Timeout", context);
+          return;
         }
       }
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
-      //navigateReplace(context, const Dashboard());
+      navigateRemoveAll(context, NoConnectionScreen());
+      rethrow;
     } on NoSuchMethodError catch (_) {
       sendErrorMessage(
           "error", 'please check your credentials and try again.', context);
+      navigateRemoveAll(context, ErrorScreen());
+      rethrow;
     } on Exception catch (_) {
       sendErrorMessage(
           "Error Occurred", "An Error Occurred, try again later", context);
-      //navigateReplace(context, const Dashboard());
+      navigateRemoveAll(context, ErrorScreen());
+      rethrow;
     } catch (e) {
       logger.e(e);
 
       sendErrorMessage("Error", "Server Timeout", context);
+      navigateRemoveAll(context, ErrorScreen());
       rethrow;
     }
+  }
+
+  Future<void> toPrivacyPolicy(context) async {
+    String url = host + baseUrl + "/privacy";
+    WebViewController _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onHttpError: (error) {
+            sendErrorMessage("Error", "Kindly check your connection.", context);
+          },
+          onProgress: (int progress) {
+            // Update loading bar.
+          },
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {},
+          onWebResourceError: (WebResourceError error) {
+            navigateBack(context);
+            sendErrorMessage("Error", error.description, context);
+          },
+          onNavigationRequest: (NavigationRequest request) async {
+            if (request.url.startsWith('https://www.google.com/')) {
+              print("Processing Request ${request.url}");
+
+              // Navigator.of(context).pop();
+
+              return NavigationDecision.prevent;
+            } else if (!request.url.contains("privacy")) {
+              print("Url Finished ${request.url}");
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..canGoBack()
+      ..loadRequest(Uri.parse(url));
+    navigatePush(context,
+        WebScreen(webTitle: "Privacy Policy", controller: _controller));
+  }
+
+  Future<void> verifyAppVersion(context) async {
+    AppVersionResult result = AppVersionResult();
+    AppVersionUpdate.showAlertUpdate(
+        backgroundColor: AppColors.whiteA700,
+        updateButtonStyle: ButtonStyle(
+            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12))),
+            backgroundColor: MaterialStatePropertyAll(AppColors.appGold)),
+        content: "Kindly update to the new version to enjoy new experience.",
+        updateTextStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppColors.whiteA700),
+        mandatory: true,
+        appVersionResult: result,
+        context: context);
+    // await AppVersionUpdate.checkForUpdates(
+    //         appleId: appleId, playStoreId: playStoreId)
+    //     .then((data) async {
+    //   print(data.storeUrl);
+    //   print(data.storeVersion);
+    //   if (data.canUpdate! || !data.canUpdate!) {
+    //     AppVersionUpdate.showAlertUpdate(
+    //         mandatory: true, appVersionResult: data, context: context);
+    //   }
+    // });
   }
 
   Future<void> checkAndUpdateToken(context) async {
@@ -175,6 +250,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
                   startDate: DateTime.now().subtract(const Duration(days: 30)),
                   endDate: DateTime.now());
           await TransactionBackend().getUserBanks(context);
+          await TransactionBackend().getBankList(context);
           navigateRemoveAll(context, const Dashboard());
         } else {
           sendErrorMessage("Error", resBody['description'], context);
@@ -227,6 +303,7 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
                   startDate: DateTime.now().subtract(const Duration(days: 30)),
                   endDate: DateTime.now());
           await TransactionBackend().getUserBanks(context);
+          await TransactionBackend().getBankList(context);
           navigateRemoveAll(context, const Dashboard());
         } else {
           sendErrorMessage("Error", resBody['description'], context);
@@ -238,14 +315,14 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     } on SocketException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
-      navigateRemoveAll(context,  ErrorScreen());
+      navigateRemoveAll(context, ErrorScreen());
     } on NoSuchMethodError catch (_) {
       sendErrorMessage(
           "error", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
-      navigateRemoveAll(context,  ErrorScreen());
+      navigateRemoveAll(context, ErrorScreen());
       //navigateReplace(context, const Dashboard());
     } on Exception catch (e) {
       logger.e(e);

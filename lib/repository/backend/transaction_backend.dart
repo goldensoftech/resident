@@ -4,9 +4,7 @@ import 'dart:io';
 import 'package:resident/app_export.dart';
 import 'package:http/http.dart' as client;
 import 'package:resident/constants/api.dart';
-import 'package:resident/repository/model/user_response_model.dart';
-
-import '../model/nqr_model.dart';
+import 'package:crypto/crypto.dart';
 import 'payment_gateways.backend.dart';
 
 class TransactionBackend with ErrorSnackBar, CustomAlerts {
@@ -126,37 +124,58 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   }
 
   Future<void> payWithDynamicNQR(context,
-      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
+      {required NqrCodeData data,
+      required String orderSn,
+      required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    String latitude = ResponseData.userLocation!.latitude;
+    String longitude = ResponseData.userLocation!.longitude;
+
     const url = "$host$baseUrl${nqrUrl}nqr_createdynamicqr_transaction";
+    String signTemp =
+        "institution_number=${data.institutionNumber}&order_amount=${data.orderAmount}&order_sn=$orderSn&" +
+            "timestamp=$timeStamp&user_account_name=${bankDetails.accountName}&user_account_number=${bankDetails.accountNumber}&" +
+            "user_bank_no=${bankDetails.bankCode}&user_bank_verification_number=${bankDetails.bvn}&" +
+            "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$apiKey";
+    print("Sign Details");
+    print(signTemp);
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+
+    print(authSign);
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client.post(Uri.parse(url),
+          headers: headersContent,
           body: json.encode({
             "institution_number": data.institutionNumber,
             "order_amount": data.orderAmount,
-            "order_sn": data.orderSn,
-            "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            "order_sn": orderSn,
+            "timestamp": timeStamp,
             "user_account_name": bankDetails.accountName,
             "user_account_number": bankDetails.accountNumber,
             "user_bank_no": bankDetails.bankCode,
-            "user_bank_verification_number":
-                ResponseData.loginResponse!.user!.bvn ?? "22480965970",
-            "user_gps":
-                "${ResponseData.userLocation!.latitude ?? " 9.55679"},${ResponseData.userLocation!.longitude ?? "9.692809"}",
-            "user_kyc_level": "1",
-            "sign": "A5668858DA5D05A74DC362FAD2DCF323"
+            "user_bank_verification_number": bankDetails.bvn,
+            "user_gps": "$latitude,$longitude",
+            "user_kyc_level": bankDetails.kycLevel,
+            "sign": authSign
           }));
 
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
         logger.i(resBody);
         if (resBody['error'] == "Service Unavailable") {
-          sendErrorMessage("Error", resBody['error'], context);
-        } else {
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
           showSuccessAlert(context,
               title: "Payment",
               description:
-                  "${data.merchantName} is currently processing your transaction",
+                  "Your transaction is currently being processed transaction",
               goToPage: const Dashboard());
         }
       }
@@ -176,41 +195,435 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     // return false;
   }
 
-  Future<void> payWithStaticNQR(context,
-      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
-    const url = "$host$baseUrl${nqrUrl}nqr_createstaticqr_transaction";
+  Future<List<Bank>> getBankList(context) async {
+    const url = "$host$baseUrl${nqrUrl}nqr_getbanklist";
     try {
       await AuthBackend().checkAndUpdateToken(context);
-      final httpConnnectionApi = await client.post(Uri.parse(url),
-          body: json.encode({
-            "amount": data.orderAmount,
-            "channel": "1",
-            "institution_number": data.institutionNumber,
-            "mch_no": data.merchantNo,
-            "order_no": data.orderSn,
-            "sub_mch_no": data.subMerchantNo,
-            "timestamp": DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            "user_account_name": bankDetails.accountName,
-            "user_account_number": bankDetails.accountNumber,
-            "user_bank_no": bankDetails.bankCode,
-            "user_bank_verification_number":
-                ResponseData.loginResponse!.user!.bvn ?? "22480965970",
-            "user_gps":
-                "${ResponseData.userLocation!.latitude},${ResponseData.userLocation!.longitude}",
-            "user_kyc_level": "1",
-            "sign": "A5668858DA5D05A74DC362FAD2DCF323"
-          }));
+      final httpConnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({"userEmail": DummyData.emailAddress}))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnectionApi.body);
+        print(resBody);
+        if (resBody["code"] == "00") {
+          final banks = resBody['bankList'] as Map<String, dynamic>;
+          logger.i(banks);
+          ResponseData.bankList = banks.values
+              .map<Bank>((json) =>
+                  Bank(name: json['Bank Name'], code: json['Bank Code']))
+              .toList();
+          print("Banks Done");
+          return ResponseData.bankList;
+        } else {
+          sendErrorMessage("Error", resBody['description'], context);
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return [];
+  }
+
+  Future<MerchantResponse?> createMerchant(context,
+      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_createmerchant";
+    String signTemp =
+        "account_name=${bankDetails.accountName}&account_number=${bankDetails.accountNumber}&address=add&bank_no=${bankDetails.bankCode}&" +
+            "contact=${ResponseData.loginResponse!.user!.lastName}&email=${ResponseData.loginResponse!.user!.userName}" +
+            "&institution_number=${data.institutionNumber}&m_fee_bearer=0&name=${data.merchantName}&phone=0${ResponseData.loginResponse!.user!.phoneNumber}&timestamp=$timeStamp&tin=999177001$apiKey";
+
+    print("Sign Details");
+    print(signTemp);
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+
+    print(authSign);
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+
+      final httpConnnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({
+                "account_name": bankDetails.accountName,
+                "account_number": bankDetails.accountNumber,
+                "address": "add",
+                "bank_no": bankDetails.bankCode,
+                "contact": ResponseData.loginResponse!.user!.lastName,
+                "email": ResponseData.loginResponse!.user!.userName,
+                "institution_number": institutionNumber,
+                "m_fee_bearer": "0",
+                "name": data.merchantName,
+                "phone": "0${ResponseData.loginResponse!.user!.phoneNumber}",
+                "timestamp": timeStamp,
+                "tin": "999177001",
+                "sign": authSign
+              }))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        print("******Creating Merchant***********");
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
+          return MerchantResponse(
+              institutionNumber: resBody["InstitutionNumber"],
+              mchNo: resBody["Mch_no"],
+              merchantName: resBody["MerchantName"],
+              merchantAddress: resBody["MerchantAddress"],
+              merchantContantName: resBody["MerchantContactName"],
+              merchantEmail: resBody["MerchantEmail"],
+              merchantPhoneNumber: resBody["MerchantPhoneNumber"],
+              merchantTin: resBody["MerchantTIN"]);
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return null;
+  }
+
+  Future<BindMchResponse?> bindMerchant(context,
+      {required String merchantNo,
+      required NqrCodeData data,
+      required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_bindmerchant";
+    String signTemp =
+        "account_name=${bankDetails.accountName}&account_number=${bankDetails.accountNumber}&" +
+            "bank_no=${bankDetails.bankCode}&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
+            "timestamp=$timeStamp$apiKey";
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({
+                "account_name": bankDetails.accountName,
+                "account_number": bankDetails.accountNumber,
+                "bank_no": bankDetails.bankCode,
+                "institution_number": data.institutionNumber,
+                "mch_no": data.merchantNo,
+                "timestamp": timeStamp,
+                "sign": authSign
+              }))
+          .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
         logger.i(resBody);
         if (resBody['error'] == "Service Unavailable") {
-          print("ERroororor");
           sendErrorMessage("Error", "Service Unavailable", context);
-        } else {
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
+          return BindMchResponse(
+            institutionNumber: resBody["InstitutionNumber"],
+            mchNo: resBody["Mch_no"],
+          );
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return null;
+  }
+
+  Future<SubMchResponse?> createSubMerchant(context,
+      {required String merchantNo,
+      required NqrCodeData data,
+      required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_createsubmerchant";
+    String signTemp =
+        "email=${ResponseData.loginResponse!.user!.userName}&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
+            "name=${data.merchantName}sub&phone_number=${ResponseData.loginResponse!.user!.phoneNumber}&" +
+            "sub_amount=588&sub_fixed=1&timestamp=$timeStamp$apiKey";
+    print("Sign Details");
+    print(signTemp);
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({
+                "email": ResponseData.loginResponse!.user!.userName,
+                "institution_number": data.institutionNumber,
+                "mch_no": data.merchantNo,
+                "name": "${data.merchantName}sub",
+                "phone_number": ResponseData.loginResponse!.user!.phoneNumber,
+                "sub_amount": "588",
+                "sub_fixed": "1",
+                "timestamp": timeStamp,
+                "sign": authSign
+              }))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
+          return SubMchResponse(
+              institutionNumber: resBody["InstitutionNumber"],
+              mchNo: resBody['Mch_no'],
+              envcoCode: resBody['Emvco_code'],
+              subMchNo: resBody['Sub_mch_no'],
+              subName: resBody['Sub_name']);
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return null;
+  }
+
+  Future<DynamicQRResponse?> createDynamicQR(context,
+      {required String merchantNo,
+      required String orderNo,
+      required NqrCodeData data,
+      required String subMchNo,
+      required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_createdynamicqr";
+    String signTemp =
+        "amount=${data.orderAmount}&channel=1&code_type=1&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
+            "order_no=$orderNo&order_type=4&sub_mch_no=${data.subMerchantNo}&timestamp=$timeStamp&unique_id=KRD1234$apiKey";
+    print("Sign Details");
+    print(signTemp);
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+
+    print(authSign);
+    print("Payload");
+
+    print({
+      "amount": data.orderAmount,
+      "channel": "1",
+      "code_type": "1",
+      "institution_number": data.institutionNumber,
+      "mch_no": data.merchantNo,
+      "order_no": orderNo,
+      "order_type": "4",
+      "sub_mch_no": data.subMerchantNo,
+      "timestamp": timeStamp,
+      "unique_id": "KRD1234",
+      "sign": authSign
+    });
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({
+                "amount": data.orderAmount,
+                "channel": "1",
+                "code_type": "1",
+                "institution_number": data.institutionNumber,
+                "mch_no": data.merchantNo,
+                "order_no": orderNo,
+                "order_type": "4",
+                "sub_mch_no": data.subMerchantNo,
+                "timestamp": timeStamp,
+                "unique_id": "KRD1234",
+                "sign": authSign
+              }))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
+          return DynamicQRResponse(
+              codeUrl: resBody['CodeUrl'], orderSn: resBody['OrderSn']);
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
+    return null;
+  }
+
+  Future<void> makeNQRPayment(context,
+      {required UserBankDetails bankDetails, required NqrCodeData data}) async {
+    data.orderSn = "202410140101492811481193723128";
+    data.institutionNumber = institutionNumber;
+    data.subMerchantNo = "S0000007261";
+    data.orderAmount = "200";
+    data.merchantNo = "M0000005463";
+
+    print("Length :${data.orderSn.length}");
+    //241016232209006037960828520400
+// 241016232209006037960828520400
+    final mchRes =
+        await createMerchant(context, data: data, bankDetails: bankDetails);
+    if (mchRes != null) {
+      await bindMerchant(context,
+          merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
+      final subMchRes = await createSubMerchant(context,
+          merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
+
+      if (subMchRes != null) {
+        final dynamicQR = await createDynamicQR(context,
+            merchantNo: subMchRes.mchNo,
+            orderNo: data.orderSn,
+            data: data,
+            subMchNo: subMchRes.subMchNo,
+            bankDetails: bankDetails);
+        if (dynamicQR != null) {
+          if (!data.isDynamic) {
+            await payWithDynamicNQR(context,
+                data: data,
+                orderSn: dynamicQR.orderSn,
+                bankDetails: bankDetails);
+          } else {
+            await payWithStaticNQR(context,
+                merchantNo: subMchRes.mchNo,
+                subMchNo: subMchRes.subMchNo,
+                data: data,
+                bankDetails: bankDetails);
+          }
+          // await payWithDynamicNQR(context,
+          //     data: data,
+          //     orderSn: dynamicQR.orderSn,
+          //     bankDetails: bankDetails);
+        }
+      }
+    }
+  }
+
+  Future<void> payWithStaticNQR(context,
+      {required String merchantNo,
+      required String subMchNo,
+      required NqrCodeData data,
+      required UserBankDetails bankDetails}) async {
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_createstaticqr_transaction";
+    String latitude = ResponseData.userLocation!.latitude;
+    String longitude = ResponseData.userLocation!.longitude;
+    String signTemp = "amount=${data.orderAmount}&channel=1&institution_number=${data.institutionNumber}&" +
+        "mch_no=${data.merchantNo}&order_no=${data.orderSn}&sub_mch_no=${data.subMerchantNo}&timestamp=$timeStamp&" +
+        "user_account_name=${bankDetails.accountName}&user_account_number=${bankDetails.accountNumber}&" +
+        "user_bank_no=${bankDetails.bankCode}&user_bank_verification_number=${bankDetails.bvn}&" +
+        "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$apiKey";
+    print("Sign Details");
+    print(signTemp);
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+    String authSign = digest.toString().toUpperCase();
+    try {
+      await AuthBackend().checkAndUpdateToken(context);
+      final httpConnnectionApi = await client
+          .post(Uri.parse(url),
+              headers: headersContent,
+              body: json.encode({
+                "amount": data.orderAmount,
+                "channel": "1",
+                "institution_number": data.institutionNumber,
+                "mch_no": data.merchantNo,
+                "order_no": data.orderSn,
+                "sub_mch_no": data.subMerchantNo,
+                "timestamp": timeStamp,
+                "user_account_name": bankDetails.accountName,
+                "user_account_number": bankDetails.accountNumber,
+                "user_bank_no": bankDetails.bankCode,
+                "user_bank_verification_number": bankDetails.bvn,
+                "user_gps": "$latitude,$longitude",
+                "user_kyc_level": bankDetails.kycLevel,
+                "sign": authSign
+              }))
+          .timeout(const Duration(seconds: 60));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['error'] == "Service Unavailable") {
+          sendErrorMessage("Error", "Service Unavailable", context);
+        } else if (resBody["ReturnCode"] == "Fail") {
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+        } else if (resBody["code"] == "91") {
+          sendErrorMessage("Error", resBody["description"], context);
+        } else if (resBody["ReturnCode"] == "Success") {
           showSuccessAlert(context,
               title: "Payment",
               description:
-                  "${data.merchantName} is currently processing your transaction",
+                  "Your transaction is currently being processed transaction",
               goToPage: const Dashboard());
         }
         // if (resBody["code"] == "00") {
@@ -239,68 +652,17 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     }
   }
 
-  // Future<void> payWithNQR(context, {required NIBSSQRCodeData data}) async {
-  //   String getSign = generateSignature(
-  //       amount: data.amount,
-  //       authCode: authCode,
-  //       institutionNumber: data.institutionNo,
-  //       merchantNumber: data.merchantId,
-  //       merchantName: data.merchantName,
-  //       orderSN: data.orderNo,
-  //       subMerchantNumber: data.subMerchantId,
-  //       timestamp: data.timestamp,
-  //       apiKey: apiKey);
-  //   const url = "https://apitest.nibss-plc.com.ng/nqr/v2/Bank/pay";
-  //   try {
-  //     await AuthBackend().checkAndUpdateToken(context);
-  //     final httpConnectionApi = await client
-  //         .post(Uri.parse(url),
-  //             body: json.encode({
-  //               "channel": "1",
-  //               "institution_number": data.institutionNo,
-  //               "mch_no": data.merchantId,
-  //               "sub_mch_no": data.subMerchantId,
-  //               "user_bank_no":
-  //                   ResponseData.userBankDetails!.accountNumber ?? "",
-  //               "user_account_name": ResponseData.userBankDetails!.name ?? "",
-  //               "user_account_number":
-  //                   ResponseData.userBankDetails!.accountNumber ?? "",
-  //               "user_bank_verification_number":
-  //                   ResponseData.userBankDetails!.bvn ?? "",
-  //               "user_kyc_level": "1",
-  //               "user_gps":
-  //                   "${ResponseData.userLocation?.longitude},${ResponseData.userLocation?.latitude}",
-  //               "amount": data.amount,
-  //               "order_no": data.orderNo,
-  //               "timestamp": data.timestamp,
-  //               "sign": getSign
-  //             }),
-  //             headers: headersContent)
-  //         .timeout(const Duration(seconds: 60));
-  //     if (httpConnectionApi.statusCode == 200) {
-  //       var resBody = json.decode(httpConnectionApi.body);
+  String getPaymentSign(
+      {required String timeStamp, required UserBankDetails bankDetails}) {
+    String signTemp =
+        "account_number=${bankDetails.accountNumber}&bank_number=${bankDetails.bankCode}&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
+    // Convert signTemp to bytes and apply MD5
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
 
-  //       if (resBody["ReturnCode"] == "Success") {
-  //         sendErrorMessage(
-  //             isSuccess: true, "Successful", "Payment Successful", context);
-  //       } else {
-  //         sendErrorMessage("Error", resBody["message"], context);
-  //       }
-  //     }
-  //   } on SocketException catch (_) {
-  //     sendErrorMessage(
-  //         "Network failure", "Please check your internet connection", context);
-  //   } on NoSuchMethodError catch (_) {
-  //     sendErrorMessage(
-  //         "error", 'please check your credentials and try again.', context);
-  //   } on TimeoutException catch (_) {
-  //     sendErrorMessage(
-  //         "Network failure", "Please check your internet connection", context);
-  //     //navigateReplace(context, const Dashboard());
-  //   } on Exception catch (e) {
-  //     logger.e(e);
-  //   }
-  // }
+    // Return the MD5 hash as a hexadecimal string
+    return digest.toString().toUpperCase();
+  }
 
   Future<void> getUserBanks(
     context,
@@ -340,10 +702,6 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     } on Exception catch (e) {
       logger.e(e);
     }
-  }
-
-  Future<List<Bank>> getBankList(context) async {
-    return [];
   }
 
   Future<void> deleteAccount(context, {required String accountNumber}) async {
@@ -390,6 +748,12 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       {required UserBankDetails userBankDetails,
       required String bankCode}) async {
     const url = "$host$baseUrl${nqrUrl}nqr_addaccount";
+    // if (!ResponseData.loginResponse!.user!.bvnStatus! ||
+    //     ResponseData.loginResponse!.user!.bvn != userBankDetails.bvn) {
+    //   sendErrorMessage("Verification Response",
+    //       "Account KYC information does not match bank details", context);
+    //   return false;
+    // }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
@@ -398,11 +762,10 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
               body: json.encode({
                 "accountNumber": userBankDetails.accountNumber,
                 "bankCode": bankCode,
-                "channelCode": "1",
+                "channelCode": userBankDetails.channelCode,
                 "accountName": userBankDetails.accountName,
-                "BankVerificationNumber":
-                    ResponseData.loginResponse!.user!.bvn ?? "22480965970",
-                "KYCLevel": "1",
+                "BankVerificationNumber": userBankDetails.bvn,
+                "KYCLevel": userBankDetails.kycLevel,
                 "userEmail": ResponseData.loginResponse!.user!.userName
               }))
           .timeout(const Duration(seconds: 60));
@@ -413,10 +776,10 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
           final newBankDetails = UserBankDetails(
               accountNumber: userBankDetails.accountNumber,
               accountName: userBankDetails.accountName,
-              bankCode: bankCode,
-              bvn: ResponseData.loginResponse!.user!.bvn ?? "22480965970",
-              kycLevel: "1",
-              channelCode: "1");
+              bankCode: userBankDetails.bankCode,
+              bvn: userBankDetails.bvn,
+              kycLevel: userBankDetails.kycLevel,
+              channelCode: userBankDetails.channelCode);
           ResponseData.userBanks.add(newBankDetails);
           return true;
         } else {
@@ -443,28 +806,50 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
 
   Future<UserBankDetails?> fetchBankDetails(context,
       {required String accountNumber, required String bankNumber}) async {
-    var url =
-        "https://api.paystack.co/bank/resolve?account_number=$accountNumber&bank_code=$bankNumber";
+    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    const url = "$host$baseUrl${nqrUrl}nqr_queryaccount";
+    String signTemp =
+        "account_number=$accountNumber&bank_number=$bankNumber&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
+    // Convert signTemp to bytes and apply MD5
+    var bytes = utf8.encode(signTemp);
+    var digest = md5.convert(bytes);
+
+    String sign = digest.toString().toUpperCase();
+    print("Bank Number $bankNumber");
+    print("Account Number $accountNumber");
+    print({
+      "account_number": accountNumber,
+      "bank_number": bankNumber,
+      "channel": "1",
+      "institution_number": institutionNumber,
+      "timestamp": timeStamp,
+      "sign": sign
+    });
     try {
       await AuthBackend().checkAndUpdateToken(context);
-      final httpConnectionApi = await client
-          .get(Uri.parse(url), headers: pkContent)
-          .timeout(const Duration(seconds: 60));
-
-      if (httpConnectionApi.statusCode == 200) {
-        var resBody = json.decode(httpConnectionApi.body);
-        print(resBody);
-        if (resBody["status"] == true) {
-          var data = resBody["data"];
+      final httpConnnectionApi = await client.post(Uri.parse(url),
+          headers: headersContent,
+          body: json.encode({
+            "account_number": accountNumber,
+            "bank_number": bankNumber,
+            "channel": "1",
+            "institution_number": "I0000001154",
+            "timestamp": timeStamp,
+            "sign": sign
+          }));
+      if (httpConnnectionApi.statusCode == 200) {
+        var resBody = json.decode(httpConnnectionApi.body);
+        logger.i(resBody);
+        if (resBody['ReturnCode'] == "Success") {
           return UserBankDetails(
-              accountNumber: (data['account_number']).toString(),
-              accountName: data['account_name'],
-              bankCode: bankNumber,
-              bvn: ResponseData.loginResponse!.user!.bvn ?? "22480965970",
-              kycLevel: "1",
-              channelCode: "1");
+              accountNumber: resBody['AccountNumber'],
+              accountName: resBody['AccountName'],
+              bankCode: resBody['DestinationInstitutionCode'],
+              bvn: resBody['BankVerificationNumber'],
+              kycLevel: resBody['KYCLevel'],
+              channelCode: resBody['ChannelCode']);
         } else {
-          sendErrorMessage("Error", resBody['message'], context);
+          sendErrorMessage("Error", resBody['ReturnMsg'], context);
         }
       }
     } on SocketException catch (_) {

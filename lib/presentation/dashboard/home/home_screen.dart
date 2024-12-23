@@ -46,288 +46,292 @@ class _HomeScreenState extends State<HomeScreen>
       top: false,
 
       //backgroundColor: AppColors.whiteA700,
-      child: Scaffold(
-        backgroundColor: AppColors.whiteA700,
-        extendBody: true,
-        // appBar: defaultAppBar(title: ""),
-        body: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          //  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
-
-          shrinkWrap: true,
-          children: [
-            Stack(children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                      child: Container(
-                    width: displaySize.width,
-                    height: txHistory.isNotEmpty && AuthBackend.isLoggedIn()
-                        ? displaySize.height * .35
-                        : 120,
-                    padding: EdgeInsets.only(
-                      top: displaySize.height * .05,
-                      left: 20,
-                      right: 20,
-                    ),
-                    decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            bottomRight: Radius.circular(30)),
-                        color: AppColors.gold100),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AuthBackend.isLoggedIn()
-                                ? Text(
-                                    "Hi ${ResponseData.loginResponse!.user!.lastName} ${ResponseData.loginResponse!.user!.firstName},",
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.baseBlack),
-                                  )
-                                : Text(
-                                    "Welcome back,",
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.baseBlack),
-                                  ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              UtilFunctions().getDashboardDate(),
-                              style: TextStyle(
-                                  fontSize: 10.0,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.baseBlack),
-                            )
-                          ],
-                        ),
-                        AuthBackend.isLoggedIn()
-                            ? Column(
-                                children: [
-                                  GestureDetector(
-                                      onTap: () {
-                                        //  _loadingPage.repeat();
-                                        navigatePush(context,
-                                            const NotificationScreen());
-                                      },
-                                      child: SvgPicture.asset(
-                                        bellIcon,
-                                        color: AppColors.baseBlack,
-                                        height: 24,
-                                        width: 24,
-                                      )),
-                                ],
+      child: GestureDetector(
+        onTap: FocusScope.of(context).unfocus,
+        child: Scaffold(
+          backgroundColor: AppColors.whiteA700,
+          extendBody: true,
+          // appBar: defaultAppBar(title: ""),
+          body: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            //  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+        
+            shrinkWrap: true,
+            children: [
+              Stack(children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                        child: Container(
+                      width: displaySize.width,
+                      height: txHistory.isNotEmpty && AuthBackend.isLoggedIn()
+                          ? displaySize.height * .35
+                          : 120,
+                      padding: EdgeInsets.only(
+                        top: displaySize.height * .05,
+                        left: 20,
+                        right: 20,
+                      ),
+                      decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(30),
+                              bottomRight: Radius.circular(30)),
+                          color: AppColors.gold100),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AuthBackend.isLoggedIn()
+                                  ? Text(
+                                      "Hi ${ResponseData.loginResponse!.user!.lastName} ${ResponseData.loginResponse!.user!.firstName},",
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.baseBlack),
+                                    )
+                                  : Text(
+                                      "Welcome back,",
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.baseBlack),
+                                    ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                UtilFunctions().getDashboardDate(),
+                                style: TextStyle(
+                                    fontSize: 10.0,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.baseBlack),
                               )
-                            : Align(
-                                alignment: Alignment.topRight,
-                                child: TextButton(
-                                  // borderRadius: BorderRadius.circular(12),
-                                  // style: ButtonStyle(shape: RoundedRectangular
-                                  // ),
-                                  onPressed: () {
-                                    navigateRemoveAll(
-                                        context, const LoginScreen());
-                                  },
-                                  child: Text(
-                                    "Login",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: AppColors.baseBlack,
-                                        fontWeight: FontWeight.w600),
+                            ],
+                          ),
+                          AuthBackend.isLoggedIn()
+                              ? Column(
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          //  _loadingPage.repeat();
+                                          
+                                          navigatePush(context,
+                                              const NotificationScreen());
+                                        },
+                                        child: SvgPicture.asset(
+                                          bellIcon,
+                                          color: AppColors.baseBlack,
+                                          height: 24,
+                                          width: 24,
+                                        )),
+                                  ],
+                                )
+                              : Align(
+                                  alignment: Alignment.topRight,
+                                  child: TextButton(
+                                    // borderRadius: BorderRadius.circular(12),
+                                    // style: ButtonStyle(shape: RoundedRectangular
+                                    // ),
+                                    onPressed: () {
+                                      navigateRemoveAll(
+                                          context, const LoginScreen());
+                                    },
+                                    child: Text(
+                                      "Login",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColors.baseBlack,
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
                                 ),
+                        ],
+                      ),
+                    )),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 20, right: 20, top: 30),
+                      child: Text("Shortcuts",
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.black900)),
+                    ),
+                    Container(
+                      // height: 200,
+                      padding: const EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      color: AppColors.whiteA700,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // const SizedBox(
+                              //   height: 20,
+                              // ),
+        
+                              GridView.builder(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          childAspectRatio: 1,
+                                          crossAxisSpacing: 1,
+                                          mainAxisSpacing: 1,
+                                          crossAxisCount:DummyData().shortcutItems.length,
+                                              // ((AuthBackend.isLoggedIn() &&
+                                              //         ResponseData.loginResponse!
+                                              //                 .user!.bvnStatus ==
+                                              //             true))
+                                              //     ? 4
+                                              //     : 3),
+                                      ),
+                                  shrinkWrap: true,
+                                  itemCount:DummyData().shortcutItems.length,
+                                  // itemCount: ((AuthBackend.isLoggedIn() &&
+                                  //         ResponseData.loginResponse!.user!
+                                  //                 .bvnStatus ==
+                                  //             true))
+                                  //     ? 4
+                                  //     : 3,
+                                      
+                                  itemBuilder: (ctx, index) {
+                                    final shortCut =
+                                        DummyData().shortcutItems[index];
+                                    // if (shortCut['title'] == "QR Scan") {
+                                    //   if (!(AuthBackend.isLoggedIn() &&
+                                    //       ResponseData.loginResponse!.user!
+                                    //               .bvnStatus ==
+                                    //           true)) {
+                                    //     return SizedBox.shrink();
+                                    //   }
+                                    // }
+        
+                                    return ShortCutItem(
+                                      isIconBlack: index == 0 ? true : false,
+                                      gridColor: shortCut['color'],
+                                      logoUrl: shortCut['logoUrl'],
+                                      pageToNavigate: shortCut['pageToGo'],
+                                      title: shortCut['title'],
+                                    );
+                                  }),
+                              const SizedBox(
+                                height: 5,
                               ),
-                      ],
-                    ),
-                  )),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, top: 30),
-                    child: Text("Shortcuts",
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.black900)),
-                  ),
-                  Container(
-                    // height: 200,
-                    padding: const EdgeInsets.only(
-                      bottom: 10,
-                    ),
-                    color: AppColors.whiteA700,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // const SizedBox(
-                            //   height: 20,
-                            // ),
-
-                            GridView.builder(
+                              Divider(color: AppColors.grey200, height: 1.5),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        childAspectRatio: 1,
-                                        crossAxisSpacing: 1,
-                                        mainAxisSpacing: 1,
-                                        crossAxisCount:4,
-                                            // ((AuthBackend.isLoggedIn() &&
-                                            //         ResponseData.loginResponse!
-                                            //                 .user!.bvnStatus ==
-                                            //             true))
-                                            //     ? 4
-                                            //     : 3),
-                                    ),
-                                shrinkWrap: true,
-                                itemCount:4,
-                                // itemCount: ((AuthBackend.isLoggedIn() &&
-                                //         ResponseData.loginResponse!.user!
-                                //                 .bvnStatus ==
-                                //             true))
-                                //     ? 4
-                                //     : 3,
-                                    
-                                itemBuilder: (ctx, index) {
-                                  final shortCut =
-                                      DummyData().shortcutItems[index];
-                                  // if (shortCut['title'] == "QR Scan") {
-                                  //   if (!(AuthBackend.isLoggedIn() &&
-                                  //       ResponseData.loginResponse!.user!
-                                  //               .bvnStatus ==
-                                  //           true)) {
-                                  //     return SizedBox.shrink();
-                                  //   }
-                                  // }
-
-                                  return ShortCutItem(
-                                    isIconBlack: index == 0 ? true : false,
-                                    gridColor: shortCut['color'],
-                                    logoUrl: shortCut['logoUrl'],
-                                    pageToNavigate: shortCut['pageToGo'],
-                                    title: shortCut['title'],
-                                  );
-                                }),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Divider(color: AppColors.grey200, height: 1.5),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: const AdvertItem(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: TextFormField(
-                            controller: searchController,
-                            style: const TextStyle(height: 1),
-                            cursorOpacityAnimates: true,
-                            cursorWidth: 1,
-                            onChanged: _filterUtilities,
-                            cursorColor: Colors.black,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 15),
-                              //labelStyle: const TextStyle(color: Colors.black54),
-                              hintText: 'Search Biller',
-                              filled: true,
-                              fillColor: AppColors.lightGrey,
-                              hintStyle: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.schemeColor),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(28.r),
-                                  borderSide: BorderSide.none),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: AppColors.schemeColor,
-                                size: 18,
+                                    const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: const AdvertItem(),
                               ),
-
-                              suffixIcon: searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      onPressed: () {
-                                        searchController.clear();
-                                        _filterUtilities("");
-                                      },
-                                      icon: Icon(
-                                        CupertinoIcons.clear_circled_solid,
-                                        color: AppColors.grey500,
-                                      ))
-                                  : const SizedBox.shrink(),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: TextFormField(
+                              controller: searchController,
+                              style: const TextStyle(height: 1),
+                              cursorOpacityAnimates: true,
+                              cursorWidth: 1,
+                              onChanged: _filterUtilities,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 15),
+                                //labelStyle: const TextStyle(color: Colors.black54),
+                                hintText: 'Search Biller',
+                                filled: true,
+                                fillColor: AppColors.lightGrey,
+                                hintStyle: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.schemeColor),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    borderSide: BorderSide.none),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(28.r),
+                                    borderSide: BorderSide.none),
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  color: AppColors.schemeColor,
+                                  size: 18,
+                                ),
+        
+                                suffixIcon: searchController.text.isNotEmpty
+                                    ? IconButton(
+                                        onPressed: () {
+                                          searchController.clear();
+                                          _filterUtilities("");
+                                        },
+                                        icon: Icon(
+                                          CupertinoIcons.clear_circled_solid,
+                                          color: AppColors.grey500,
+                                        ))
+                                    : const SizedBox.shrink(),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        _filteredUtitlities.isEmpty
-                            ? const EmptyListWidget()
-                            : Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0),
-                                child: GridView.builder(
-                                    physics: const BouncingScrollPhysics(),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                            childAspectRatio: 1,
-                                            crossAxisSpacing: 40,
-                                            mainAxisSpacing: 20,
-                                            crossAxisCount: 2),
-                                    shrinkWrap: true,
-                                    itemCount: _filteredUtitlities.length,
-                                    itemBuilder: (ctx, index) {
-                                      final shortCut =
-                                          _filteredUtitlities[index];
-                                      return BillItem(
-                                        logoUrl: shortCut['logoUrl'],
-                                        pageToNavigate: shortCut['pageToGo'],
-                                        isApplyColor: shortCut['color'] == null
-                                            ? true
-                                            : false,
-                                        title: shortCut['title'],
-                                      );
-                                    }),
-                              ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              txHistory.isNotEmpty && AuthBackend.isLoggedIn()
-                  ? Positioned(
-                      top: displaySize.height * .13,
-                      child: SizedBox(
-                          width: displaySize.width,
-                          child:
-                              RecentTransactionListBox(txHistory: txHistory)))
-                  : const SizedBox.shrink(),
-            ]),
-          ],
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          _filteredUtitlities.isEmpty
+                              ? const EmptyListWidget()
+                              : Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0),
+                                  child: GridView.builder(
+                                      physics: const BouncingScrollPhysics(),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                              childAspectRatio: 1,
+                                              crossAxisSpacing: 40,
+                                              mainAxisSpacing: 20,
+                                              crossAxisCount: 2),
+                                      shrinkWrap: true,
+                                      itemCount: _filteredUtitlities.length,
+                                      itemBuilder: (ctx, index) {
+                                        final shortCut =
+                                            _filteredUtitlities[index];
+                                        return BillItem(
+                                          logoUrl: shortCut['logoUrl'],
+                                          pageToNavigate: shortCut['pageToGo'],
+                                          isApplyColor: shortCut['color'] == null
+                                              ? true
+                                              : false,
+                                          title: shortCut['title'],
+                                        );
+                                      }),
+                                ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                txHistory.isNotEmpty && AuthBackend.isLoggedIn()
+                    ? Positioned(
+                        top: displaySize.height * .13,
+                        child: SizedBox(
+                            width: displaySize.width,
+                            child:
+                                RecentTransactionListBox(txHistory: txHistory)))
+                    : const SizedBox.shrink(),
+              ]),
+            ],
+          ),
         ),
       ),
     );

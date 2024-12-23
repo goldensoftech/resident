@@ -26,7 +26,7 @@ class UtilFunctions with ErrorSnackBar, CustomAlerts {
   Future<void> getLocation(context) async {
     // Check if location permission is granted
     ResponseData.userLocation =
-        UserLocation(latitude: "9.55679", longitude: " 9.692809");
+        UserLocation(latitude: "9.55679", longitude: "9.692809");
 
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -53,8 +53,9 @@ class UtilFunctions with ErrorSnackBar, CustomAlerts {
       desiredAccuracy: LocationAccuracy.high,
     );
 
-    ResponseData.userLocation?.latitude = position.latitude.toString();
-    ResponseData.userLocation?.longitude = position.longitude.toString();
+ResponseData.userLocation?.latitude = position.latitude.abs().toStringAsFixed(5);
+ResponseData.userLocation?.longitude = position.longitude.abs().toStringAsFixed(5);
+
   }
 
   String generateDemoNumber() {

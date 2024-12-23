@@ -24,9 +24,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
   final _formKey = GlobalKey<FormState>();
 
   List<Bank> filteredBankList = [];
-  List<Bank> bankList = DummyData().bankList.map((data) {
-    return Bank(name: data['name'], logoUrl: data['url'], code: data['code']);
-  }).toList();
+  List<Bank> bankList = ResponseData.bankList;
 
   @override
   void initState() {
@@ -60,12 +58,12 @@ class _AddAccountScreenState extends State<AddAccountScreen>
   }
 
   addBankDetails(context) async {
-    FocusScope.of(context).unfocus();
+   
     isAccountAdded = await TransactionBackend().addBankDetails(context,
         userBankDetails: bankDetails!, bankCode: selectedBank!.code);
     setState(() {
       isAccountAdded;
-    });
+    }); FocusScope.of(context).unfocus();
   }
 
   @override
@@ -277,8 +275,8 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                                   )
                                                                 : Image.asset(
                                                                     logoPng,
-                                                                    height: 40,
-                                                                    width: 40,
+                                                                    height: 20,
+                                                                    width: 20,
                                                                     fit: BoxFit
                                                                         .cover,
                                                                     filterQuality:
@@ -354,9 +352,9 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                           )
                                         : Image.asset(
                                             logoPng,
-                                            // height: 20,
-                                            // width: 20,
-                                            fit: BoxFit.cover,
+                                            height: 15,
+                                            width: 15,
+                                            fit: BoxFit.fill,
                                             filterQuality: FilterQuality.high,
                                           ),
                                   ),
@@ -494,7 +492,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                           borderRadius: BorderRadius.only(
                                               topLeft: Radius.circular(10),
                                               topRight: Radius.circular(10))),
-                                      builder: (context) {
+                                      builder: (ctx) {
                                         // print("lenght of tiles ${dataPlans.length}");
                                         return Container(
                                             color: AppColors.whiteA700,
@@ -622,12 +620,13 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                                       .circular(
                                                                           12))),
                                                       onPressed: () async {
+                                                        navigateBack(ctx);
+
                                                         setState(() {
                                                           _request =
                                                               addBankDetails(
                                                                   context);
                                                         });
-                                                        // navigateBack(context);
                                                         FocusScope.of(context)
                                                             .unfocus();
                                                         await _request;
