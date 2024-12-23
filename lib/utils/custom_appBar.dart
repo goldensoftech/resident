@@ -63,9 +63,12 @@ mixin CustomWidgets<T extends StatefulWidget> on State<T> {
 mixin CustomAppBar<T extends StatefulWidget> on State<T> {
   AppBar defaultAppBar({
     String? title,
+    double?
+     height
   }) {
     return AppBar(
       elevation: 0,
+      toolbarHeight: height,
       backgroundColor: AppColors.gold100,
       centerTitle: true,
       forceMaterialTransparency: false,
@@ -79,13 +82,13 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
-      title: Text(
+      title: title!=null?Text(
         title ?? "",
         style: TextStyle(
             fontSize: 18,
             color: AppColors.baseBlack,
             fontWeight: FontWeight.w700),
-      ),
+      ):SizedBox.shrink(),
     );
   }
 
@@ -147,59 +150,58 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
       automaticallyImplyLeading: false,
       backgroundColor: AppColors.whiteA700,
       foregroundColor: AppColors.whiteA700,
-      flexibleSpace: Padding(
-        padding: const EdgeInsets.symmetric(
+toolbarHeight: 80,
+      flexibleSpace: ListView(
+         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
         ),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 40,
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => navigateBack(context),
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 30),
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: AppColors.appGold, shape: BoxShape.circle),
-                    child: Center(
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: AppColors.whiteA700,
-                        size: 18.0,
-                      ),
+        children: [
+          const SizedBox(
+            height: 40,
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => navigateBack(context),
+                child: Container(
+                  margin: const EdgeInsets.only(right: 30),
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: AppColors.appGold, shape: BoxShape.circle),
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: AppColors.whiteA700,
+                      size: 18.0,
                     ),
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: AppColors.appGold,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    title ?? "",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.whiteA700),
-                  ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                decoration: BoxDecoration(
+                    color: AppColors.appGold,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text(
+                  title ?? "",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.whiteA700),
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Divider(
-              height: 1,
-              thickness: .8,
-              color: AppColors.grey200,
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Divider(
+            height: 1,
+            thickness: .8,
+            color: AppColors.grey200,
+          )
+        ],
       ),
     );
   }

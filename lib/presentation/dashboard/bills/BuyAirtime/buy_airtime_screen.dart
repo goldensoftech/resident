@@ -62,7 +62,9 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return  
+    
+     SafeArea(
       top: false,
       child: Stack(
         children: [
@@ -70,7 +72,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
                 backgroundColor: AppColors.whiteA700,
-                appBar: customAppBar(title: "Buy Airtime"),
+               appBar: customAppBar(title: "Buy Airtime"),
                 body: Form(
                   key: _formKey,
                   child: ListView(
@@ -831,5 +833,6 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
         ],
       ),
     );
+  
   }
 }

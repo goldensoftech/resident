@@ -23,17 +23,20 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: AppColors.gold100,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: AppColors.gold100,
+    //   statusBarBrightness: Brightness.dark,
+    //   statusBarIconBrightness: Brightness.dark,
+    //   systemNavigationBarColor: Colors.transparent,
+    //   systemNavigationBarDividerColor: Colors.transparent,
+    //   systemNavigationBarIconBrightness: Brightness.dark,
+    // ));
     return SafeArea(
       top: false,
       child: Scaffold(
+    
+      
+    
         backgroundColor: AppColors.whiteA700,
         body: SizedBox.expand(
           child: PageView(
@@ -51,7 +54,9 @@ class _DashboardState extends State<Dashboard> {
             ],
           ),
         ),
+      
         bottomNavigationBar: BottomNavigationBar(
+
             backgroundColor: AppColors.whiteA700,
             type: BottomNavigationBarType.fixed,
             currentIndex: _currentIndex,
@@ -70,6 +75,7 @@ class _DashboardState extends State<Dashboard> {
                 fontWeight: FontWeight.w700),
             items: [
               BottomNavigationBarItem(
+                
                   activeIcon: SvgPicture.asset(
                     homeActvIcon,
                   ),
