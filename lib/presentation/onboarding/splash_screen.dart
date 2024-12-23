@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
           //         endDate: DateTime.now());
           navigateReplace(context, const OnboardingScreen());
         } else {
-        //  await AuthBackend().getAuthToken(context);
+          //  await AuthBackend().getAuthToken(context);
           logger.i("Check User");
           DummyData.emailAddress = sharedPreferences.getString("Email");
           DummyData.password = sharedPreferences.getString("Password");
