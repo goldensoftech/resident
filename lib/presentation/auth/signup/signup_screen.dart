@@ -1,7 +1,6 @@
 import 'package:resident/app_export.dart';
 
-import 'package:intl_phone_number_input/intl_phone_number_input.dart'
-    as intlPhone;
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -31,9 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen>
   double _strength = 0;
   Future<dynamic>? _register;
   String notSuccessfullMessage = '';
-  intlPhone.PhoneNumber number = intlPhone.PhoneNumber(
-    isoCode: 'NG',
-  );
+  
   void _checkPassword(String value) {
     _password = value.trim();
 
@@ -332,57 +329,42 @@ class _SignUpScreenState extends State<SignUpScreen>
                     color: AppColors.darkGrey),
               ),
             ),
-            intlPhone.InternationalPhoneNumberInput(
-              onInputChanged: (number) {
-                print(number.parseNumber());
-              },
-              onInputValidated: (bool value) {
-                print(value);
-              },
-              selectorConfig: const intlPhone.SelectorConfig(
-                selectorType: intlPhone.PhoneInputSelectorType.BOTTOM_SHEET,
-                useBottomSheetSafeArea: true,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter phone number';
-                }
-                if (value.length < 10 || value.length > 11) {
-                  return 'Invalid phone number';
-                }
-                return null;
-              },
-              ignoreBlank: false,
-              autoValidateMode: AutovalidateMode.disabled,
-              selectorTextStyle: const TextStyle(color: Colors.black),
-              initialValue: number,
-              textFieldController: _phoneNumberController,
-              formatInput: true,
-              inputDecoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-                  //labelStyle: const TextStyle(color: Colors.black54),
-                  hintText: 'Enter phone number ',
-                  hintStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.grey200),
-                  border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(width: 1.w, color: AppColors.formGrey),
-                      borderRadius: BorderRadius.circular(8.r)),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                    borderSide: BorderSide(color: AppColors.appGold),
-                  )),
-              keyboardType: const TextInputType.numberWithOptions(
-                  signed: true, decimal: true),
-              inputBorder: const OutlineInputBorder(),
-              onSaved: (number) {
-                print('On Saved: $number');
-              },
-            ),
-          ]),
+            TextFormField(
+                              controller: _phoneNumberController,
+                             
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              validator: (value) {
+                                if (value == null || value.length<10||value.length>11) {
+                                  return 'Please enter a valid phone address';
+                                }
+                                return null;
+                              },
+                              style: const TextStyle(height: 1),
+                              cursorOpacityAnimates: true,
+                              cursorWidth: 1,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 20),
+                                //labelStyle: const TextStyle(color: Colors.black54),
+                                hintText: 'Enter phone number ',
+                                hintStyle: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.grey200),
+                                   border: OutlineInputBorder(
+              borderSide: BorderSide(width: 1.w, color: AppColors.formGrey),
+              borderRadius: BorderRadius.circular(8.r)),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.r),
+            borderSide: BorderSide(color: AppColors.appGold),)
+                              ),
+                            ),
+                         ]),
           const SizedBox(
             height: 10.0,
           ),

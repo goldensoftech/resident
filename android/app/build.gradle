@@ -10,7 +10,7 @@ plugins {
        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
    }
 android {
-    namespace = "com.example.resident"
+    namespace = "com.residentfintech.ios"
     compileSdk = 34
     ndkVersion = flutter.ndkVersion
 

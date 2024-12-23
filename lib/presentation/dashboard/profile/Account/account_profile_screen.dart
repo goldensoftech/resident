@@ -1,6 +1,5 @@
 import 'package:resident/app_export.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart'
-    as intlPhone;
+
 
 class AccountProfileScreen extends StatefulWidget {
   const AccountProfileScreen({super.key});
@@ -18,7 +17,7 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phonecontroller = TextEditingController();
   String initialCountry = 'NG';
-  intlPhone.PhoneNumber? number;
+  
   Future<void>? _request;
   @override
   void initState() {
@@ -32,17 +31,17 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
       _firstNameController.text = ResponseData.loginResponse!.user!.firstName!;
       _secondNameController.text = ResponseData.loginResponse!.user!.lastName!;
       _emailController.text = ResponseData.loginResponse!.user!.userName!;
-
-      number = intlPhone.PhoneNumber(
-          isoCode: 'NG',
-          phoneNumber:
-              ResponseData.loginResponse!.user!.phoneNumber!.startsWith("0000")
-                  ? ""
-                  : ResponseData.loginResponse!.user!.phoneNumber!);
-    } else {
-      number = intlPhone.PhoneNumber(
-        isoCode: 'NG',
-      );
+_phonecontroller.text=ResponseData.loginResponse!.user!.userName!;
+    //   number = intlPhone.PhoneNumber(
+    //       isoCode: 'NG',
+    //       phoneNumber:
+    //           ResponseData.loginResponse!.user!.phoneNumber!.startsWith("0000")
+    //               ? ""
+    //               : ResponseData.loginResponse!.user!.phoneNumber!);
+    // } else {
+    //   number = intlPhone.PhoneNumber(
+    //     isoCode: 'NG',
+    //   );
     }
   }
 
@@ -262,36 +261,24 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
                             const SizedBox(
                               height: 5,
                             ),
-                            intlPhone.InternationalPhoneNumberInput(
-                              onInputChanged: (number) {
-                                print(number.parseNumber());
+                           TextFormField(
+                              controller: _phonecontroller,
+                              readOnly: true,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                setState(() {});
                               },
-                              onInputValidated: (bool value) {
-                                print(value);
-                              },
-                              selectorConfig: const intlPhone.SelectorConfig(
-                                selectorType: intlPhone
-                                    .PhoneInputSelectorType.BOTTOM_SHEET,
-                                useBottomSheetSafeArea: true,
-                              ),
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter phone number';
-                                }
-                                if (value.length <10 ||
-                                    value.length > 11) {
-                                  return 'Invalid phone number';
+                                if (value == null || value.length<10||value.length>11) {
+                                  return 'Please enter a valid phone address';
                                 }
                                 return null;
                               },
-                              ignoreBlank: false,
-                              autoValidateMode: AutovalidateMode.disabled,
-                              selectorTextStyle:
-                                  const TextStyle(color: Colors.black),
-                              initialValue: number,
-                              textFieldController: _phonecontroller,
-                              formatInput: true,
-                              inputDecoration: InputDecoration(
+                              style: const TextStyle(height: 1),
+                              cursorOpacityAnimates: true,
+                              cursorWidth: 1,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
                                 filled: true,
                                 fillColor: AppColors.lightGrey,
                                 contentPadding: const EdgeInsets.symmetric(
@@ -310,13 +297,6 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
                                   borderSide: BorderSide.none,
                                 ),
                               ),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      signed: true, decimal: true),
-                              inputBorder: const OutlineInputBorder(),
-                              onSaved: (number) {
-                                print('On Saved: $number');
-                              },
                             ),
                           ],
                         ),

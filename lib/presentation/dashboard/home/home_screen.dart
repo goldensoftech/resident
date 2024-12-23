@@ -34,14 +34,15 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: AppColors.gold100,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: AppColors.gold100,
+    //   statusBarBrightness: Brightness.dark,
+    //   statusBarIconBrightness: Brightness.dark,
+    //   systemNavigationBarColor: Colors.black,
+    //   systemNavigationBarDividerColor: Colors.black,
+    //   systemNavigationBarIconBrightness: Brightness.dark,
+  
+    // ));
     return SafeArea(
       top: false,
 
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Scaffold(
           backgroundColor: AppColors.whiteA700,
           extendBody: true,
-          // appBar: defaultAppBar(title: ""),
+          appBar: defaultAppBar(title: "",height: 20),
           body: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             //  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
@@ -140,12 +141,19 @@ class _HomeScreenState extends State<HomeScreen>
                                       navigateRemoveAll(
                                           context, const LoginScreen());
                                     },
-                                    child: Text(
-                                      "Login",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.baseBlack,
-                                          fontWeight: FontWeight.w600),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: AppColors.whiteA700),
+                                      child: Text(
+                                        "Login",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.baseBlack,
+                                            fontWeight: FontWeight.w800),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -229,10 +237,10 @@ class _HomeScreenState extends State<HomeScreen>
                               const SizedBox(
                                 height: 5,
                               ),
-                              Padding(
+                              const Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 20.0),
-                                child: const AdvertItem(),
+                                    EdgeInsets.symmetric(horizontal: 20.0),
+                                child: AdvertItem(),
                               ),
                             ],
                           ),
