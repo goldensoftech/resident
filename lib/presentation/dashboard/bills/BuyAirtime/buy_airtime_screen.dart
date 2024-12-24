@@ -22,7 +22,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  final FlutterContactPicker _contactPicker = new FlutterContactPicker();
+  final FlutterContactPicker _contactPicker = FlutterContactPicker();
 
   Contact? _contact;
   OrderItem? order;
