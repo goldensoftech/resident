@@ -24,8 +24,14 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
         if (resBody['code'] == "00") {
           ResponseData.tokenResponseModel =
               TokenResponseModel.fromJson(resBody);
+         // await checkTokenStatus(context);
         } else {
-          sendErrorMessage("Error", "Session Timeout", context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", "Session Timeout", context);
+          }
+
           return;
         }
       }
@@ -119,6 +125,37 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
     //         mandatory: true, appVersionResult: data, context: context);
     //   }
     // });
+  }
+
+  Future<void> checkTokenStatus(context) async {
+    const url = "$host$baseUrl${iswPathUrl}iswgetbillerpaymentitem";
+    try {
+      final httpConnectionApi = await client
+          .post(Uri.parse(url),
+              body: json.encode({"serviceid": 903}), headers: headersContent)
+          .timeout(const Duration(seconds: 60));
+
+      if (httpConnectionApi.statusCode == 200) {
+        var resBody = jsonDecode(httpConnectionApi.body.toString());
+        logger.i(resBody);
+        if (resBody["error"] != null ||
+            resBody['error'] == "Service Unavailable") {
+          ResponseData.tokenResponseModel!.updateToken(value: defaultKey) ;
+        }
+      }
+    } on SocketException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+    } on NoSuchMethodError catch (_) {
+      sendErrorMessage(
+          "error", 'please check your credentials and try again.', context);
+    } on TimeoutException catch (_) {
+      sendErrorMessage(
+          "Network failure", "Please check your internet connection", context);
+      //navigateReplace(context, const Dashboard());
+    } on Exception catch (e) {
+      logger.e(e);
+    }
   }
 
   Future<void> checkAndUpdateToken(context) async {
@@ -306,7 +343,12 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
           await TransactionBackend().getBankList(context);
           navigateRemoveAll(context, const Dashboard());
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
+
           navigateRemoveAll(context, const LoginScreen());
         }
       } else {
@@ -355,7 +397,11 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               context);
           ResponseData.loginResponse!.user!.photo = profileUrl;
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
         }
       }
     } on TimeoutException catch (_) {
@@ -411,7 +457,11 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               goToPage: const LoginScreen());
           // await signInAuto(context, email: email, pwd: pwd);
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
         }
       }
     } on TimeoutException catch (_) {
@@ -454,7 +504,11 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
                 email: email,
               ));
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
         }
       } else {
         sendErrorMessage("Error", "Unable to complete request", context);
@@ -499,7 +553,11 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               pwd: newPassword);
           navigateBack(context);
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
         }
       }
     } on SocketException catch (_) {
@@ -537,6 +595,12 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
               description: resBody['description'],
               title: "Password Reset",
               goToPage: const LoginScreen());
+        } else {
+          if (resBody['description'] != null) {
+            sendErrorMessage("Error", resBody['description'], context);
+          } else {
+            sendErrorMessage("Error", resBody['error'], context);
+          }
         }
       }
     } on SocketException catch (_) {

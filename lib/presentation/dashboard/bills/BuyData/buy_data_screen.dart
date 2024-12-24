@@ -23,6 +23,7 @@ class _BuyDataScreenState extends State<BuyDataScreen>
   final TextEditingController _planController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _contactPhoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final FlutterNativeContactPicker _contactPicker =
       FlutterNativeContactPicker();
@@ -166,8 +167,9 @@ class _BuyDataScreenState extends State<BuyDataScreen>
                                     _contact = contact;
                                   });
                                   if (_contact != null) {
-                                    _phoneController.text =
-                                        _contact!.phoneNumbers.toString();
+                                    _phoneController.text = _contact!
+                                        .phoneNumbers!.first
+                                        .toString();
                                   }
                                 },
                                 icon: SvgPicture.asset(
@@ -482,7 +484,7 @@ class _BuyDataScreenState extends State<BuyDataScreen>
                                         height: 10,
                                       ),
                                       TextFormField(
-                                        controller: _phoneController,
+                                        controller: _contactPhoneController,
                                         keyboardType: TextInputType.number,
                                         onChanged: (value) {
                                           setState(() {});

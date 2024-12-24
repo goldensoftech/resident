@@ -31,7 +31,7 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
       _firstNameController.text = ResponseData.loginResponse!.user!.firstName!;
       _secondNameController.text = ResponseData.loginResponse!.user!.lastName!;
       _emailController.text = ResponseData.loginResponse!.user!.userName!;
-_phonecontroller.text=ResponseData.loginResponse!.user!.userName!;
+_phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
     //   number = intlPhone.PhoneNumber(
     //       isoCode: 'NG',
     //       phoneNumber:

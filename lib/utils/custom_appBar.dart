@@ -61,11 +61,7 @@ mixin CustomWidgets<T extends StatefulWidget> on State<T> {
   }
 }
 mixin CustomAppBar<T extends StatefulWidget> on State<T> {
-  AppBar defaultAppBar({
-    String? title,
-    double?
-     height
-  }) {
+  AppBar defaultAppBar({String? title, double? height}) {
     return AppBar(
       elevation: 0,
       toolbarHeight: height,
@@ -82,13 +78,15 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
-      title: title!=null?Text(
-        title ?? "",
-        style: TextStyle(
-            fontSize: 18,
-            color: AppColors.baseBlack,
-            fontWeight: FontWeight.w700),
-      ):SizedBox.shrink(),
+      title: title != null
+          ? Text(
+              title ?? "",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: AppColors.baseBlack,
+                  fontWeight: FontWeight.w700),
+            )
+          : SizedBox.shrink(),
     );
   }
 
@@ -150,20 +148,21 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
       automaticallyImplyLeading: false,
       backgroundColor: AppColors.whiteA700,
       foregroundColor: AppColors.whiteA700,
-toolbarHeight: 80,
+      toolbarHeight: 100,
       flexibleSpace: ListView(
-         padding: const EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
+          vertical: 10,
         ),
         children: [
           const SizedBox(
-            height: 40,
+            height: 60,
           ),
           Row(
             children: [
-              GestureDetector(
-                onTap: () => navigateBack(context),
-                child: Container(
+              IconButton(
+                onPressed: () => navigateBack(context),
+                icon: Container(
                   margin: const EdgeInsets.only(right: 30),
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(

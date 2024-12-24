@@ -11,13 +11,14 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<List<DataItem>> getNetworkDataPlans(context,
       {required id, required network}) async {
     const url = "$host$baseUrl${iswPathUrl}iswgetbillerpaymentitem";
-
+   
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnectionApi = await client
           .post(Uri.parse(url),
               body: json.encode({"serviceid": id}), headers: headersContent)
           .timeout(const Duration(seconds: 60));
+
       if (httpConnectionApi.statusCode == 200) {
         var resBody = jsonDecode(httpConnectionApi.body.toString());
         print(resBody);
@@ -31,6 +32,8 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
                 code: data["PaymentCode"]);
           }).toList();
           return dataItems;
+        } else {
+          sendErrorMessage("Error", resBody["error"], context);
         }
       }
     } on SocketException catch (_) {

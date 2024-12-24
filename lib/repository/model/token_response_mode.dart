@@ -8,6 +8,9 @@ class TokenResponseModel {
 
   TokenResponseModel(
       {this.code, this.token, this.tokenExpiryTime, this.description});
+      updateToken({required String value}) {
+    this.token = value;
+  }
   TokenResponseModel.fromJson(dynamic json) {
     code = json['code'];
     token = json['Bearer']['token'];
@@ -24,6 +27,7 @@ class TokenResponseModel {
           code: this.code ?? this.code,
           token: token ?? token,
           description: description ?? description);
+  
 }
 
 class ISWAuthToken {

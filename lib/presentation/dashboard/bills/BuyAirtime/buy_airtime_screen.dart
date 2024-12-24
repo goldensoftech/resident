@@ -20,6 +20,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
 
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _contactPhoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
@@ -177,7 +178,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                   });
                                   if (_contact != null) {
                                     _phoneController.text =
-                                        _contact!.phoneNumbers.toString();
+                                        _contact!.phoneNumbers!.first.toString();
                                   }
                                 },
                                 icon: SvgPicture.asset(
@@ -351,7 +352,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                         height: 10,
                                       ),
                                       TextFormField(
-                                        controller: _phoneController,
+                                        controller: _contactPhoneController,
                                         keyboardType: TextInputType.number,
                                         onChanged: (value) {
                                           setState(() {});
