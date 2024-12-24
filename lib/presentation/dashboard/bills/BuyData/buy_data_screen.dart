@@ -2,6 +2,7 @@
 
 import 'dart:ui';
 
+import 'package:flutter_native_contact_picker/model/contact.dart';
 import 'package:resident/app_export.dart';
 
 class BuyDataScreen extends StatefulWidget {
@@ -23,7 +24,8 @@ class _BuyDataScreenState extends State<BuyDataScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final FlutterContactPicker _contactPicker = FlutterContactPicker();
+  final FlutterNativeContactPicker _contactPicker =
+      FlutterNativeContactPicker();
   Contact? _contact;
   Future<void>? _request;
   OrderItem? order;
