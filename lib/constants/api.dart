@@ -14,7 +14,7 @@ const String iswPathUrl = "/api/isw/v1/";
 const String isRemitaUrl = "/api/remita/v1/";
 const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
-
+const String siteUrl = "residentfintech.com";
 const appleId = '284882215';
 const playStoreId = 'com.facebook.katana';
 
