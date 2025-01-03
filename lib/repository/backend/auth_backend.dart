@@ -60,7 +60,8 @@ class AuthBackend with ErrorSnackBar, CustomAlerts {
   }
 
   Future<void> toPrivacyPolicy(context) async {
-    String url = host + baseUrl + "/privacy";
+    String url = host + siteUrl + "/privacy";
+    print("Privacy url: $url");
     WebViewController _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
