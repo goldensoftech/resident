@@ -7,6 +7,7 @@ import 'package:resident/app_export.dart';
 import 'package:resident/constants/api.dart';
 import 'package:resident/presentation/dashboard/bills/web_screen.dart';
 
+
 class AuthBackend with ErrorSnackBar, CustomAlerts {
   late SharedPreferences sharedPreferences;
   Future<void> getAuthToken(context) async {

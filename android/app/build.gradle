@@ -54,6 +54,7 @@ flutter {
     source = "../.."
 }
 dependencies {
+    
     implementation "androidx.core:core-ktx:1.6.0"
     implementation 'com.android.support:multidex:2.0.1'
    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20"

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:resident/app_export.dart';
 
+import '../../constants/api.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -25,59 +27,62 @@ class _SplashScreenState extends State<SplashScreen>
 
   checkUser(context) async {
     //await AuthBackend().verifyAppVersion(context);
-    // await AppVersionUpdate.checkForUpdates(
-    //         appleId: appleId, playStoreId: playStoreId)
-    //     .then((data) async {
-    //   print(data.storeUrl);
-    //   print(data.storeVersion);
-    //   if (data.canUpdate! || !data.canUpdate!) {
-    //     AppVersionUpdate.showAlertUpdate(
-    //         mandatory: true, appVersionResult: data, context: context);
-    //   }
-    // });
-    initData().then((onValue) async {
-      //navigateReplace(context, const OnboardingScreen());
-      try {
-        displaySize = MediaQuery.of(context).size;
+    await AppVersionUpdate.checkForUpdates(
+            appleId: appleId, playStoreId: playStoreId)
+        .then((data) async {
+      print(data.storeUrl);
+      print(data.storeVersion);
+      if (data.canUpdate! || !data.canUpdate!) {
+        AppVersionUpdate.showAlertUpdate(
+            mandatory: true, appVersionResult: data, context: context);
+      } else {
+        initData().then((onValue) async {
+          //navigateReplace(context, const OnboardingScreen());
+          try {
+            displaySize = MediaQuery.of(context).size;
 
-        sharedPreferences = await SharedPreferences.getInstance();
-        DummyData.firstTimeOnApp = sharedPreferences.getBool("firstTimeOnApp");
-        logger.t("First time on App? : ${DummyData.firstTimeOnApp}");
-        if (DummyData.firstTimeOnApp == true ||
-            DummyData.firstTimeOnApp == null) {
-          await AuthBackend().setDefaultUser();
-          // ResponseData.txHistory = await TransactionBackend()
-          //     .getTransactionHistory(context,
-          //         startDate: DateTime.now().subtract(const Duration(days: 60)),
-          //         endDate: DateTime.now());
-          navigateReplace(context, const OnboardingScreen());
-        } else {
-          //  await AuthBackend().getAuthToken(context);
-          logger.i("Check User");
-          DummyData.emailAddress = sharedPreferences.getString("Email");
-          DummyData.password = sharedPreferences.getString("Password");
-          if ((DummyData.emailAddress != null &&
-                  DummyData.emailAddress!.isNotEmpty) &&
-              (DummyData.password != null && DummyData.password!.isNotEmpty)) {
-            submitLogin();
-          } else {
-            await AuthBackend().setDefaultUser();
-            navigateReplace(context, const Dashboard());
-            logger.e("error");
+            sharedPreferences = await SharedPreferences.getInstance();
+            DummyData.firstTimeOnApp =
+                sharedPreferences.getBool("firstTimeOnApp");
+            logger.t("First time on App? : ${DummyData.firstTimeOnApp}");
+            if (DummyData.firstTimeOnApp == true ||
+                DummyData.firstTimeOnApp == null) {
+              await AuthBackend().setDefaultUser();
+              // ResponseData.txHistory = await TransactionBackend()
+              //     .getTransactionHistory(context,
+              //         startDate: DateTime.now().subtract(const Duration(days: 60)),
+              //         endDate: DateTime.now());
+              navigateReplace(context, const OnboardingScreen());
+            } else {
+              //  await AuthBackend().getAuthToken(context);
+              logger.i("Check User");
+              DummyData.emailAddress = sharedPreferences.getString("Email");
+              DummyData.password = sharedPreferences.getString("Password");
+              if ((DummyData.emailAddress != null &&
+                      DummyData.emailAddress!.isNotEmpty) &&
+                  (DummyData.password != null &&
+                      DummyData.password!.isNotEmpty)) {
+                submitLogin();
+              } else {
+                await AuthBackend().setDefaultUser();
+                navigateReplace(context, const Dashboard());
+                logger.e("error");
+              }
+            }
+          } on TimeoutException catch (_) {
+            sendErrorMessage("Network failure",
+                "Please check your internet connection", context);
+            //navigateReplace(context, const Dashboard());
+          } on NoSuchMethodError catch (_) {
+            sendErrorMessage("error",
+                'please check your credentials and try again.', context);
+          } catch (e) {
+            logger.e(e);
+            sendErrorMessage("Network failure",
+                "Please check your internet connection", context);
+            //navigateReplace(context, const Dashboard());
           }
-        }
-      } on TimeoutException catch (_) {
-        sendErrorMessage("Network failure",
-            "Please check your internet connection", context);
-        //navigateReplace(context, const Dashboard());
-      } on NoSuchMethodError catch (_) {
-        sendErrorMessage(
-            "error", 'please check your credentials and try again.', context);
-      } catch (e) {
-        logger.e(e);
-        sendErrorMessage("Network failure",
-            "Please check your internet connection", context);
-        //navigateReplace(context, const Dashboard());
+        });
       }
     });
   }
@@ -119,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                   'assets/images/logoAnim.gif',
                   // width: MediaQuery.sizeOf(context).width * .8,
                   // height: MediaQuery.sizeOf(context).height * .3,
-                  scale: 0.1,
+                  scale: 2.5,
                   fit: BoxFit.contain)),
           persistentFooterAlignment: AlignmentDirectional.bottomCenter,
           persistentFooterButtons: [

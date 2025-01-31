@@ -6,7 +6,8 @@ import 'package:resident/repository/data/response_data.dart';
 const String assetsUrl = "assets/images/";
 const String apiId = "edgeDeveloper";
 const String apiSecret = "4953b2aeecde85314b5b0f8f5fa6091e";
-
+const String playstoreId = "com.residentfintech.android";
+const String appleId = "com.residentfintech.ios";
 const String host = 'https://';
 const String baseUrl = "prodints.residentfintech.com";
 const String appPathUrl = "/api/account/v1/";
@@ -15,7 +16,7 @@ const String isRemitaUrl = "/api/remita/v1/";
 const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
 const String siteUrl = "residentfintech.com";
-const appleId = '284882215';
+
 const playStoreId = 'com.facebook.katana';
 
 //Remita
