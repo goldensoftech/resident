@@ -33,7 +33,6 @@ jobs:
         run: |
           flutter clean
           flutter pub get
-
       # Ensure Podfile exists and install CocoaPods
       - name: Ensure Podfile exists and install CocoaPods
         run: |
@@ -44,12 +43,10 @@ jobs:
           cd ios
           sudo gem install cocoapods
           pod install
-
       # Build the app for iOS
       - name: Build iOS app with Flutter
         run: |
           flutter build ios --release --no-codesign
-
       # Create Git tag
       - name: Create Git tag
         run: |
@@ -66,17 +63,17 @@ jobs:
       - name: Fetch tags
         run: git fetch --tags
 
-      # Step 6: Explicitly checkout the tag to ensure it's the current context
+      # Step 6: Checkout the newly created tag
       - name: Checkout the tag
         run: |
-          git fetch origin $TAG_NAME  # Make sure the tag is fetched
-          git checkout $TAG_NAME  # Checkout the tag to ensure that the correct commit is checked out
+          git fetch origin $TAG_NAME  # Fetch the specific tag
+          git checkout tags/$TAG_NAME  # Checkout the tag explicitly (this is crucial)
           git status  # Optional: Check if we're on the correct tag
 
-      # Upload .ipa to GitHub Release
+      # Step 7: Upload .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/ios/ipa/resident.ipa
+          files: build/ios/ipa/resident.ipa  # Path to your .ipa file
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use default token here for release action
