@@ -12,6 +12,11 @@ jobs:
   build:
     runs-on: macos-latest
 
+    permissions:
+      contents: write  # Allows write access to the repository's contents (to push tags)
+      pull-requests: write  # Allows write access to pull requests (optional, depending on your needs)
+      id-token: write  # Required for authenticating with GitHub APIs for releases
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
