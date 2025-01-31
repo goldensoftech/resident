@@ -17,19 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter using official GitHub Action (with specific version)
-      - name: 'Set Flutter 3.10.0'
+      # Set up Flutter using the latest stable version with Dart SDK >= 3.7.0
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-             flutter-version: 3.10.0
-             
-      # - name: 'Checkout Flutter 3.10.0'
-      #   shell: bash
-      #   run: |
-      #      cd $FLUTTER_ROOT;
-      #      git fetch --tags;
-      #      git checkout 3.7.0;
-      #      flutter --version;  # Use a specific version of Flutter
+          flutter-version: '3.10.0'  # Use Flutter 3.10.x or newer, which includes Dart SDK 3.x
 
       # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
       - name: Flutter pub get
