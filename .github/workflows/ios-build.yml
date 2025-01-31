@@ -41,29 +41,53 @@ jobs:
           sudo gem install cocoapods
           pod install
 
+      - name: Set up code signing
+        run: |
+          # Create a custom keychain
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+          # Import the signing certificate
+          echo "${{ secrets.IOS_SIGNING_CERTIFICATE }}" | base64 --decode > ios_distribution.p12
+          security import ios_distribution.p12 -t agg -k build.keychain -P "${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}" -A
+
+          # Configure keychain settings
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+
+          # Import the provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
       - name: Build iOS app with Flutter
         run: |
-          flutter build ipa
+          flutter build ipa --release --export-options-plist=ios/export_options.plist
 
-      - name: List build directory
+      - name: List build directory (for debugging)
         run: ls -R build/ios
-      
-      
-      # - name: Create Git tag
-      #   run: |
-      #     TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
-      #     echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # Make TAG_NAME available in subsequent steps
-      #     git tag $TAG_NAME
-      #     git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-      #     git push origin $TAG_NAME  # Push the tag
 
-      # - name: Fetch all tags
-      #   run: git fetch --tags  # Make sure all tags are fetched
+      - name: Check if .ipa file exists
+        run: |
+          if [ ! -f build/ios/ipa/resident.ipa ]; then
+            echo "Error: .ipa file not found!"
+            exit 1
+          fi
 
-      # - name: Upload .ipa to GitHub Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: ${{ env.TAG_NAME }}  # Use the created tag for the release
-      #     files: build/ios/ipa/resident.ipa
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Git tag
+        run: |
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # Make TAG_NAME available in subsequent steps
+          git tag $TAG_NAME
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push origin $TAG_NAME  # Push the tag
+
+      - name: Fetch all tags
+        run: git fetch --tags  # Make sure all tags are fetched
+
+      - name: Upload .ipa to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}  # Use the created tag for the release
+          files: build/ios/ipa/resident.ipa  # Update this path if necessary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
