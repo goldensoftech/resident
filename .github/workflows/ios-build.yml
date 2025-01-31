@@ -17,12 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter (Ensure it's available for all subsequent steps)
+      # Install Flutter manually (clone the stable channel)
       - name: Set up Flutter
         run: |
           # Clone Flutter SDK from GitHub and checkout the stable channel
           git clone https://github.com/flutter/flutter.git -b stable --depth 1
-          echo "::add-path::$(pwd)/flutter/bin"
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH  # Add flutter to PATH
           flutter --version  # Check if flutter is installed correctly
 
       # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
