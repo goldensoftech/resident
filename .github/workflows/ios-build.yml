@@ -52,6 +52,10 @@ jobs:
           git tag $TAG_NAME
           git remote set-url origin https://x-access-token:${{ secrets.GH_PATT }}@github.com/${{ github.repository }}.git
           git push origin $TAG_NAME  # Push the tag to the repository
+        env:
+          FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.24.4-arm64
+          PUB_CACHE: /Users/runner/.pub-cache
+
 
       # Upload .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
