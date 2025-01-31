@@ -17,11 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter using official GitHub Action
+      # Set up Flutter using official GitHub Action (with specific version)
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'  # or specify a version like '3.5.0'
+          flutter-version: '3.5.0'  # Use a specific version of Flutter
 
       # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
       - name: Flutter pub get
