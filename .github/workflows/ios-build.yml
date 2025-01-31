@@ -36,9 +36,10 @@ jobs:
           flutter pub get
           flutter build ios --release --no-codesign
 
-      # Upload the .ipa to artifacts (updated to v3)
-      - name: Upload .ipa to artifacts
-        uses: actions/upload-artifact@latest  # Updated to v3 to avoid deprecated version
+      # Upload the .ipa to GitHub Releases using softprops/action-gh-release
+      - name: Upload .ipa to GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: Resident-build
-          path: build/ios/ipa/resident.ipa  # Adjust the path to your .ipa file location
+          files: build/ios/ipa/resident.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
