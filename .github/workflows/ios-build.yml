@@ -14,7 +14,7 @@ jobs:
 
     permissions:
       contents: write  # Allows write access to the repository's contents (to push tags)
-      pull-requests: write  # Allows write access to pull requests (optional, depending on your needs)
+      pull-requests: write  # Optional: Allows write access to pull requests
       id-token: write  # Required for authenticating with GitHub APIs for releases
 
     steps:
@@ -48,6 +48,7 @@ jobs:
       - name: Create Git tag
         run: |
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # Make TAG_NAME available in subsequent steps
           git tag $TAG_NAME
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin $TAG_NAME  # Push the tag
@@ -55,14 +56,10 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags  # Make sure all tags are fetched
 
-      - name: Checkout the tag
-        run: |
-          git checkout tags/$TAG_NAME  # Checkout the tag explicitly
-          git status  # Optional: Check if we're on the correct tag
-
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.TAG_NAME }}  # Use the created tag for the release
           files: build/ios/ipa/resident.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
