@@ -63,7 +63,7 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
-      # Step 6: Checkout the newly created tag (Corrected)
+      # Step 6: Explicitly checkout the tag (with HEAD detaching)
       - name: Checkout the tag
         run: |
           git checkout $TAG_NAME  # Checkout the tag explicitly (this is crucial)
