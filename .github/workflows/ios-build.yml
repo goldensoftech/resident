@@ -17,26 +17,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Xcode environment (this step will automatically install the latest Xcode)
-      - name: Set up Xcode
-        uses: apple-actions/setup-xcode@v2
+      # Set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2  # Flutter setup action
         with:
-          xcode-version: '15.x'  # Ensure this is the version you want (Xcode 15+)
+          flutter-version: '3.5'  # Specify the Flutter version you want to use
 
-      # Install CocoaPods dependencies (if you're using CocoaPods)
+      # Install dependencies (CocoaPods for iOS, etc.)
       - name: Install CocoaPods dependencies
         run: |
           sudo gem install cocoapods
           pod install
 
-      # Build the app using the correct scheme "Runner"
-      - name: Build iOS app
+      # Build the app using Flutter (this will build for iOS)
+      - name: Build iOS app with Flutter
         run: |
-          xcodebuild -workspace Resident.xcworkspace -scheme Runner -sdk iphoneos -configuration Release clean build
+          flutter clean
+          flutter pub get
+          flutter build ios --release --no-codesign
 
-      # Upload the .ipa to artifacts (updated path)
+      # Upload the .ipa to artifacts (adjusted path)
       - name: Upload .ipa to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2  # Using v2 to avoid the deprecation
         with:
           name: Resident-build
-          path: build/ios/ipa/resident.ipa  # Adjusted the path to your .ipa file location
+          path: build/ios/ipa/resident.ipa  # Adjust the path to your .ipa file location
