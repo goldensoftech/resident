@@ -59,15 +59,14 @@ jobs:
           FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.24.4-arm64
           PUB_CACHE: /Users/runner/.pub-cache
 
-      # Step 5: Fetch tags to ensure the latest tag is available
-      - name: Fetch tags
+      # Step 5: Fetch all tags to ensure the newly created tag is available
+      - name: Fetch all tags
         run: git fetch --tags
 
-      # Step 6: Checkout the newly created tag
+      # Step 6: Checkout the newly created tag (Corrected)
       - name: Checkout the tag
         run: |
-          git fetch origin $TAG_NAME  # Fetch the specific tag
-          git checkout tags/$TAG_NAME  # Checkout the tag explicitly (this is crucial)
+          git checkout $TAG_NAME  # Checkout the tag explicitly (this is crucial)
           git status  # Optional: Check if we're on the correct tag
 
       # Step 7: Upload .ipa to GitHub Release
