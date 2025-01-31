@@ -50,7 +50,7 @@ jobs:
         run: |
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Or you can use a version from your `pubspec.yaml`
           git tag $TAG_NAME
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PATH }}@github.com/${{ github.repository }}.git
           git push origin $TAG_NAME  # Push the tag to the repository
 
       # Upload .ipa to GitHub Release
