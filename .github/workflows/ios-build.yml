@@ -25,10 +25,15 @@ jobs:
           export PATH="$PATH:`pwd`/flutter/bin"
           flutter --version
 
-      # Ensure iOS project has a Podfile
+      # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
+      - name: Flutter pub get
+        run: |
+          flutter clean
+          flutter pub get
+
+      # Ensure iOS project has a Podfile (and regenerate if necessary)
       - name: Ensure Podfile exists
         run: |
-          # If the Podfile doesn't exist, generate it
           if [ ! -f ios/Podfile ]; then
             echo "Podfile is missing. Creating a new one..."
             flutter create .
@@ -44,8 +49,6 @@ jobs:
       # Build the app using Flutter (this will build for iOS)
       - name: Build iOS app with Flutter
         run: |
-          flutter clean
-          flutter pub get
           flutter build ios --release --no-codesign
 
       # Upload the .ipa to GitHub Release using softprops/action-gh-release
