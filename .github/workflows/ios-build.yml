@@ -10,30 +10,22 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest  # Uses the latest macOS runner with the latest Xcode
-
-    permissions:
-      contents: write  # Allows write access to the repository's contents (to push tags)
-      pull-requests: write  # Allows write access to pull requests (optional, depending on your needs)
-      id-token: write  # Required for authenticating with GitHub APIs for releases
+    runs-on: macos-latest
 
     steps:
-      # Checkout your code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter (latest stable version)
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.4'  # Specify the Flutter version you want to use
+          flutter-version: '3.24.4'
 
-      # Clean and install dependencies
       - name: Flutter clean and pub get
         run: |
           flutter clean
           flutter pub get
-      # Ensure Podfile exists and install CocoaPods
+
       - name: Ensure Podfile exists and install CocoaPods
         run: |
           if [ ! -f ios/Podfile ]; then
@@ -43,36 +35,29 @@ jobs:
           cd ios
           sudo gem install cocoapods
           pod install
-      # Build the app for iOS
+
       - name: Build iOS app with Flutter
         run: |
           flutter build ios --release --no-codesign
-      # Create Git tag
+
       - name: Create Git tag
         run: |
-          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Or you can use a version from your `pubspec.yaml`
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
           git tag $TAG_NAME
-          # Use GITHUB_TOKEN for authentication (GitHub provides this automatically in the Actions environment)
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push origin $TAG_NAME  # Push the tag to the repository
-        env:
-          FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.24.4-arm64
-          PUB_CACHE: /Users/runner/.pub-cache
+          git push origin $TAG_NAME  # Push the tag
 
-      # Step 5: Fetch all tags to ensure the newly created tag is available
       - name: Fetch all tags
-        run: git fetch --tags
+        run: git fetch --tags  # Make sure all tags are fetched
 
-      # Step 6: Explicitly checkout the tag (with HEAD detaching)
       - name: Checkout the tag
         run: |
-          git checkout $TAG_NAME  # Checkout the tag explicitly (this is crucial)
+          git checkout tags/$TAG_NAME  # Checkout the tag explicitly
           git status  # Optional: Check if we're on the correct tag
 
-      # Step 7: Upload .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/ios/ipa/resident.ipa  # Path to your .ipa file
+          files: build/ios/ipa/resident.ipa
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use default token here for release action
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
