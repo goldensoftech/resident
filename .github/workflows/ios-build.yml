@@ -1,0 +1,66 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+  pull_request:
+    branches:
+      - main  # Optional: If you want to trigger the build on PRs as well
+
+jobs:
+  build:
+    runs-on: macos-latest  # Uses the latest macOS runner with the latest Xcode
+
+    steps:
+      # Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Flutter using official GitHub Action (with specific version)
+      - name: 'Set Flutter 3.7.0'
+        uses: subosito/flutter-action@v2
+        with:
+             flutter-version: 3.7.0
+             
+      - name: 'Checkout Flutter 3.7.0'
+        shell: bash
+        run: |
+           cd $FLUTTER_ROOT;
+           git fetch --tags;
+           git checkout 3.7.0;
+           flutter --version;  # Use a specific version of Flutter
+
+      # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
+      - name: Flutter pub get
+        run: |
+          flutter clean
+          flutter pub get
+
+      # Ensure iOS project has a Podfile (and regenerate if necessary)
+      - name: Ensure Podfile exists
+        run: |
+          if [ ! -f ios/Podfile ]; then
+            echo "Podfile is missing. Creating a new one..."
+            flutter create .
+          fi
+
+      # Install CocoaPods dependencies
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          sudo gem install cocoapods
+          pod install
+
+      # Build the app using Flutter (this will build for iOS)
+      - name: Build iOS app with Flutter
+        run: |
+          flutter build ios --release --no-codesign
+
+      # Upload the .ipa to GitHub Release using softprops/action-gh-release
+      - name: Upload .ipa to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/ios/ipa/resident.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -305,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen>
               AppColors.whiteA700,
             )),
             child: Text(
-              "Skip to Dashoboard",
+              "Skip to Dashboard",
               style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
