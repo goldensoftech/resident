@@ -66,6 +66,11 @@ jobs:
       - name: Fetch tags
         run: git fetch --tags
 
+      # Step 6: Explicitly checkout the tag to ensure release detection
+      - name: Checkout tag
+        run: |
+          git checkout $TAG_NAME  # Checkout the tag to ensure that the correct commit is checked out
+
       # Upload .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
