@@ -1,17 +1,12 @@
-name: iOS Build and Release
+name: Build and Release iOS App
 
 on:
   push:
     branches:
-      - main  # Or your default branch
+      - main  # Trigger the workflow on push to the main branch
   pull_request:
     branches:
-      - main  # Optional: If you want to trigger the build on PRs as well
-  # Also trigger on tag creation for releases
-  # If you want to create a release manually, you can create a tag via `git tag` command
-  create:
-    tags:
-      - '*'  # Any tag triggers the release
+      - main  # Optional: If you want to trigger the build on PRs
 
 jobs:
   build:
@@ -26,7 +21,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.24.4'  # Specify the Flutter version you want to use
 
       # Clean and install dependencies
       - name: Flutter clean and pub get
@@ -34,7 +29,7 @@ jobs:
           flutter clean
           flutter pub get
 
-      # Ensure Podfile exists and install dependencies
+      # Ensure Podfile exists and install CocoaPods
       - name: Ensure Podfile exists and install CocoaPods
         run: |
           if [ ! -f ios/Podfile ]; then
@@ -50,12 +45,13 @@ jobs:
         run: |
           flutter build ios --release --no-codesign
 
-      # Create a Git tag (if not already created in a previous step)
+      # Create a Git tag
       - name: Create Git tag
         run: |
           TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Or you can use a version from your `pubspec.yaml`
           git tag $TAG_NAME
-          git push origin $TAG_NAME
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+          git push origin $TAG_NAME  # Push the tag to the repository
 
       # Upload the .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
@@ -63,5 +59,4 @@ jobs:
         with:
           files: build/ios/ipa/resident.ipa
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use default token here for release action
