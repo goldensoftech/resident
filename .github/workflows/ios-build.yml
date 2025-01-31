@@ -59,6 +59,14 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
+      - name: List provisioning profiles
+        run: |
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: List keychain certificates
+        run: |
+          security find-identity -v -p codesigning
+
       - name: Build iOS app with Flutter
         run: |
           flutter build ipa --release --export-options-plist=ios/export_options.plist
