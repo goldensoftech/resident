@@ -1,0 +1,42 @@
+name: iOS Build
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+  pull_request:
+    branches:
+      - main  # Optional: If you want to trigger the build on PRs as well
+
+jobs:
+  build:
+    runs-on: macos-latest  # Uses the latest macOS runner with the latest Xcode
+
+    steps:
+      # Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Xcode environment (this step will automatically install the latest Xcode)
+      - name: Set up Xcode
+        uses: apple-actions/setup-xcode@v2
+        with:
+          xcode-version: '15.x'  # Ensure this is the version you want (Xcode 15+)
+
+      # Install CocoaPods dependencies (if you're using CocoaPods)
+      - name: Install CocoaPods dependencies
+        run: |
+          sudo gem install cocoapods
+          pod install
+
+      # Build the app using the correct scheme "Runner"
+      - name: Build iOS app
+        run: |
+          xcodebuild -workspace Resident.xcworkspace -scheme Runner -sdk iphoneos -configuration Release clean build
+
+      # Upload the .ipa to artifacts (updated path)
+      - name: Upload .ipa to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Resident-build
+          path: build/ios/ipa/resident.ipa  # Adjusted the path to your .ipa file location
