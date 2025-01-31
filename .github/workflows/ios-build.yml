@@ -23,7 +23,7 @@ jobs:
         with:
           flutter-version: '3.5'  # Specify the Flutter version you want to use
 
-      # Install dependencies (CocoaPods for iOS, etc.)
+      # Install CocoaPods dependencies
       - name: Install CocoaPods dependencies
         run: |
           sudo gem install cocoapods
@@ -36,9 +36,9 @@ jobs:
           flutter pub get
           flutter build ios --release --no-codesign
 
-      # Upload the .ipa to artifacts (adjusted path)
+      # Upload the .ipa to artifacts (updated to v3)
       - name: Upload .ipa to artifacts
-        uses: actions/upload-artifact@v2  # Using v2 to avoid the deprecation
+        uses: actions/upload-artifact@v3  # Updated to v3 to avoid deprecated version
         with:
           name: Resident-build
           path: build/ios/ipa/resident.ipa  # Adjust the path to your .ipa file location
