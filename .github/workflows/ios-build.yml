@@ -21,7 +21,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2  # Flutter setup action
         with:
-          flutter-version: '3.5'  # Specify the Flutter version you want to use
+          flutter-version: 'stable'  # Specify the Flutter version you want to use
 
       # Install CocoaPods dependencies
       - name: Install CocoaPods dependencies
