@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter_native_contact_picker/model/contact.dart';
+
 import 'package:resident/app_export.dart';
 
 class BuyAirtimeScreen extends StatefulWidget {
