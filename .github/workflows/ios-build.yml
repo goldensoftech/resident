@@ -38,7 +38,7 @@ jobs:
 
       # Upload the .ipa to artifacts (updated to v3)
       - name: Upload .ipa to artifacts
-        uses: actions/upload-artifact@v3  # Updated to v3 to avoid deprecated version
+        uses: actions/upload-artifact@latest  # Updated to v3 to avoid deprecated version
         with:
           name: Resident-build
           path: build/ios/ipa/resident.ipa  # Adjust the path to your .ipa file location
