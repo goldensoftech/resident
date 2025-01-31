@@ -18,17 +18,17 @@ jobs:
         uses: actions/checkout@v3
 
       # Set up Flutter using official GitHub Action (with specific version)
-      - name: 'Set Flutter ^3.5.0'
+      - name: 'Set Flutter 3.7.0'
         uses: subosito/flutter-action@v2
         with:
-             flutter-version: ^3.5.0
+             flutter-version: 3.7.0
              
-      - name: 'Checkout Flutter ^3.5.0'
+      - name: 'Checkout Flutter 3.7.0'
         shell: bash
         run: |
            cd $FLUTTER_ROOT;
            git fetch --tags;
-           git checkout ^3.5.0;
+           git checkout 3.7.0;
            flutter --version;  # Use a specific version of Flutter
 
       # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
