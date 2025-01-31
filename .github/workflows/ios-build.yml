@@ -1,4 +1,4 @@
-name: iOS Build
+name: iOS Build and Release
 
 on:
   push:
@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - main  # Optional: If you want to trigger the build on PRs as well
+  # Also trigger on tag creation for releases
+  # If you want to create a release manually, you can create a tag via `git tag` command
+  create:
+    tags:
+      - '*'  # Any tag triggers the release
 
 jobs:
   build:
@@ -17,42 +22,46 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter using the latest stable version with Dart SDK >= 3.24.4
+      # Set up Flutter (latest stable version)
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.4'  # Use Flutter 3.10.x or newer, which includes Dart SDK 3.x
+          flutter-version: '3.24.4'
 
-      # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
-      - name: Flutter pub get
+      # Clean and install dependencies
+      - name: Flutter clean and pub get
         run: |
           flutter clean
           flutter pub get
 
-      # Ensure iOS project has a Podfile (and regenerate if necessary)
-      - name: Ensure Podfile exists
+      # Ensure Podfile exists and install dependencies
+      - name: Ensure Podfile exists and install CocoaPods
         run: |
           if [ ! -f ios/Podfile ]; then
             echo "Podfile is missing. Creating a new one..."
             flutter create .
           fi
-
-      # Install CocoaPods dependencies
-      - name: Install CocoaPods dependencies
-        run: |
           cd ios
           sudo gem install cocoapods
           pod install
 
-      # Build the app using Flutter (this will build for iOS)
+      # Build the app for iOS
       - name: Build iOS app with Flutter
         run: |
           flutter build ios --release --no-codesign
 
-      # Upload the .ipa to GitHub Release using softprops/action-gh-release
+      # Create a Git tag (if not already created in a previous step)
+      - name: Create Git tag
+        run: |
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"  # Or you can use a version from your `pubspec.yaml`
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+
+      # Upload the .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: build/ios/ipa/resident.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
