@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>ad-hoc</string> <!-- Options: app-store, ad-hoc, enterprise, development -->
+    <string>app-store</string> <!-- Use 'app-store' for App Store distribution -->
     <key>teamID</key>
     <string>CV6ZVT4543</string> <!-- Replace with your Apple Developer Team ID -->
     <key>signingStyle</key>
@@ -11,7 +11,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>com.residentfintech.resident</key> <!-- Replace with your app's Bundle ID -->
-        <string>Your_Provisioning_Profile_Name</string> <!-- Replace with your provisioning profile name -->
+        <string>resident</string> <!-- Replace with your App Store provisioning profile name -->
     </dict>
 </dict>
 </plist>
