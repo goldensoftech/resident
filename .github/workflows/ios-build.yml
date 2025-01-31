@@ -62,6 +62,9 @@ jobs:
           FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.24.4-arm64
           PUB_CACHE: /Users/runner/.pub-cache
 
+      # Step 5: Fetch tags to ensure the latest tag is available
+      - name: Fetch tags
+        run: git fetch --tags
 
       # Upload .ipa to GitHub Release
       - name: Upload .ipa to GitHub Release
