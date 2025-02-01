@@ -22,7 +22,7 @@ export 'package:image_picker/image_picker.dart';
 export 'package:webview_flutter/webview_flutter.dart';
 export 'package:currency_symbols/currency_symbols.dart';
 export 'package:dropdown_button2/dropdown_button2.dart';
-export 'package:mobile_scanner/mobile_scanner.dart';
+// export 'package:mobile_scanner/mobile_scanner.dart';
 export 'package:flutter_phoenix/flutter_phoenix.dart';
 export 'package:app_version_update/app_version_update.dart';
 

@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+6
 
 environment:
-  sdk: ^2.18.0
+  sdk: ^3.5.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -59,13 +59,9 @@ dependencies:
   currency_symbols: ^0.0.1+2
   liquid_pull_to_refresh: ^3.0.1
   dropdown_button2: ^2.3.9
-
-  mobile_scanner: ^5.2.3
-  geolocator: ^13.0.1
   permission_handler: ^11.3.1
   flutter_phoenix: ^1.1.1
-  crypto: ^3.0.5
-  app_version_update: ^5.0.3
+  app_version_update: 6.0.0
   
 
 

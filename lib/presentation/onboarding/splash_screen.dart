@@ -27,15 +27,15 @@ class _SplashScreenState extends State<SplashScreen>
 
   checkUser(context) async {
     //await AuthBackend().verifyAppVersion(context);
-    await AppVersionUpdate.checkForUpdates(
-            appleId: appleId, playStoreId: playStoreId)
+     AppVersionUpdate.checkForUpdates(
+            appleId: appleId, playStoreId: playstoreId)
         .then((data) async {
-      print(data.storeUrl);
+      print(data);
       print(data.storeVersion);
-      if (data.canUpdate! || !data.canUpdate!) {
+      if (data.canUpdate! ) {
         AppVersionUpdate.showAlertUpdate(
-            mandatory: true, appVersionResult: data, context: context);
-      } else {
+            mandatory: false, appVersionResult: data, context: context);
+      } });
         initData().then((onValue) async {
           //navigateReplace(context, const OnboardingScreen());
           try {
@@ -83,8 +83,8 @@ class _SplashScreenState extends State<SplashScreen>
             //navigateReplace(context, const Dashboard());
           }
         });
-      }
-    });
+      
+    
   }
 
   Future initData() async {
