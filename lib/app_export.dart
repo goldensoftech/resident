@@ -17,6 +17,7 @@ export 'package:pinput/pinput.dart';
 export 'package:otp_timer_button/otp_timer_button.dart';
 export 'package:lottie/lottie.dart';
 export 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
+export 'package:flutter_native_contact_picker/model/contact.dart';
 export 'package:grouped_list/grouped_list.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:webview_flutter/webview_flutter.dart';
