@@ -11,7 +11,7 @@ class _RemittaScreenState extends State<RemittaScreen>
     with CustomAlerts, CustomAppBar {
   @override
   void initState() {
-    getCategories(context);
+    // getCategories(context);
     super.initState();
   }
 

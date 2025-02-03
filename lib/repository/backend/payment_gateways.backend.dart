@@ -256,8 +256,12 @@ class Pay with ErrorSnackBar, CustomAlerts {
       ..addJavaScriptChannel("FlutterChannel",
           onMessageReceived: (message) async {
         if (message.message == 'successful') {
-          await TransactionBackend()
-              .processRemitaPayment(context, details: rrrData);
+          showSuccessAlert(context,
+              title: "Successful",
+              description: "Your Remita payment was successful.",
+              goToPage: const Dashboard());
+          // await TransactionBackend()
+          //     .processRemitaPayment(context, details: rrrData);
         } else if (message.message == 'error') {
           sendErrorMessage("Error", "Payment not successful", context);
           navigateBack(context);
@@ -400,7 +404,7 @@ class Pay with ErrorSnackBar, CustomAlerts {
        
         <li>
             <label>RRR <span class="required">*</span></label>
-            <input type="text" id="js-rrr" name="rrr" class="field-long" disabled/>
+            <input hidden type="text" id="js-rrr" name="rrr" class="field-long" disabled/>
         </li>
         
         <li>

@@ -516,17 +516,17 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                         {
                                                           FocusScope.of(context)
                                                               .unfocus();
-                                                          await TransactionBackend()
-                                                              .preProcessPayment(
-                                                                  context,
-                                                                  details:
-                                                                      lookupDetails!
-                                                                          .detials);
+                                                          // await TransactionBackend()
+                                                          //     .preProcessPayment(
+                                                          //         context,
+                                                          //         details:
+                                                          //             lookupDetails!
+                                                          //                 .detials);
                                                           await Pay().withRemita(
                                                               context,
                                                               rrrData:
                                                                   lookupDetails!
-                                                                      .rrrData!,
+                                                                      .rrrData,
                                                               details:
                                                                   lookupDetails!
                                                                       .detials);

@@ -72,8 +72,8 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                               child: ListTile(
                                   onTap: () async {
                                     if (gateWay['gateway_type'] ==
-                                        PaymentGateway.interswitch) {
-                                      _request = payWithISW(context);
+                                        PaymentGateway.remita) {
+                                      // _request = payWithRemita(context);
                                     } else if (gateWay['gateway_type'] ==
                                         PaymentGateway.paystack) {
                                       _request = payWithPayStack(context);
@@ -127,6 +127,15 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
         ));
   }
 
+  Future<void> payWithRemita(context) async {
+//     PaymentDetails details = widget.details;
+//     details.paymentGateway = PaymentGateway.remita;
+//    RemitaDetails? remitaData= await TransactionBackend().initiateRemitaPayment(billPaymentProductId:details);
+//    if(remitaData==null){
+// return;
+//    }
+//     await Pay().withRemita(context, details: details, rrrData:remitaData);
+  }
   Future<void> payWithISW(context) async {
     PaymentDetails details = widget.details;
     details.paymentGateway = PaymentGateway.interswitch;

@@ -11,7 +11,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<List<DataItem>> getNetworkDataPlans(context,
       {required id, required network}) async {
     const url = "$host$baseUrl${iswPathUrl}iswgetbillerpaymentitem";
-   
+
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnectionApi = await client
@@ -1000,7 +1000,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       final httpConnectionApi = await client
           .post(Uri.parse(url),
               body: json.encode({
-                "transactionRef": details.txRef,
+                "paymentIdentifier": details.paymentIdentifier,
                 "rrr": details.rrr,
                 "amount": details.amount,
                 "channel": "MOBILE",
@@ -1056,6 +1056,8 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       "email": email,
       "phoneNumber": phoneNumber,
       "customerId": customerId,
+      "transaction_type": 'Remita',
+      "payment_gateway": "REMITA",
       "metadata": {
         "customFields": customFields,
       },
@@ -1087,7 +1089,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
           "Network failure", "Please check your internet connection", context);
     } on NoSuchMethodError catch (_) {
       sendErrorMessage(
-          "error", 'please check your credentials and try again.', context);
+          "NoSuchMethodError", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);

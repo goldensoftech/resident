@@ -109,28 +109,27 @@ class LookupDetails {
             transactionType: TransactionType.remita),
         status: convertPaymentTitle(json['status']),
         rrrData: RemitaDetails(
-            txRef: json['transactionRef'] ?? json['rrr'],
-            rrr: json['rrr'],
-            amount: double.parse(json['rrrAmount'].toString()),
-            commission: double.parse(json['fee'].toString())));
+          paymentIdentifier: json['paymentIdentifier'] ?? json['rrr'],
+          rrr: json['rrr'],
+          amount: double.parse(json['rrrAmount'].toString()),
+        ));
   }
 }
 
 class RemitaDetails {
-  String txRef;
+  String paymentIdentifier;
   String rrr;
   double amount;
-  double commission;
-  RemitaDetails(
-      {required this.txRef,
-      required this.rrr,
-      required this.amount,
-      required this.commission});
+
+  RemitaDetails({
+    required this.paymentIdentifier,
+    required this.rrr,
+    required this.amount,
+  });
   factory RemitaDetails.fromJson(dynamic json) {
     return RemitaDetails(
-        txRef: json['transactionRef'],
+        paymentIdentifier: json['paymentIdentifier'],
         rrr: json['rrr'],
-        commission: double.parse((json['commission'].toString())),
         amount: double.parse(json['amount'].toString()));
   }
 }
