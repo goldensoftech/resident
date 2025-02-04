@@ -34,9 +34,11 @@ class _SplashScreenState extends State<SplashScreen>
       print(data.storeVersion);
       if (data.canUpdate! || !data.canUpdate!) {
         AppVersionUpdate.showAlertUpdate(
-            mandatory: true, appVersionResult: data, context: context);
-      } else {
-        initData().then((onValue) async {
+            mandatory: false, appVersionResult: data, context: context);
+      }
+      
+    });
+         initData().then((onValue) async {
           //navigateReplace(context, const OnboardingScreen());
           try {
             displaySize = MediaQuery.of(context).size;
@@ -83,8 +85,7 @@ class _SplashScreenState extends State<SplashScreen>
             //navigateReplace(context, const Dashboard());
           }
         });
-      }
-    });
+      
   }
 
   Future initData() async {
