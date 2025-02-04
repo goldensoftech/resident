@@ -1,58 +1,101 @@
-name: iOS Build
+name: Build and Release iOS App
 
 on:
   push:
     branches:
-      - main  # Or your default branch
+      - main  # Trigger the workflow on push to the main branch
   pull_request:
     branches:
-      - main  # Optional: If you want to trigger the build on PRs as well
+      - main  # Optional: If you want to trigger the build on PRs
 
 jobs:
   build:
-    runs-on: macos-latest  # Uses the latest macOS runner with the latest Xcode
+    runs-on: macos-latest
+
+    permissions:
+      contents: write  # Allows write access to the repository's contents (to push tags)
+      pull-requests: write  # Optional: Allows write access to pull requests
+      id-token: write  # Required for authenticating with GitHub APIs for releases
 
     steps:
-      # Checkout your code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter using the latest stable version with Dart SDK >= 3.24.0
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'  # Use Flutter 3.10.x or newer, which includes Dart SDK 3.x
+          flutter-version: '3.24.4'
 
-      # Ensure Flutter dependencies are installed before iOS build (flutter pub get)
-      - name: Flutter pub get
+      - name: Flutter clean and pub get
         run: |
           flutter clean
           flutter pub get
 
-      # Ensure iOS project has a Podfile (and regenerate if necessary)
-      - name: Ensure Podfile exists
+      - name: Ensure Podfile exists and install CocoaPods
         run: |
           if [ ! -f ios/Podfile ]; then
             echo "Podfile is missing. Creating a new one..."
             flutter create .
           fi
-
-      # Install CocoaPods dependencies
-      - name: Install CocoaPods dependencies
-        run: |
           cd ios
           sudo gem install cocoapods
           pod install
 
-      # Build the app using Flutter (this will build for iOS)
+      - name: Set up code signing
+        run: |
+          # Create a custom keychain
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+          # Import the signing certificate
+          echo "${{ secrets.IOS_SIGNING_CERTIFICATE }}" | base64 --decode > ios_distribution.p12
+          security import ios_distribution.p12 -t agg -k build.keychain -P "${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}" -A
+
+          # Configure keychain settings
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+
+          # Import the provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/resident.mobileprovision
+
+      - name: List provisioning profiles
+        run: |
+          ls -l ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: List keychain certificates
+        run: |
+          security find-identity -v -p codesigning
+
       - name: Build iOS app with Flutter
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ipa --release --export-options-plist=ios/export_options.plist
 
-      # Upload the .ipa to GitHub Release using softprops/action-gh-release
+      - name: List build directory (for debugging)
+        run: ls -R build/ios
+
+      - name: Check if .ipa file exists
+        run: |
+          if [ ! -f build/ios/ipa/resident.ipa ]; then
+            echo "Error: .ipa file not found!"
+            exit 1
+          fi
+
+      - name: Create Git tag
+        run: |
+          TAG_NAME="v$(date +'%Y%m%d%H%M%S')"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # Make TAG_NAME available in subsequent steps
+          git tag $TAG_NAME
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push origin $TAG_NAME  # Push the tag
+
+      - name: Fetch all tags
+        run: git fetch --tags  # Make sure all tags are fetched
+
       - name: Upload .ipa to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/ios/ipa/resident.ipa
+          tag_name: ${{ env.TAG_NAME }}  # Use the created tag for the release
+          files: build/ios/ipa/resident.ipa  # Update this path if necessary
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

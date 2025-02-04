@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store</string> <!-- Use 'app-store' for App Store distribution -->
+    <key>teamID</key>
+    <string>CV6ZVT4543</string> <!-- Replace with your Apple Developer Team ID -->
+    <key>signingStyle</key>
+    <string>manual</string> <!-- Use 'automatic' if you're using automatic signing -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.residentfintech.resident</key> <!-- Replace with your app's Bundle ID -->
+        <string>resident</string> <!-- Replace with your App Store provisioning profile name -->
+    </dict>
+</dict>
+</plist>

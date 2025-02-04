@@ -24,7 +24,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
   RemitaCategory? selectedCatgory;
   List<RemitaBillerProduct> products = [];
   RemitaBillerProduct? selectedProduct;
-  List<RemitaCategory> _allUtitlities = [];
+  // List<RemitaCategory> _allUtitlities = [];
   List<RemitaCategory> _filteredUtitlities = [];
   RemitaDetails? rrrDetails;
   RemitaCustomer? customer;
@@ -38,19 +38,27 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
   final TextEditingController _productController = TextEditingController();
   @override
   void initState() {
-    _allUtitlities = ResponseData.remitaCategories;
-    _filteredUtitlities = _allUtitlities;
+    fecthProducts();
+    // _allUtitlities = ResponseData.remitaCategories;
+    _filteredUtitlities = ResponseData.remitaCategories;
     searchController.addListener(() {
       _filterUtilities(searchController.text);
     });
     super.initState();
   }
 
+  void fecthProducts() async {
+    if (ResponseData.remitaCategories.isEmpty) {
+      ResponseData.remitaCategories =
+          await TransactionBackend().getRemitaCategories(context);
+    }
+  }
+
   void _filterUtilities(String searchText) {
     if (searchText.isEmpty) {
-      _filteredUtitlities = _allUtitlities;
+      _filteredUtitlities = ResponseData.remitaCategories;
     } else {
-      _filteredUtitlities = _allUtitlities
+      _filteredUtitlities = ResponseData.remitaCategories
           .where((utility) =>
               utility.name.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
@@ -66,7 +74,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     });
   }
 
-  Future<void> initiatePayment(RemitaCustomer customer) async {
+  Future<void> initiatePayment() async {
     //  {"variable_name": "account_number", "value": "1111111111111"},
     // {"variable_name": "minimum_vend_amount", "value": "900"},
 
@@ -78,11 +86,11 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
         "value": _controllers[field.varName]?.text ?? '',
       };
     }).toList();
-    print("AMount value is ${customer.amount}");
+    // print("AMount value is ${customer.amount}");
     rrrDetails = await TransactionBackend().initiateRemitaPayment(context,
-        billPaymentProductId: "42460928",
+        billPaymentProductId: selectedProduct!.productId,
         amount: double.parse(_amountController.text),
-        customerId: customer.customerId ?? "",
+        customerId: "11111",
         email: ResponseData.loginResponse!.isLoggedIn == true
             ? ResponseData.loginResponse!.user!.userName!
             : _emailController.text,
@@ -90,18 +98,18 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
             ? ResponseData.loginResponse!.user!.phoneNumber!
             : _phoneController.text,
         customFields: customFields,
-        name: customer.customerName ?? _nameController.text);
+        name: _nameController.text);
     setState(() {
       rrrDetails;
     });
   }
 
-  Future<void> validateRmtCustomer(context) async {
+  Future<void> vaidateRmtCustomer(context) async {
     customer = await TransactionBackend().validateRemitaCustomer(context,
-        productId: "4111452350", customerId: "1111111111111");
+        productId: selectedProduct!.productId, customerId: "1111111111111");
 
     if (customer != null) {
-      await initiatePayment(customer!);
+      // await initiatePayment(customer!);
     }
     setState(() {
       customer;
@@ -139,6 +147,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                         controller: _categoryController,
                         readOnly: true,
                         onTap: () {
+                          _filterUtilities('');
                           showModalBottomSheet(
                               context: context,
                               backgroundColor: AppColors.whiteA700,
@@ -975,12 +984,13 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                           return;
                         }
                         setState(() {
-                          _request = validateRmtCustomer(context);
+                          _request = initiatePayment();
                         });
                         await _request;
                         if (rrrDetails != null) {
                           showDialog(
                               barrierDismissible: true,
+                              // ignore: use_build_context_synchronously
                               context: context,
                               builder: (context) {
                                 return BackdropFilter(
@@ -1209,9 +1219,9 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                     .width *
                                                                 .5,
                                                             child: Text(
-                                                              customer!
-                                                                      .customerName ??
-                                                                  "",
+                                                              _nameController
+                                                                      .text ??
+                                                                  "USER",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -1353,13 +1363,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                         FocusScope.of(context)
                                                             .unfocus();
                                                         PaymentDetails details = PaymentDetails(
-                                                            customerId:
-                                                                customer!.customerId ??
-                                                                    "00",
-                                                            customerEmail: ResponseData
-                                                                        .loginResponse!
-                                                                        .isLoggedIn ==
-                                                                    true
+                                                            customerId: "00",
+                                                            customerEmail: ResponseData.loginResponse!.isLoggedIn == true
                                                                 ? ResponseData
                                                                     .loginResponse!
                                                                     .user!
@@ -1368,31 +1373,56 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                     .text,
                                                             amount: rrrDetails!
                                                                 .amount,
-                                                            customerMobile: ResponseData
-                                                                        .loginResponse!
-                                                                        .isLoggedIn ==
-                                                                    true
+                                                            customerMobile: ResponseData.loginResponse!.isLoggedIn == true
                                                                 ? ResponseData
                                                                     .loginResponse!
                                                                     .user!
                                                                     .phoneNumber!
                                                                 : _phoneController
                                                                     .text,
-                                                            payerName: customer!
-                                                                    .customerName ??
-                                                                _nameController.text,
-                                                            surcharge: rrrDetails!.commission.toInt(),
-                                                            paymentGateway: PaymentGateway.remita,
-                                                            ref: rrrDetails!.rrr,
-                                                            serviceName: selectedProduct!.productName,
-                                                            serviceId: selectedProduct!.productId,
-                                                            paymentCode: selectedProduct!.productId,
-                                                            transactionType: TransactionType.remita);
-                                                        await TransactionBackend()
-                                                            .preProcessPayment(
-                                                                context,
-                                                                details:
-                                                                    details);
+                                                            payerName: _nameController
+                                                                .text,
+                                                            surcharge: 0,
+                                                            paymentGateway:
+                                                                PaymentGateway
+                                                                    .remita,
+                                                            ref:
+                                                                rrrDetails!.rrr,
+                                                            serviceName:
+                                                                selectedProduct!
+                                                                    .productName,
+                                                            serviceId:
+                                                                selectedProduct!
+                                                                    .productId,
+                                                            paymentCode:
+                                                                selectedProduct!
+                                                                    .productId,
+                                                            transactionType:
+                                                                TransactionType.remita);
+                                                        // await TransactionBackend().initiateRemitaPayment(
+                                                        //     context,
+                                                        //     billPaymentProductId:
+                                                        //         details
+                                                        //             .serviceId!,
+                                                        //     amount:
+                                                        //         details.amount,
+                                                        //     name: details
+                                                        //             .payerName ??
+                                                        //         "",
+                                                        //     email: details
+                                                        //             .customerEmail ??
+                                                        //         "",
+                                                        //     phoneNumber: details
+                                                        //             .customerMobile ??
+                                                        //         "",
+                                                        //     customerId: details
+                                                        //         .customerId,
+                                                        //     customFields: []);
+                                                        // // await TransactionBackend()
+                                                        // //     .preProcessPayment(
+                                                        // //         context,
+                                                        // //         details:
+                                                        // //             details);
                                                         await Pay().withRemita(
                                                             context,
                                                             rrrData:

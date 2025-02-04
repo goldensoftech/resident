@@ -17,7 +17,6 @@ const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
 const String siteUrl = "residentfintech.com";
 
-const playStoreId = 'com.facebook.katana';
 
 //Remita
 const String remitaKey =

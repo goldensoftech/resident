@@ -15,9 +15,10 @@ class BillItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         FocusScope.of(context).unfocus();
         navigatePush(context, pageToNavigate);
+        
       },
       child: Container(
         decoration: BoxDecoration(
