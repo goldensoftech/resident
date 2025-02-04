@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
           }
         });
       
-    
+        
   }
 
   Future initData() async {
