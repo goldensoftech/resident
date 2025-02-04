@@ -34,8 +34,8 @@ class _SplashScreenState extends State<SplashScreen>
       print(data.storeVersion);
       if (data.canUpdate! ) {
         AppVersionUpdate.showAlertUpdate(
-            mandatory: true, appVersionResult: data, context: context);
-      } else {
+            mandatory: false, appVersionResult: data, context: context);
+      }}); 
         initData().then((onValue) async {
           //navigateReplace(context, const OnboardingScreen());
           try {
@@ -83,8 +83,8 @@ class _SplashScreenState extends State<SplashScreen>
             //navigateReplace(context, const Dashboard());
           }
         });
-      }
-    });
+      
+    
   }
 
   Future initData() async {
