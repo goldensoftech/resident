@@ -16,8 +16,8 @@ export 'package:smooth_page_indicator/smooth_page_indicator.dart';
 export 'package:pinput/pinput.dart';
 export 'package:otp_timer_button/otp_timer_button.dart';
 export 'package:lottie/lottie.dart';
-export 'package:flutter_native_contact_picker/flutter_native_contact_picker.dart';
-export 'package:flutter_native_contact_picker/model/contact.dart';
+export 'package:flutter_native_contact_picker_plus/flutter_native_contact_picker_plus.dart';
+
 export 'package:grouped_list/grouped_list.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:webview_flutter/webview_flutter.dart';

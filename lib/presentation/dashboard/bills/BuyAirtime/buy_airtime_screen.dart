@@ -1,8 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
-import 'dart:io';
 import 'dart:ui';
-
 
 import 'package:resident/app_export.dart';
 
@@ -15,7 +13,6 @@ class BuyAirtimeScreen extends StatefulWidget {
 
 class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
     with CustomAppBar, CustomAlerts, ErrorSnackBar {
-      
   int? selectedNetworkIndex;
   int? selectedAmountIndex;
   DataItem? selectedPlan;
@@ -26,7 +23,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  final FlutterNativeContactPicker _contactPicker = FlutterNativeContactPicker();
+  final FlutterContactPickerPlus _contactPicker = FlutterContactPickerPlus();
 
   Contact? _contact;
   OrderItem? order;
@@ -66,9 +63,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return  
-    
-     SafeArea(
+    return SafeArea(
       top: false,
       child: Stack(
         children: [
@@ -76,7 +71,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
                 backgroundColor: AppColors.whiteA700,
-               appBar: customAppBar(title: "Buy Airtime"),
+                appBar: customAppBar(title: "Buy Airtime"),
                 body: Form(
                   key: _formKey,
                   child: ListView(
@@ -179,8 +174,9 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                     _contact = contact;
                                   });
                                   if (_contact != null) {
-                                    _phoneController.text =
-                                        _contact!.phoneNumbers!.first.toString();
+                                    _phoneController.text = _contact!
+                                        .phoneNumbers!.first
+                                        .toString();
                                   }
                                 },
                                 icon: SvgPicture.asset(
@@ -837,6 +833,5 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
         ],
       ),
     );
-  
   }
 }
