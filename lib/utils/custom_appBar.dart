@@ -70,14 +70,7 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
       forceMaterialTransparency: false,
       scrolledUnderElevation: 0.0,
       foregroundColor: AppColors.gold100,
-      systemOverlayStyle: SystemUiOverlayStyle(
-        statusBarColor: AppColors.gold100,
-        statusBarBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       title: title != null
           ? Text(
               title ?? "",

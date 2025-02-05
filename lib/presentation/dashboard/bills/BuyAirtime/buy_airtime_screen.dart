@@ -192,67 +192,67 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Select Amount',
-                                  style: TextStyle(
-                                      color: AppColors.black900,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(height: 10),
-                                GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                            childAspectRatio: 2.7,
-                                            crossAxisSpacing: 10,
-                                            mainAxisSpacing: 20,
-                                            crossAxisCount: 3),
-                                    shrinkWrap: true,
-                                    itemCount: dataPlans.length,
-                                    itemBuilder: (ctx, index) {
-                                      final airtime = dataPlans[index];
-                                      bool isSelected =
-                                          selectedAmountIndex == index;
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            selectedAmountIndex = index;
-                                            selectedPlan = airtime;
-                                            _amountController.text =
-                                                airtime.amount.toString();
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 40,
-                                          height: 20,
-                                          //padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              color: isSelected
-                                                  ? AppColors.appGold
-                                                  : AppColors.whiteA700,
-                                              border: Border.all(
-                                                  color: isSelected
-                                                      ? AppColors.appGold
-                                                      : AppColors.neutralGrey),
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                          child: Center(
-                                            child: Text(
-                                              "NGN ${airtime.amount}",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: isSelected
-                                                      ? AppColors.whiteA700
-                                                      : AppColors.baseBlack),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                const SizedBox(
-                                  height: 30,
-                                ),
+                                // Text(
+                                //   'Select Amount',
+                                //   style: TextStyle(
+                                //       color: AppColors.black900,
+                                //       fontSize: 12,
+                                //       fontWeight: FontWeight.w600),
+                                // ),
+                                // const SizedBox(height: 10),
+                                // GridView.builder(
+                                //     gridDelegate:
+                                //         const SliverGridDelegateWithFixedCrossAxisCount(
+                                //             childAspectRatio: 2.7,
+                                //             crossAxisSpacing: 10,
+                                //             mainAxisSpacing: 20,
+                                //             crossAxisCount: 3),
+                                //     shrinkWrap: true,
+                                //     itemCount: dataPlans.length,
+                                //     itemBuilder: (ctx, index) {
+                                //       final airtime = dataPlans[index];
+                                //       bool isSelected =
+                                //           selectedAmountIndex == index;
+                                //       return GestureDetector(
+                                //         onTap: () {
+                                //           setState(() {
+                                //             selectedAmountIndex = index;
+                                //             selectedPlan = airtime;
+                                //             _amountController.text =
+                                //                 airtime.amount.toString();
+                                //           });
+                                //         },
+                                //         child: Container(
+                                //           width: 40,
+                                //           height: 20,
+                                //           //padding: EdgeInsets.all(10),
+                                //           decoration: BoxDecoration(
+                                //               color: isSelected
+                                //                   ? AppColors.appGold
+                                //                   : AppColors.whiteA700,
+                                //               border: Border.all(
+                                //                   color: isSelected
+                                //                       ? AppColors.appGold
+                                //                       : AppColors.neutralGrey),
+                                //               borderRadius:
+                                //                   BorderRadius.circular(8)),
+                                //           child: Center(
+                                //             child: Text(
+                                //               "NGN ${airtime.amount}",
+                                //               style: TextStyle(
+                                //                   fontSize: 12,
+                                //                   fontWeight: FontWeight.w600,
+                                //                   color: isSelected
+                                //                       ? AppColors.whiteA700
+                                //                       : AppColors.baseBlack),
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       );
+                                //     }),
+                                // const SizedBox(
+                                //   height: 30,
+                                // ),
                                 TextFormField(
                                   controller: _amountController,
                                   keyboardType: TextInputType.number,

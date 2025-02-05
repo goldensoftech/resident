@@ -10,14 +10,6 @@ class BillsScreen extends StatefulWidget {
 class _BillsScreenState extends State<BillsScreen> with CustomAppBar {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: AppColors.gold100,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
     return SafeArea(
         top: false,
         child: Scaffold(

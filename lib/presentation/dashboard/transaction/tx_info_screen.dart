@@ -41,14 +41,7 @@ class _TransactionInfoScreenState extends State<TransactionInfoScreen>
                 backgroundColor: AppColors.gold100,
                 scrolledUnderElevation: 0.0,
                 foregroundColor: AppColors.whiteA700,
-                systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarColor: AppColors.gold100,
-                  statusBarBrightness: Brightness.dark,
-                  statusBarIconBrightness: Brightness.dark,
-                  systemNavigationBarColor: Colors.transparent,
-                  systemNavigationBarDividerColor: Colors.transparent,
-                  systemNavigationBarIconBrightness: Brightness.dark,
-                ),
+
                 //toolbarHeight: 80,
                 title: Text(
                   "Transaction",

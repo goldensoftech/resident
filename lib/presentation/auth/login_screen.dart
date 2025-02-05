@@ -1,4 +1,3 @@
-
 import 'package:resident/app_export.dart';
 import 'package:resident/repository/model/user_response_model.dart';
 
@@ -50,15 +49,6 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: AppColors.whiteA700,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ));
-
     return SafeArea(
       top: false,
       child: Stack(children: [
