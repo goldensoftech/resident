@@ -296,7 +296,7 @@ mixin CustomAlerts {
                         color: AppColors.whiteA700,
                         borderRadius: BorderRadius.circular(10.r)),
                     height: displaySize.height * .6,
-                    width: displaySize.width * .9,
+                    width: displaySize.width * .8,
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 13.w, vertical: 20.h),

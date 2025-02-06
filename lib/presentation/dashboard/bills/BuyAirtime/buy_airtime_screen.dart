@@ -493,7 +493,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                               borderRadius:
                                                   BorderRadius.circular(10.r)),
                                           height: displaySize.height * .6,
-                                          width: displaySize.width * .9,
+                                          width: displaySize.width * .8,
                                           child: Padding(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 13.w,
@@ -562,7 +562,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                                                         .w700),
                                                           ),
                                                           Text(
-                                                            "Airtime Purchase",
+                                                            "Airtime",
                                                             style: TextStyle(
                                                                 color: AppColors
                                                                     .baseBlack,

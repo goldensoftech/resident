@@ -33,7 +33,7 @@ class _AccountSuccessScreenState extends State<AccountSuccessScreen> {
                   ),
                   const SizedBox(height: 20.0),
                   SizedBox(
-                    width: displaySize.width * .9,
+                    width: displaySize.width * .8,
                     child: Text(
                         "You're now just a few taps away from paying your bills on time, every time. Start managing your bills today and never miss a payment again!",
                         style: TextStyle(

@@ -1011,7 +1011,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                               borderRadius:
                                                   BorderRadius.circular(10.r)),
                                           height: displaySize.height * .7,
-                                          width: displaySize.width * .9,
+                                          width: displaySize.width * .8,
                                           child: Padding(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 13.w,
@@ -1080,7 +1080,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                         .w700),
                                                           ),
                                                           Text(
-                                                            "Remita Payment",
+                                                            "Remita",
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
