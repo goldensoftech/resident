@@ -301,7 +301,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                     //// padding: EdgeInsets.only(left:3),
                                                                     onTap: () {
                                                                       copyText(lookupDetails!
-                                                                          .rrrData!
+                                                                          .rrrData
                                                                           .rrr);
                                                                       sendErrorMessage(
                                                                           "Copied",
@@ -356,31 +356,29 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                     FontWeight
                                                                         .w700),
                                                           ),
-                                                           SizedBox(
-                                                             
-                                                              width: displaySize
-                                                                      .width *
-                                                                  .3,
-                                                              child: Text(
-                                                                lookupDetails!
-                                                                        .detials
-                                                                        .payerName ??
-                                                                    "",
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .right,
-                                                                style: TextStyle(
-                                                                    color: AppColors
-                                                                        .baseBlack,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700),
-                                                              ),
+                                                          SizedBox(
+                                                            width: displaySize
+                                                                    .width *
+                                                                .3,
+                                                            child: Text(
+                                                              lookupDetails!
+                                                                      .detials
+                                                                      .payerName ??
+                                                                  "USER",
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                  color: AppColors
+                                                                      .baseBlack,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
                                                             ),
-                                                        
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -414,7 +412,6 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                         .w700),
                                                           ),
                                                           SizedBox(
-                                                           
                                                             width: displaySize
                                                                     .width *
                                                                 .5,

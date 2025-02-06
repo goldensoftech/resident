@@ -89,9 +89,8 @@ class Pay with ErrorSnackBar, CustomAlerts {
                   description: "Payment Successful",
                   goToPage: const Dashboard());
               return NavigationDecision.prevent;
-            } 
+            }
             return NavigationDecision.navigate;
-          
           },
         ),
       )
