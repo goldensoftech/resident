@@ -94,14 +94,7 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
 
       scrolledUnderElevation: 0.0,
       foregroundColor: bgColor ?? AppColors.gold100,
-      systemOverlayStyle: SystemUiOverlayStyle(
-        statusBarColor: bgColor ?? AppColors.gold100,
-        statusBarBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
 
       //toolbarHeight: 80,
       title: Text(
@@ -141,6 +134,7 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
       automaticallyImplyLeading: false,
       backgroundColor: AppColors.whiteA700,
       foregroundColor: AppColors.whiteA700,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       toolbarHeight: 80,
       flexibleSpace: FractionallySizedBox(
         child: ListView(

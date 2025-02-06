@@ -6,11 +6,14 @@ import 'package:delightful_toast/delight_toast.dart';
 mixin ErrorSnackBar {
   void sendErrorMessage(String title, String msg, context,
       {bool? up, bool? isSuccess}) {
+        
     DelightToastBar(
         autoDismiss: true,
         position: DelightSnackbarPosition.top,
-        snackbarDuration: const Duration(seconds: 5),
-        builder: (context) => Card(
+        snackbarDuration: const Duration(seconds: 3),
+        builder: (context) {
+          
+          return Card(
             color: Colors.white,
             elevation: 1,
             clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -64,7 +67,7 @@ mixin ErrorSnackBar {
                   ),
                 ],
               ),
-            ))).show(context);
+            ));}).show(context);
   
   }
 
