@@ -91,6 +91,7 @@ class Pay with ErrorSnackBar, CustomAlerts {
               return NavigationDecision.prevent;
             } 
             return NavigationDecision.navigate;
+          
           },
         ),
       )
