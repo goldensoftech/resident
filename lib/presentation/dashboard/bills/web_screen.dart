@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:resident/app_export.dart';
 
 class WebScreen extends StatefulWidget {
