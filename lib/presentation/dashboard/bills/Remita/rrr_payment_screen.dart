@@ -152,7 +152,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                     BorderRadius.circular(
                                                         10.r)),
                                             height: displaySize.height * .7,
-                                            width: displaySize.width * .9,
+                                            width: displaySize.width * .8,
                                             child: Padding(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 13.w,
@@ -223,7 +223,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                           .w700),
                                                             ),
                                                             Text(
-                                                              "Remita Payment",
+                                                              "Remita",
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,

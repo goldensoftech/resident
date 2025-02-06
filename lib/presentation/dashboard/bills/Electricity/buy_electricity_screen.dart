@@ -584,7 +584,7 @@ class _BuyElectricityScreenState extends State<BuyElectricityScreen>
                                                                         .w700),
                                                           ),
                                                           Text(
-                                                            "Electricity Payment",
+                                                            "Electricity",
                                                             style: TextStyle(
                                                                 color: AppColors
                                                                     .baseBlack,
