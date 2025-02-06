@@ -356,14 +356,11 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                     FontWeight
                                                                         .w700),
                                                           ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .centerRight,
-                                                            child: SizedBox(
-                                                              height: 20,
+                                                           SizedBox(
+                                                             
                                                               width: displaySize
                                                                       .width *
-                                                                  .5,
+                                                                  .3,
                                                               child: Text(
                                                                 lookupDetails!
                                                                         .detials
@@ -383,7 +380,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                             .w700),
                                                               ),
                                                             ),
-                                                          )
+                                                        
                                                         ],
                                                       ),
                                                     ),
@@ -417,7 +414,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                         .w700),
                                                           ),
                                                           SizedBox(
-                                                            height: 20,
+                                                           
                                                             width: displaySize
                                                                     .width *
                                                                 .5,
@@ -472,10 +469,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                           .w700),
                                                             ),
                                                             Text(
-                                                              "$ngnIcon ${UtilFunctions.formatAmount(
-                                                                      lookupDetails!
-                                                                          .rrrData
-                                                                          .amount)}",
+                                                              "$ngnIcon ${UtilFunctions.formatAmount(lookupDetails!.rrrData.amount)}",
                                                               style: TextStyle(
                                                                   color: AppColors
                                                                       .appGold,

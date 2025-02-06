@@ -293,9 +293,6 @@ class Pay with ErrorSnackBar, CustomAlerts {
               print("Url Finished ${request.url}");
 
               return NavigationDecision.prevent;
-            } else {
-              Navigator.of(context).pop();
-              sendErrorMessage("Error", "Payment not successful", context);
             }
             return NavigationDecision.navigate;
           },
