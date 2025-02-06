@@ -89,10 +89,7 @@ class Pay with ErrorSnackBar, CustomAlerts {
                   description: "Payment Successful",
                   goToPage: const Dashboard());
               return NavigationDecision.prevent;
-            } else {
-              Navigator.of(context).pop();
-              sendErrorMessage("Error", "Payment not successful", context);
-            }
+            } 
             return NavigationDecision.navigate;
           },
         ),
