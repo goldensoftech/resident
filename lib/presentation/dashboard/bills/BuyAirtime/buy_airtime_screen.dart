@@ -23,9 +23,6 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  final FlutterContactPickerPlus _contactPicker = FlutterContactPickerPlus();
-
-  Contact? _contact;
   OrderItem? order;
   List<DataItem> dataPlans = [];
   Future<void>? _request;
@@ -143,6 +140,9 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                           if (value == null || value.isEmpty) {
                             return 'Please enter a phone number';
                           }
+                          if (value.length < 10 || value.length > 11) {
+                            return "Invalid number";
+                          }
                           return null;
                         },
                         style: const TextStyle(height: 1),
@@ -150,40 +150,41 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                         cursorWidth: 1,
                         cursorColor: Colors.black,
                         decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 12),
-                            //labelStyle: const TextStyle(color: Colors.black54),
-                            hintText: 'Recipient Number',
-                            hintStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: AppColors.grey700),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 1.w, color: AppColors.formGrey),
-                                borderRadius: BorderRadius.circular(8.r)),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                              borderSide: BorderSide(color: AppColors.appGold),
-                            ),
-                            suffixIcon: IconButton(
-                                onPressed: () async {
-                                  Contact? contact =
-                                      await _contactPicker.selectContact();
-                                  setState(() {
-                                    _contact = contact;
-                                  });
-                                  if (_contact != null) {
-                                    _phoneController.text = _contact!
-                                        .phoneNumbers!.first
-                                        .toString();
-                                  }
-                                },
-                                icon: SvgPicture.asset(
-                                  contactList,
-                                  color: AppColors.appGold,
-                                  //size: 18,
-                                ))),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 12),
+                          //labelStyle: const TextStyle(color: Colors.black54),
+                          hintText: 'Recipient Number',
+                          hintStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.grey700),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1.w, color: AppColors.formGrey),
+                              borderRadius: BorderRadius.circular(8.r)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.r),
+                            borderSide: BorderSide(color: AppColors.appGold),
+                          ),
+                          // suffixIcon: IconButton(
+                          //     onPressed: () async {
+                          //       Contact? contact =
+                          //           await _contactPicker.selectContact();
+                          //       setState(() {
+                          //         _contact = contact;
+                          //       });
+                          //       if (_contact != null) {
+                          //         _phoneController.text = _contact!
+                          //             .phoneNumbers!.first
+                          //             .toString();
+                          //       }
+                          //     },
+                          //     icon: SvgPicture.asset(
+                          //       contactList,
+                          //       color: AppColors.appGold,
+                          //       //size: 18,
+                          //     ))
+                        ),
                       ),
                       const SizedBox(
                         height: 20,

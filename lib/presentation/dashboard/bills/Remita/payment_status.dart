@@ -1,5 +1,4 @@
 import 'package:resident/app_export.dart';
-import 'package:resident/utils/enums.dart';
 
 class PaymentStatusScreen extends StatefulWidget {
   const PaymentStatusScreen({super.key});
