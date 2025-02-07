@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import UserNotifications
+import GeneratedPluginRegistrant
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
