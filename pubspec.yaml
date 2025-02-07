@@ -44,6 +44,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   permission_handler: ^11.3.1
   flutter_phoenix: ^1.1.1
+  app_version_update: ^6.0.0
 
   
 
