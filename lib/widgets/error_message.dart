@@ -1,4 +1,4 @@
-import 'package:delightful_toast/toast/components/toast_card.dart';
+
 import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:resident/app_export.dart';
 import 'package:delightful_toast/delight_toast.dart';

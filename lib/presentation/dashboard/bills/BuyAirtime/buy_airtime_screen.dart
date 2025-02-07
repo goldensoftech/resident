@@ -258,9 +258,9 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                                   controller: _amountController,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
-                                    if(dataPlans.isNotEmpty){
-                                      selectedPlan=dataPlans.first;
-                                    }
+                                   if(dataPlans.isNotEmpty){
+                                    selectedPlan=dataPlans.first;
+                                   }
                                     setState(() {});
                                   },
                                   validator: (value) {

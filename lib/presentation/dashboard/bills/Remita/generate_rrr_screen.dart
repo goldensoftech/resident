@@ -1210,31 +1210,25 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                   FontWeight
                                                                       .w700),
                                                         ),
-                                                        Align(
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: SizedBox(
-                                                            height: 20,
-                                                            width: displaySize
-                                                                    .width *
-                                                                .5,
-                                                            child: Text(
-                                                              _nameController
-                                                                      .text ??
-                                                                  "USER",
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .right,
-                                                              style: TextStyle(
-                                                                  color: AppColors
-                                                                      .baseBlack,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700),
-                                                            ),
+                                                        SizedBox(
+                                                        
+                                                          width: displaySize.width *.3,
+                                                          child: Text(
+                                                            _nameController
+                                                                    .text ??
+                                                                "USER",
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textAlign:
+                                                                TextAlign
+                                                                    .right,
+                                                            style: TextStyle(
+                                                                color: AppColors
+                                                                    .baseBlack,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
                                                           ),
                                                         )
                                                       ],
