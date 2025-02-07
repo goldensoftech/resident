@@ -22,7 +22,8 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
   final TextEditingController _contactPhoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
+final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
+  Contact? _contact;
   OrderItem? order;
   List<DataItem> dataPlans = [];
   Future<void>? _request;
@@ -166,24 +167,24 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
                             borderRadius: BorderRadius.circular(8.r),
                             borderSide: BorderSide(color: AppColors.appGold),
                           ),
-                          // suffixIcon: IconButton(
-                          //     onPressed: () async {
-                          //       Contact? contact =
-                          //           await _contactPicker.selectContact();
-                          //       setState(() {
-                          //         _contact = contact;
-                          //       });
-                          //       if (_contact != null) {
-                          //         _phoneController.text = _contact!
-                          //             .phoneNumbers!.first
-                          //             .toString();
-                          //       }
-                          //     },
-                          //     icon: SvgPicture.asset(
-                          //       contactList,
-                          //       color: AppColors.appGold,
-                          //       //size: 18,
-                          //     ))
+                          suffixIcon: IconButton(
+                              onPressed: () async {
+                                Contact? contact =
+                                    await _contactPicker.selectContact();
+                                setState(() {
+                                  _contact = contact;
+                                });
+                                if (_contact != null) {
+                                  _phoneController.text = _contact!
+                                      .phoneNumbers!.first
+                                      .toString();
+                                }
+                              },
+                              icon: SvgPicture.asset(
+                                contactList,
+                                color: AppColors.appGold,
+                                //size: 18,
+                              ))
                         ),
                       ),
                       const SizedBox(

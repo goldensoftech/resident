@@ -2,6 +2,8 @@
 
 import 'dart:ui';
 
+import 'package:flutter_native_contact_picker_plus/flutter_native_contact_picker_plus.dart';
+import 'package:flutter_native_contact_picker_plus/flutter_native_contact_picker_plus_platform_interface.dart';
 import 'package:resident/app_export.dart';
 
 class BuyDataScreen extends StatefulWidget {
@@ -24,7 +26,8 @@ class _BuyDataScreenState extends State<BuyDataScreen>
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _contactPhoneController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
+final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
+  Contact? _contact;
   Future<void>? _request;
   OrderItem? order;
   final _formKey = GlobalKey<FormState>();
@@ -159,24 +162,24 @@ class _BuyDataScreenState extends State<BuyDataScreen>
                               borderRadius: BorderRadius.circular(8.r),
                               borderSide: BorderSide(color: AppColors.appGold),
                             ),
-                            // suffixIcon: IconButton(
-                            //     onPressed: () async {
-                            //       Contact? contact =
-                            //           await _contactPicker.selectContact();
-                            //       setState(() {
-                            //         _contact = contact;
-                            //       });
-                            //       if (_contact != null) {
-                            //         _phoneController.text = _contact!
-                            //             .phoneNumbers!.first
-                            //             .toString();
-                            //       }
-                            //     },
-                            //     icon: SvgPicture.asset(
-                            //       contactList,
-                            //       color: AppColors.appGold,
-                            //       //size: 18,
-                            //     ))
+                            suffixIcon: IconButton(
+                                onPressed: () async {
+                                  Contact? contact =
+                                      await _contactPicker.selectContact();
+                                  setState(() {
+                                    _contact = contact;
+                                  });
+                                  if (_contact != null) {
+                                    _phoneController.text = _contact!
+                                        .phoneNumbers!.first
+                                        .toString();
+                                  }
+                                },
+                                icon: SvgPicture.asset(
+                                  contactList,
+                                  color: AppColors.appGold,
+                                  //size: 18,
+                                ))
                                 ),
                       ),
                       const SizedBox(
