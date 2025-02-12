@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:resident/app_export.dart';
 
@@ -41,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
     //   systemNavigationBarColor: Colors.black,
     //   systemNavigationBarDividerColor: Colors.black,
     //   systemNavigationBarIconBrightness: Brightness.dark,
-  
+
     // ));
     return SafeArea(
       top: false,
@@ -52,11 +54,11 @@ class _HomeScreenState extends State<HomeScreen>
         child: Scaffold(
           backgroundColor: AppColors.whiteA700,
           extendBody: true,
-          appBar: defaultAppBar(title: "",height: 20),
+          appBar: defaultAppBar(title: "", height: 20),
           body: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             //  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
-        
+
             shrinkWrap: true,
             children: [
               Stack(children: [
@@ -119,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     GestureDetector(
                                         onTap: () {
                                           //  _loadingPage.repeat();
-                                          
+
                                           navigatePush(context,
                                               const NotificationScreen());
                                         },
@@ -142,10 +144,12 @@ class _HomeScreenState extends State<HomeScreen>
                                           context, const LoginScreen());
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 10),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: AppColors.whiteA700),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          color: AppColors.whiteA700),
                                       child: Text(
                                         "Login",
                                         textAlign: TextAlign.center,
@@ -184,32 +188,33 @@ class _HomeScreenState extends State<HomeScreen>
                               // const SizedBox(
                               //   height: 20,
                               // ),
-        
+
                               GridView.builder(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 10),
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
-                                          childAspectRatio: 1,
-                                          crossAxisSpacing: 1,
-                                          mainAxisSpacing: 1,
-                                          crossAxisCount:DummyData().shortcutItems.length,
-                                              // ((AuthBackend.isLoggedIn() &&
-                                              //         ResponseData.loginResponse!
-                                              //                 .user!.bvnStatus ==
-                                              //             true))
-                                              //     ? 4
-                                              //     : 3),
-                                      ),
+                                    childAspectRatio: 1,
+                                    crossAxisSpacing: 1,
+                                    mainAxisSpacing: 1,
+                                    crossAxisCount:
+                                        DummyData().shortcutItems.length,
+                                    // ((AuthBackend.isLoggedIn() &&
+                                    //         ResponseData.loginResponse!
+                                    //                 .user!.bvnStatus ==
+                                    //             true))
+                                    //     ? 4
+                                    //     : 3),
+                                  ),
                                   shrinkWrap: true,
-                                  itemCount:DummyData().shortcutItems.length,
+                                  itemCount: DummyData().shortcutItems.length,
                                   // itemCount: ((AuthBackend.isLoggedIn() &&
                                   //         ResponseData.loginResponse!.user!
                                   //                 .bvnStatus ==
                                   //             true))
                                   //     ? 4
                                   //     : 3,
-                                      
+
                                   itemBuilder: (ctx, index) {
                                     final shortCut =
                                         DummyData().shortcutItems[index];
@@ -221,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     //     return SizedBox.shrink();
                                     //   }
                                     // }
-        
+
                                     return ShortCutItem(
                                       isIconBlack: index == 0 ? true : false,
                                       gridColor: shortCut['color'],
@@ -238,8 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 height: 5,
                               ),
                               const Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 20.0),
+                                padding: EdgeInsets.symmetric(horizontal: 20.0),
                                 child: AdvertItem(),
                               ),
                             ],
@@ -248,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen>
                             height: 10,
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
                             child: TextFormField(
                               controller: searchController,
                               style: const TextStyle(height: 1),
@@ -278,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   color: AppColors.schemeColor,
                                   size: 18,
                                 ),
-        
+
                                 suffixIcon: searchController.text.isNotEmpty
                                     ? IconButton(
                                         onPressed: () {
@@ -314,12 +319,18 @@ class _HomeScreenState extends State<HomeScreen>
                                       itemBuilder: (ctx, index) {
                                         final shortCut =
                                             _filteredUtitlities[index];
+                                        if (Platform.isIOS &&
+                                            shortCut['title'] ==
+                                                'Sport Betting') {
+                                          return const SizedBox.shrink();
+                                        }
                                         return BillItem(
                                           logoUrl: shortCut['logoUrl'],
                                           pageToNavigate: shortCut['pageToGo'],
-                                          isApplyColor: shortCut['color'] == null
-                                              ? true
-                                              : false,
+                                          isApplyColor:
+                                              shortCut['color'] == null
+                                                  ? true
+                                                  : false,
                                           title: shortCut['title'],
                                         );
                                       }),

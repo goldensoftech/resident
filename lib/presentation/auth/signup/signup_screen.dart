@@ -376,8 +376,42 @@ class _SignUpScreenState extends State<SignUpScreen>
                     color: AppColors.darkGrey),
               ),
             ),
-            textInput(_bvnController, "Bvn Number", 1, "Bvn Number", 1,
-                TextInputType.number, true),
+             TextFormField(
+              controller: _bvnController,
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                setState(() {});
+              },
+              validator: (value) {
+                if (value == null || value.length != 11) {
+                  return 'Please enter a valid BVN';
+                }
+                return null;
+              },
+              style: const TextStyle(height: 1),
+              cursorOpacityAnimates: true,
+              cursorWidth: 1,
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  //labelStyle: const TextStyle(color: Colors.black54),
+                  hintText: 'Enter Bank Verification Number (BVN) ',
+                  hintStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.grey200),
+                  border: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(width: 1.w, color: AppColors.formGrey),
+                      borderRadius: BorderRadius.circular(8.r)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                    borderSide: BorderSide(color: AppColors.appGold),
+                  )),
+            ),
+            // textInput(_bvnController, "Bvn Number", 1, "Bvn Number", 1,
+            //     TextInputType.number, true),
           ]),
           const SizedBox(
             height: 10.0,

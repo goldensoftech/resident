@@ -771,7 +771,7 @@ class DummyData {
       'logoUrl': cableTvIcon,
       'pageToGo': const CableTvScreen()
     },
-    {
+{
       'title': 'Sport Betting',
       'logoUrl': betIcon,
       'pageToGo': const SportBettingScreen()

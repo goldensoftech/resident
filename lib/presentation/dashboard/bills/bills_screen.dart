@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:resident/app_export.dart';
 
 class BillsScreen extends StatefulWidget {
@@ -43,6 +45,10 @@ class _BillsScreenState extends State<BillsScreen> with CustomAppBar {
                             itemCount: DummyData().billItems.length,
                             itemBuilder: (ctx, index) {
                               final shortCut = DummyData().billItems[index];
+                              if (Platform.isIOS &&
+                                  shortCut['title'] == 'Sport Betting') {
+                                return const SizedBox.shrink();
+                              }
                               return BillItem(
                                 logoUrl: shortCut['logoUrl'],
                                 pageToNavigate: shortCut['pageToGo'],
