@@ -771,11 +771,6 @@ class DummyData {
       'logoUrl': cableTvIcon,
       'pageToGo': const CableTvScreen()
     },
-{
-      'title': 'Sport Betting',
-      'logoUrl': betIcon,
-      'pageToGo': const SportBettingScreen()
-    },
     {
       'title': 'Internet Services',
       'logoUrl': wifiIcon,
@@ -791,6 +786,11 @@ class DummyData {
       'logoUrl': remitaIcon,
       'color': false,
       'pageToGo': const RemittaScreen(),
+    },
+    {
+      'title': 'Sport Betting',
+      'logoUrl': betIcon,
+      'pageToGo': const SportBettingScreen()
     },
   ];
   final List<Map<String, dynamic>> virtualAccountsList = [
