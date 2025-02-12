@@ -5,7 +5,7 @@ description: "A general payment plaform"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.1+2030
+version: 1.0.1+2034
 
 environment:
   sdk: ^3.5.0
