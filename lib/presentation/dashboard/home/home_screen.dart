@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           context, const LoginScreen());
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           horizontal: 15, vertical: 10),
                                       decoration: BoxDecoration(
                                           borderRadius:
@@ -164,85 +164,87 @@ class _HomeScreenState extends State<HomeScreen>
                         ],
                       ),
                     )),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 20, right: 20, top: 30),
-                      child: Text("Shortcuts",
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.black900)),
-                    ),
+                    // Padding(
+                    //   padding:
+                    //       const EdgeInsets.only(left: 20, right: 20, top: 30),
+                    //   child: Text("",
+                    //       style: TextStyle(
+                    //           fontSize: 12,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: AppColors.black900)),
+                   // ),
                     Container(
                       // height: 200,
                       padding: const EdgeInsets.only(
+                        top:20,
                         bottom: 10,
                       ),
                       color: AppColors.whiteA700,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
+                          const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // const SizedBox(
                               //   height: 20,
                               // ),
 
-                              GridView.builder(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    childAspectRatio: 1,
-                                    crossAxisSpacing: 1,
-                                    mainAxisSpacing: 1,
-                                    crossAxisCount:
-                                        DummyData().shortcutItems.length,
-                                    // ((AuthBackend.isLoggedIn() &&
-                                    //         ResponseData.loginResponse!
-                                    //                 .user!.bvnStatus ==
-                                    //             true))
-                                    //     ? 4
-                                    //     : 3),
-                                  ),
-                                  shrinkWrap: true,
-                                  itemCount: DummyData().shortcutItems.length,
-                                  // itemCount: ((AuthBackend.isLoggedIn() &&
-                                  //         ResponseData.loginResponse!.user!
-                                  //                 .bvnStatus ==
-                                  //             true))
-                                  //     ? 4
-                                  //     : 3,
+                              // GridView.builder(
+                              //     padding:
+                              //         const EdgeInsets.symmetric(vertical: 10),
+                              //     gridDelegate:
+                              //         SliverGridDelegateWithFixedCrossAxisCount(
+                              //       childAspectRatio: 1,
+                              //       crossAxisSpacing: 1,
+                              //       mainAxisSpacing: 1,
+                              //       crossAxisCount:
+                              //           DummyData().shortcutItems.length,
+                              //       // ((AuthBackend.isLoggedIn() &&
+                              //       //         ResponseData.loginResponse!
+                              //       //                 .user!.bvnStatus ==
+                              //       //             true))
+                              //       //     ? 4
+                              //       //     : 3),
+                              //     ),
+                              //     shrinkWrap: true,
+                              //     itemCount: DummyData().shortcutItems.length,
+                              //     // itemCount: ((AuthBackend.isLoggedIn() &&
+                              //     //         ResponseData.loginResponse!.user!
+                              //     //                 .bvnStatus ==
+                              //     //             true))
+                              //     //     ? 4
+                              //     //     : 3,
 
-                                  itemBuilder: (ctx, index) {
-                                    final shortCut =
-                                        DummyData().shortcutItems[index];
-                                    // if (shortCut['title'] == "QR Scan") {
-                                    //   if (!(AuthBackend.isLoggedIn() &&
-                                    //       ResponseData.loginResponse!.user!
-                                    //               .bvnStatus ==
-                                    //           true)) {
-                                    //     return SizedBox.shrink();
-                                    //   }
-                                    // }
+                              //     itemBuilder: (ctx, index) {
+                              //       final shortCut =
+                              //           DummyData().shortcutItems[index];
+                              //       // if (shortCut['title'] == "QR Scan") {
+                              //       //   if (!(AuthBackend.isLoggedIn() &&
+                              //       //       ResponseData.loginResponse!.user!
+                              //       //               .bvnStatus ==
+                              //       //           true)) {
+                              //       //     return SizedBox.shrink();
+                              //       //   }
+                              //       // }
 
-                                    return ShortCutItem(
-                                      isIconBlack: index == 0 ? true : false,
-                                      gridColor: shortCut['color'],
-                                      logoUrl: shortCut['logoUrl'],
-                                      pageToNavigate: shortCut['pageToGo'],
-                                      title: shortCut['title'],
-                                    );
-                                  }),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Divider(color: AppColors.grey200, height: 1.5),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              const Padding(
+                              //       return ShortCutItem(
+                              //         isIconBlack: index == 0 ? true : false,
+                              //         gridColor: shortCut['color'],
+                              //         logoUrl: shortCut['logoUrl'],
+                              //         pageToNavigate: shortCut['pageToGo'],
+                              //         title: shortCut['title'],
+                              //       );
+                              //     }),
+
+                              // const SizedBox(
+                              //   height: 5,
+                              // ),
+                              //Divider(color: AppColors.grey200, height: 1.5),
+                              // const SizedBox(
+                              //   height: 5,
+                              // ),
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                                 child: AdvertItem(),
                               ),
