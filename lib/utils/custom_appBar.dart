@@ -135,61 +135,59 @@ mixin CustomAppBar<T extends StatefulWidget> on State<T> {
       backgroundColor: AppColors.whiteA700,
       foregroundColor: AppColors.whiteA700,
       systemOverlayStyle: SystemUiOverlayStyle.dark,
-      toolbarHeight: 80,
-      flexibleSpace: FractionallySizedBox(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 10,
+      // toolbarHeight: 80,
+      flexibleSpace: ListView(
+        padding: const EdgeInsets.only(
+          left: 20.0,
+          top: 20,
+        ),
+        children: [
+          const SizedBox(
+            height: 30,
           ),
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => navigateBack(context),
-                  icon: Container(
-                    margin: const EdgeInsets.only(right: 30),
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: AppColors.appGold, shape: BoxShape.circle),
-                    child: Center(
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: AppColors.whiteA700,
-                        size: 18.0,
-                      ),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => navigateBack(context),
+                icon: Container(
+                  margin: const EdgeInsets.only(right: 30),
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: AppColors.appGold, shape: BoxShape.circle),
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: AppColors.whiteA700,
+                      size: 18.0,
                     ),
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: AppColors.appGold,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    title ?? "",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.whiteA700),
-                  ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                decoration: BoxDecoration(
+                    color: AppColors.appGold,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text(
+                  title ?? "",
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.whiteA700),
                 ),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Divider(
-              height: 1,
-              thickness: .8,
-              color: AppColors.grey200,
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Divider(
+            height: 1,
+            thickness: .8,
+            color: AppColors.grey200,
+          )
+        ],
       ),
     );
   }

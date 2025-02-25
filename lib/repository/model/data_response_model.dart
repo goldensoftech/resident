@@ -35,6 +35,7 @@ class PaymentDetails {
   String? payerName;
   TransactionType transactionType;
   PaymentGateway? paymentGateway;
+  Metadata? metadata;
 
   PaymentDetails(
       {required this.customerId,
@@ -44,6 +45,7 @@ class PaymentDetails {
       required this.payerName,
       required this.surcharge,
       this.ref,
+      this.metadata,
       required this.serviceName,
       required this.serviceId,
       required this.paymentCode,
@@ -61,6 +63,20 @@ class PaymentDetails {
   //       paymentGateway: json['Payment_gateway'],
   //       transactionType: json['transation_type']);
   // }
+}
+
+class Metadata {
+  DateTime? txnDate;
+
+  String? receiptUrl;
+  Metadata({this.txnDate, this.receiptUrl});
+
+  factory Metadata.fromJson(dynamic json) {
+    return Metadata(
+        txnDate:
+            json['transactionDate'] ?? DateTime.parse(json['transactionDate']),
+        receiptUrl: json['receiptUrl']);
+  }
 }
 
 class OrderItem {

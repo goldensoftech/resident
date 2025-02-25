@@ -83,28 +83,6 @@ class _PaymentStatusScreenState extends State<PaymentStatusScreen>
                 onPressed: () => showTxConfirmationAlert(context,
                     type: TransactionType.remita),
 
-                //  (_emailController.text.isNotEmpty &&
-                //         _passwordController.text.isNotEmpty &&
-                //         _passwordController.text.isNotEmpty &&
-                //         _confirmPasswordController.text.isNotEmpty)
-                //     ? () {
-                //         navigatePush(
-                //             context,
-                //             SignupVerificationScreen(
-                //               email: _emailController.text,
-                //             ));
-                //         // if (!_formKey.currentState!.validate()) {
-                //         //   // ScaffoldMessenger.of(context).showSnackBar(
-                //         //   //     const SnackBar(content: Text('Processing Data')));
-                //         //   return;
-                //         // }
-                //         // setState(() {
-                //         //   _login = loginRequest(context);
-                //         // });
-                //         // _login;
-                //         // navigatePush(context, const SignUpScreen());
-                //       }
-                //     : null,
                 child: Text(
                   'Continue',
                   style: TextStyle(

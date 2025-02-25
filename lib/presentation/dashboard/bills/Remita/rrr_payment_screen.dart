@@ -124,7 +124,9 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                 txnId: lookupDetails!.rrrData.rrr,
                                 serviceType: lookupDetails!.detials.serviceName,
                                 status: lookupDetails!.status,
-                                txnDate: lookupDetails!.date,
+                                data:lookupDetails!.detials.metadata ,
+                                txnDate:
+                                    lookupDetails!.detials.metadata!.txnDate!,
                                 type: TransactionType.remita);
                             navigatePush(
                                 context, TransactionInfoScreen(tx: txn));
@@ -485,6 +487,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                       ),
                                                     ],
                                                   ),
+                                                  
                                                   const Spacer(),
                                                   SizedBox(
                                                     width:
@@ -513,6 +516,8 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                           //         details:
                                                           //             lookupDetails!
                                                           //                 .detials);
+
+                                                       
                                                           await Pay().withRemita(
                                                               context,
                                                               rrrData:

@@ -22,7 +22,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen>
   final TextEditingController _contactPhoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
+  final FlutterContactPickerPlus _contactPicker = FlutterContactPickerPlus();
   Contact? _contact;
   OrderItem? order;
   List<DataItem> dataPlans = [];
@@ -151,41 +151,41 @@ final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
                         cursorWidth: 1,
                         cursorColor: Colors.black,
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 12),
-                          //labelStyle: const TextStyle(color: Colors.black54),
-                          hintText: 'Recipient Number',
-                          hintStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.grey700),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  width: 1.w, color: AppColors.formGrey),
-                              borderRadius: BorderRadius.circular(8.r)),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                            borderSide: BorderSide(color: AppColors.appGold),
-                          ),
-                          suffixIcon: IconButton(
-                              onPressed: () async {
-                                Contact? contact =
-                                    await _contactPicker.selectContact();
-                                setState(() {
-                                  _contact = contact;
-                                });
-                                if (_contact != null) {
-                                  _phoneController.text = _contact!
-                                      .phoneNumbers!.first
-                                      .toString();
-                                }
-                              },
-                              icon: SvgPicture.asset(
-                                contactList,
-                                color: AppColors.appGold,
-                                //size: 18,
-                              ))
-                        ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 12),
+                            //labelStyle: const TextStyle(color: Colors.black54),
+                            hintText: 'Recipient Number',
+                            hintStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.grey700),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 1.w, color: AppColors.formGrey),
+                                borderRadius: BorderRadius.circular(8.r)),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                              borderSide: BorderSide(color: AppColors.appGold),
+                            ),
+                            suffixIcon: IconButton(
+                                onPressed: () async {
+                                  Contact? contact =
+                                      await _contactPicker.selectContact();
+                                  setState(() {
+                                    _contact = contact;
+                                  });
+                                  if (_contact != null) {
+                                    _phoneController.text = _contact!
+                                        .phoneNumbers!.first
+                                        .toString();
+                                    _phoneController.text = _phoneController.text.trim();
+                                  }
+                                },
+                                icon: SvgPicture.asset(
+                                  contactList,
+                                  color: AppColors.appGold,
+                                  //size: 18,
+                                ))),
                       ),
                       const SizedBox(
                         height: 20,
@@ -259,9 +259,9 @@ final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
                                   controller: _amountController,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
-                                   if(dataPlans.isNotEmpty){
-                                    selectedPlan=dataPlans.first;
-                                   }
+                                    if (dataPlans.isNotEmpty) {
+                                      selectedPlan = dataPlans.first;
+                                    }
                                     setState(() {});
                                   },
                                   validator: (value) {

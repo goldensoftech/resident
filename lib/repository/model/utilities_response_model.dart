@@ -84,17 +84,19 @@ class LookupDetails {
   RemitaDetails rrrData;
   PaymentDetails detials;
   PaymentStatus status;
-  DateTime date;
+  // DateTime date;
+
   LookupDetails(
       {required this.detials,
-      required this.date,
+      // required this.date,
       required this.status,
       required this.rrrData});
   factory LookupDetails.fromJson(dynamic json) {
     return LookupDetails(
-        date: DateTime.parse(
-            json['transactionDate'] ?? DateTime.now().toString()),
+        // date: DateTime.parse(
+        //     json['transactionDate'] ?? DateTime.now().toString()),
         detials: PaymentDetails(
+            metadata: Metadata.fromJson(json['metadata']),
             customerId: json["phoneNumber"],
             customerEmail: json['email'],
             amount: double.parse(json['amount'].toString()),
@@ -176,7 +178,8 @@ class BillerCustomFields {
     return BillerCustomFields(
         displayName: json['display_name'],
         required: json['required'],
-        options: (json['selectOptions'] as List<dynamic>?)
+        options: ((json['customFieldDropDown'] ?? json['selectOptions'])
+                    as List<dynamic>?)
                 ?.map((data) => ProductSelectOptions.fromJson(data))
                 .toList() ??
             [],
@@ -187,19 +190,39 @@ class BillerCustomFields {
 
 class ProductSelectOptions {
   String value;
+  String? code;
+  String? fieldId;
   String displayName;
-  ProductSelectOptions({required this.value, required this.displayName});
+  bool? isFixed;
+  ProductSelectOptions(
+      {this.code,
+      this.fieldId,
+      this.isFixed,
+      required this.value,
+      required this.displayName});
   factory ProductSelectOptions.fromJson(dynamic json) {
     return ProductSelectOptions(
-        value: json['VALUE'], displayName: json['DISPLAY_NAME']);
+        code: json['CODE'],
+        fieldId: json['ID'],
+        isFixed: (json['FIXEDPRICE'] == null || json['FIXEDPRICE'] == 'false')
+            ? false
+            : true,
+        value: json['VALUE'] ?? json['UNITPRICE'].toString(),
+        displayName: json['DISPLAY_NAME'] ?? json['DESCRIPTION']);
   }
 }
 
 FieldType getFieldType(String type) {
   if (type == 'number') {
     return FieldType.number;
-  } else if (type.contains('select')) {
+  } else if (type == 'singleselect') {
     return FieldType.singleselect;
+  } else if (type == 'multiselect') {
+    return FieldType.multiselect;
+  } else if (type == 'multiselectwithprice') {
+    return FieldType.multiselectwithprice;
+  } else if (type.contains('date')) {
+    return FieldType.date;
   } else
     return FieldType.alphanumeric;
 }

@@ -28,6 +28,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
   List<RemitaCategory> _filteredUtitlities = [];
   RemitaDetails? rrrDetails;
   RemitaCustomer? customer;
+  Map<String, Set<String>> selectedMultiOptions = {}; // Stores selected options
 
   Future<void>? _request;
   final TextEditingController _categoryController = TextEditingController();
@@ -36,6 +37,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _productController = TextEditingController();
+  double totalPrice = 0.0;
   @override
   void initState() {
     fecthProducts();
@@ -66,6 +68,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     setState(() {});
   }
 
+  Map<String, Map<String, Map<String, dynamic>>> selectedItemsWithQty = {};
+
   Future<void> _fetchProduct(String id) async {
     products =
         await TransactionBackend().getBillerProduct(context, productId: id);
@@ -78,18 +82,51 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     //  {"variable_name": "account_number", "value": "1111111111111"},
     // {"variable_name": "minimum_vend_amount", "value": "900"},
 
-    final List<Map<String, dynamic>> customFields =
-        selectedProduct!.fields.map((field) {
-      return {
-        "variable_name":
-            field.varName, // Assuming fieldId corresponds to the variable name
-        "value": _controllers[field.varName]?.text ?? '',
-      };
-    }).toList();
+    final List<Map<String, dynamic>> customFields = [];
+    for (final field in selectedProduct!.fields) {
+      if (field.varName != "amount_item_list") {
+        customFields.add({
+          "variable_name": field.varName,
+          "value": _controllers[field.varName]?.text ?? '',
+        });
+      }
+    }
     // print("AMount value is ${customer.amount}");
+    final List<Map<String, dynamic>> customFieldsMultiSelectWithPrice = [];
+    selectedItemsWithQty.forEach((fieldName, items) {
+      final List<Map<String, dynamic>> itemsList = [];
+      items.forEach((itemName, details) {
+        itemsList.add({
+          "unitPrice": details['amount'],
+          "fixedPrice": details[
+              'isFixed'], // Assuming this is dynamic based on your logic
+          "quantity": details['quantity'],
+          "code": details['code'], // Use itemName or another unique identifier
+          "itemName": itemName,
+          "selectedListId":
+              details['ID'], // Replace with actual ID if available
+          "selected": true,
+        });
+      });
+      customFieldsMultiSelectWithPrice.add({
+        "variable_name": fieldName,
+        "value": itemsList,
+      });
+    });
+
+    // Build customFieldsMultiSelect
+    // final List<Map<String, dynamic>> customFieldsMultiSelect = [];
+    // selectedMultiOptions.forEach((fieldName, selectedOptions) {
+    //   customFieldsMultiSelect.add({
+    //     "variable_name": fieldName,
+    //     "value": selectedOptions.toList(),
+    //   });
+    // });
+
     rrrDetails = await TransactionBackend().initiateRemitaPayment(context,
         billPaymentProductId: selectedProduct!.productId,
         amount: double.parse(_amountController.text),
+        customFieldsMultiSelectWithPrice: customFieldsMultiSelectWithPrice,
         customerId: "11111",
         email: ResponseData.loginResponse!.isLoggedIn == true
             ? ResponseData.loginResponse!.user!.userName!
@@ -170,6 +207,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                   child: Scrollbar(
                                     radius: const Radius.circular(5),
                                     child: ListView(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
                                       children: [
                                         Container(
                                           alignment: Alignment.center,
@@ -239,6 +278,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                           height: 10,
                                         ),
                                         ListView.separated(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
                                             itemCount: _filteredUtitlities
                                                 .length,
                                             shrinkWrap: true,
@@ -264,6 +305,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                     _productController.text =
                                                         "";
                                                     selectedCatgory = data;
+                                                    selectedItemsWithQty
+                                                        .clear();
                                                     _categoryController.text =
                                                         data.name;
                                                     _request =
@@ -377,6 +420,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                         child: Scrollbar(
                                           radius: const Radius.circular(5),
                                           child: ListView(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
                                             children: [
                                               Container(
                                                 alignment: Alignment.center,
@@ -463,6 +508,9 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                 height: 10,
                                               ),
                                               ListView.separated(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10),
                                                   itemCount: products.length,
                                                   shrinkWrap: true,
                                                   physics:
@@ -501,12 +549,15 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                           //   _controllers[field.varName] = TextEditingController();
                                                           // }
                                                         });
+                                                        print(selectedProduct);
                                                         _controllers.clear();
                                                         for (var field
                                                             in data.fields) {
                                                           _controllers[field
                                                                   .varName] =
                                                               TextEditingController();
+                                                          selectedItemsWithQty
+                                                              .clear();
                                                         }
                                                         for (var i
                                                             in data.fields) {
@@ -611,6 +662,10 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter amount';
+                                } else if (value == '0' ||
+                                    value == "0.00" ||
+                                    value == "0.0") {
+                                  return 'Please enter a valid  amount';
                                 }
                                 return null;
                               },
@@ -651,13 +706,429 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                     readOnly:
                                         (field.type == FieldType.multiselect ||
                                                 field.type ==
-                                                    FieldType.singleselect)
+                                                    FieldType.singleselect ||
+                                                field.type ==
+                                                    FieldType
+                                                        .multiselectwithprice ||
+                                                field.type == FieldType.date)
                                             ? true
                                             : false,
                                     onTap: () {
-                                      if (field.type == FieldType.multiselect ||
-                                          field.type ==
-                                              FieldType.singleselect) {
+                                      if (field.type ==
+                                          FieldType.multiselectwithprice) {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: AppColors.whiteA700,
+                                          showDragHandle: true,
+                                          enableDrag: true,
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                            ),
+                                          ),
+                                          builder: (context) {
+                                            // Initialize selectedItemsWithQty for this field if it doesn't exist
+                                            selectedItemsWithQty.putIfAbsent(
+                                                field.varName, () => {});
+
+                                            // Function to calculate the total price
+                                            double calculateTotalPrice() {
+                                              return selectedItemsWithQty[
+                                                      field.varName]!
+                                                  .entries
+                                                  .fold(0.0, (sum, entry) {
+                                                double amount = entry
+                                                        .value['amount'] ??
+                                                    0.0; // Ensure amount is a double
+                                                int quantity =
+                                                    entry.value['quantity'] ??
+                                                        1;
+                                                return sum +
+                                                    (amount * quantity);
+                                              });
+                                            }
+
+                                            return StatefulBuilder(
+                                              builder: (context, setState) {
+                                                return Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 20),
+                                                  child: Column(
+                                                    children: [
+                                                      const Text(
+                                                        "Select Items & Enter Quantity",
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      Expanded(
+                                                        child: ListView.builder(
+                                                          itemCount: field
+                                                                  .options
+                                                                  ?.length ??
+                                                              0, // Null check for field.options
+                                                          itemBuilder:
+                                                              (ctx, index) {
+                                                            final data = field
+                                                                    .options![
+                                                                index]; // Safe access after null check
+                                                            bool isOptionFixed =
+                                                                data.isFixed ??
+                                                                    false;
+                                                            bool isSelected =
+                                                                selectedItemsWithQty[field
+                                                                            .varName]
+                                                                        ?.containsKey(
+                                                                            data.displayName) ??
+                                                                    false;
+                                                            int quantity = selectedItemsWithQty[
+                                                                        field
+                                                                            .varName]?[data
+                                                                        .displayName]
+                                                                    ?[
+                                                                    'quantity'] ??
+                                                                1;
+                                                            double unitPrice = double
+                                                                    .tryParse(data
+                                                                            .value ??
+                                                                        '0.0') ??
+                                                                0.0; // Handle null value for data.value
+                                                            double
+                                                                enteredAmount =
+                                                                selectedItemsWithQty[
+                                                                            field
+                                                                                .varName]?[data
+                                                                            .displayName]
+                                                                        ?[
+                                                                        'amount'] ??
+                                                                    unitPrice;
+
+                                                            // Create a TextEditingController for each item
+                                                            final TextEditingController
+                                                                amountController =
+                                                                TextEditingController(
+                                                              text: enteredAmount
+                                                                  .toStringAsFixed(
+                                                                      2), // Pre-fill with the stored amount
+                                                            );
+
+                                                            return Card(
+                                                              color: AppColors
+                                                                  .whiteA700,
+                                                              elevation: 2,
+                                                              child: ListTile(
+                                                                title: Text(data
+                                                                    .displayName),
+                                                                subtitle:
+                                                                    isOptionFixed
+                                                                        ? Text(
+                                                                            "Unit Price: ₦${unitPrice.toStringAsFixed(2)}")
+                                                                        : SizedBox(
+                                                                            width:
+                                                                                100,
+                                                                            height:
+                                                                                40,
+                                                                            child:
+                                                                                TextField(
+                                                                              controller: amountController, // Use the controller
+                                                                              keyboardType: TextInputType.number,
+                                                                              decoration: const InputDecoration(
+                                                                                labelText: "Enter Amount",
+                                                                                border: OutlineInputBorder(),
+                                                                              ),
+                                                                              onChanged: (val) {
+                                                                                setState(() {
+                                                                                  double newAmount = double.tryParse(val) ?? 0.0; // Ensure newAmount is a double
+                                                                                  selectedItemsWithQty[field.varName]!.update(
+                                                                                    data.displayName, // Use displayName as the key
+                                                                                    (value) => {
+                                                                                      'amount': newAmount,
+                                                                                      'code': data.code,
+                                                                                      'ID': data.fieldId,
+                                                                                      'isFixed': isOptionFixed,
+                                                                                      'quantity': value['quantity'],
+                                                                                    },
+                                                                                    ifAbsent: () => {
+                                                                                      'amount': newAmount,
+                                                                                      'code': data.code,
+                                                                                      'ID': data.fieldId,
+                                                                                      'isFixed': isOptionFixed,
+                                                                                      'quantity': 1,
+                                                                                    },
+                                                                                  );
+                                                                                });
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                trailing:
+                                                                    isSelected
+                                                                        ? Row(
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.min,
+                                                                            children: [
+                                                                              IconButton(
+                                                                                icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                                                                                onPressed: () {
+                                                                                  setState(() {
+                                                                                    if (quantity > 1) {
+                                                                                      selectedItemsWithQty[field.varName]![data.displayName]!['quantity'] = quantity - 1;
+                                                                                    } else {
+                                                                                      selectedItemsWithQty[field.varName]!.remove(data.displayName);
+                                                                                    }
+                                                                                  });
+                                                                                },
+                                                                              ),
+                                                                              Text("$quantity", style: const TextStyle(fontSize: 16)),
+                                                                              IconButton(
+                                                                                icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                                                                                onPressed: () {
+                                                                                  setState(() {
+                                                                                    selectedItemsWithQty[field.varName]!.update(
+                                                                                      data.displayName, // Use displayName as the key
+                                                                                      (value) => {
+                                                                                        'code': data.code,
+                                                                                        'isFixed': isOptionFixed,
+                                                                                        'ID': data.fieldId,
+                                                                                        'amount': value['amount'].toDouble(), // Ensure amount is a double
+                                                                                        'quantity': value['quantity'] + 1,
+                                                                                      },
+                                                                                      ifAbsent: () => {
+                                                                                        'code': data.code,
+                                                                                        'ID': data.fieldId,
+                                                                                        'isFixed': isOptionFixed,
+                                                                                        'amount': isOptionFixed ? unitPrice.toDouble() : 0.0, // Ensure amount is a double
+                                                                                        'quantity': 1,
+                                                                                      },
+                                                                                    );
+                                                                                  });
+                                                                                },
+                                                                              ),
+                                                                            ],
+                                                                          )
+                                                                        : IconButton(
+                                                                            icon:
+                                                                                Icon(Icons.add, color: AppColors.appGold),
+                                                                            onPressed:
+                                                                                () {
+                                                                              setState(() {
+                                                                                selectedItemsWithQty[field.varName]!.putIfAbsent(
+                                                                                  data.displayName, // Use displayName as the key
+                                                                                  () => {
+                                                                                    'code': data.code,
+                                                                                    'isFixed': isOptionFixed,
+                                                                                    'ID': data.fieldId,
+                                                                                    'amount': isOptionFixed ? unitPrice.toDouble() : 0.0, // Ensure amount is a double
+                                                                                    'quantity': 1,
+                                                                                  },
+                                                                                );
+                                                                              });
+                                                                            },
+                                                                          ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          const Text(
+                                                              "Total Amount",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize:
+                                                                      14)),
+                                                          Text(
+                                                              "₦${calculateTotalPrice().toStringAsFixed(2)}",
+                                                              style: const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize:
+                                                                      14)),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          _controllers.putIfAbsent(
+                                                              field.varName,
+                                                              () =>
+                                                                  TextEditingController());
+                                                          _controllers[field
+                                                                      .varName]
+                                                                  ?.text =
+                                                              "Items: ${selectedItemsWithQty[field.varName]!.entries.map((e) => "${e.value['quantity']} x ₦${e.value['amount'].toStringAsFixed(2)}").join(", ")}\nTotal: ₦${calculateTotalPrice().toStringAsFixed(2)}";
+                                                          _amountController
+                                                                  .text =
+                                                              calculateTotalPrice()
+                                                                  .toStringAsFixed(
+                                                                      2);
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                            "Confirm Selection"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      } else if (field.type ==
+                                          FieldType.multiselect) {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: AppColors.whiteA700,
+                                          showDragHandle: true,
+                                          enableDrag: true,
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              topRight: Radius.circular(10),
+                                            ),
+                                          ),
+                                          builder: (context) {
+                                            // Ensure selectedMultiOptions[field.varName] is initialized
+                                            selectedMultiOptions.putIfAbsent(
+                                                field.varName,
+                                                () => <String>{});
+
+                                            return StatefulBuilder(
+                                              builder: (context, setState) {
+                                                return Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 20),
+                                                  child: Column(
+                                                    children: [
+                                                      const Text(
+                                                        "Select Options",
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      Expanded(
+                                                        child: ListView.builder(
+                                                          itemCount: field
+                                                                  .options
+                                                                  ?.length ??
+                                                              0, // Null check for field.options
+                                                          itemBuilder:
+                                                              (ctx, index) {
+                                                            final data = field
+                                                                    .options![
+                                                                index]; // Safe access after null check
+                                                            bool isSelected =
+                                                                selectedMultiOptions[field
+                                                                            .varName]
+                                                                        ?.contains(
+                                                                            data.displayName) ??
+                                                                    false;
+
+                                                            return CheckboxListTile(
+                                                              key: ValueKey(data
+                                                                  .displayName), // Unique key for each checkbox
+                                                              title: Text(data
+                                                                  .displayName),
+                                                              value: isSelected,
+                                                              onChanged: (bool?
+                                                                  selected) {
+                                                                setState(() {
+                                                                  if (selected ==
+                                                                      true) {
+                                                                    selectedMultiOptions[field
+                                                                            .varName]
+                                                                        ?.add(data
+                                                                            .displayName);
+                                                                  } else {
+                                                                    selectedMultiOptions[field
+                                                                            .varName]
+                                                                        ?.remove(
+                                                                            data.displayName);
+                                                                  }
+                                                                });
+                                                              },
+                                                              activeColor:
+                                                                  AppColors
+                                                                      .appGold,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          // Ensure _controllers[field.varName] is initialized
+                                                          _controllers.putIfAbsent(
+                                                              field.varName,
+                                                              () =>
+                                                                  TextEditingController());
+
+                                                          // Map selected values to their display names
+                                                          final selectedDisplayNames = field
+                                                              .options
+                                                              ?.where((option) =>
+                                                                  selectedMultiOptions[field
+                                                                          .varName]
+                                                                      ?.contains(
+                                                                          option
+                                                                              .displayName) ??
+                                                                  false)
+                                                              .map((option) =>
+                                                                  option
+                                                                      .displayName)
+                                                              .join(", ");
+
+                                                          _controllers[field
+                                                                      .varName]
+                                                                  ?.text =
+                                                              selectedDisplayNames ??
+                                                                  "";
+                                                          _controllers[field
+                                                                      .varName]
+                                                                  ?.text =
+                                                              _controllers[field
+                                                                      .varName]!
+                                                                  .text
+                                                                  .trim();
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: const Text(
+                                                            "Confirm Selection"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      } else if (field.type ==
+                                          FieldType.singleselect) {
                                         showModalBottomSheet(
                                             context: context,
                                             backgroundColor:
@@ -672,6 +1143,8 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                     topRight:
                                                         Radius.circular(10))),
                                             builder: (context) {
+                                              print(
+                                                  "Opti legth ${field.options.length}");
                                               return Container(
                                                   color: AppColors.whiteA700,
                                                   constraints: BoxConstraints(
@@ -689,6 +1162,9 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                         const Radius.circular(
                                                             5),
                                                     child: ListView(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10),
                                                       children: [
                                                         Container(
                                                           alignment:
@@ -712,8 +1188,14 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                           height: 10,
                                                         ),
                                                         ListView.separated(
-                                                            itemCount: field
-                                                                .options.length,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        10),
+                                                            itemCount:
+                                                                field.options
+                                                                    .length,
                                                             shrinkWrap: true,
                                                             physics:
                                                                 const ScrollPhysics(),
@@ -779,6 +1261,22 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                     ),
                                                   ));
                                             });
+                                      } else if (field.type == FieldType.date) {
+                                        showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(2000),
+                                          lastDate: DateTime(2100),
+                                        ).then((selectedDate) {
+                                          if (selectedDate != null) {
+                                            setState(() {
+                                              // Format the date as DD/MM/YYYY
+                                              _controllers[field.varName]
+                                                      ?.text =
+                                                  "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}";
+                                            });
+                                          }
+                                        });
                                       }
                                     },
                                     controller: _controllers[field.varName],
@@ -1146,7 +1644,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                           FontWeight
                                                                               .w700),
                                                                 ),
-                                                                SizedBox(
+                                                                const SizedBox(
                                                                   width: 2,
                                                                 ),
                                                                 InkWell(
@@ -1211,8 +1709,9 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                       .w700),
                                                         ),
                                                         SizedBox(
-                                                        
-                                                          width: displaySize.width *.3,
+                                                          width: displaySize
+                                                                  .width *
+                                                              .3,
                                                           child: Text(
                                                             _nameController
                                                                     .text ??
@@ -1221,8 +1720,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                 TextOverflow
                                                                     .ellipsis,
                                                             textAlign:
-                                                                TextAlign
-                                                                    .right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                                 color: AppColors
                                                                     .baseBlack,
@@ -1488,6 +1986,7 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     switch (type) {
       case FieldType.number:
         return TextInputType.number;
+
       default:
         return TextInputType.text;
     }

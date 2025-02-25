@@ -17,6 +17,7 @@ export 'package:pinput/pinput.dart';
 export 'package:otp_timer_button/otp_timer_button.dart';
 export 'package:lottie/lottie.dart';
 export 'package:flutter_native_contact_picker_plus/flutter_native_contact_picker_plus.dart';
+export 'package:geolocator/geolocator.dart';
 
 
 export 'package:grouped_list/grouped_list.dart';
@@ -81,6 +82,7 @@ export 'package:resident/widgets/error_message.dart';
 export 'package:resident/widgets/form_fields.dart';
 export 'package:resident/widgets/animation/loading_gif.dart';
 export 'package:resident/presentation/dashboard/home/advert_item.dart';
+
 export 'package:resident/presentation/dashboard/home/short_cut_item.dart';
 export 'package:resident/presentation/dashboard/transaction/tx_item.dart';
 export 'package:resident/utils/custom_appBar.dart';

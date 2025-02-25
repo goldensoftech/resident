@@ -38,7 +38,7 @@ class _BillsScreenState extends State<BillsScreen> with CustomAppBar {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                     childAspectRatio: 1,
-                                    crossAxisSpacing: 40,
+                                    crossAxisSpacing: 20,
                                     mainAxisSpacing: 20,
                                     crossAxisCount: 2),
                             shrinkWrap: true,

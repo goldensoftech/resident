@@ -72,21 +72,28 @@ class _TransactionInfoScreenState extends State<TransactionInfoScreen>
                 actions: [
                   if (widget.tx.status == PaymentStatus.completed ||
                       widget.tx.status == PaymentStatus.paid)
-                    FittedBox(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 10),
-                        margin: const EdgeInsets.only(right: 10),
-                        decoration: BoxDecoration(
-                            color: AppColors.appGold,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Center(
-                          child: Text(
-                            'Share',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.whiteA700),
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.tx.data!.receiptUrl != null) {
+                          _launchUrl(widget.tx.data!.receiptUrl!);
+                        }
+                      },
+                      child: FittedBox(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 10),
+                          margin: const EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                              color: AppColors.appGold,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Center(
+                            child: Text(
+                              '${widget.tx.type == TransactionType.remita ? 'View' : 'Share'} Receipt',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.whiteA700),
+                            ),
                           ),
                         ),
                       ),
@@ -410,5 +417,11 @@ class _TransactionInfoScreenState extends State<TransactionInfoScreen>
         ),
       ],
     );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    if (!await launchUrl(Uri.parse(urlString))) {
+      throw Exception("Could not launch $urlString");
+    }
   }
 }

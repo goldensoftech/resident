@@ -173,12 +173,14 @@ final FlutterContactPickerPlus _contactPicker= FlutterContactPickerPlus();
                                     _phoneController.text = _contact!
                                         .phoneNumbers!.first
                                         .toString();
+                                          _phoneController.text =    _phoneController.text.trim();
                                   }
                                 },
                                 icon: SvgPicture.asset(
                                   contactList,
                                   color: AppColors.appGold,
                                   //size: 18,
+
                                 ))
                                 ),
                       ),

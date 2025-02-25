@@ -14,6 +14,7 @@ class TransactionModel {
   PaymentStatus status;
   TransactionType? type;
   PaymentGateway? gateway;
+  Metadata? data;
 
   TransactionModel({
     required this.amount,
@@ -22,6 +23,7 @@ class TransactionModel {
     required this.payerName,
     required this.payerPhone,
     required this.paymentCode,
+    this.data,
     required this.refId,
     required this.serviceType,
     required this.status,
@@ -32,11 +34,12 @@ class TransactionModel {
   });
   factory TransactionModel.fromJson(dynamic json) {
     return TransactionModel(
-        amount: double.parse(json["Amount"] ?? "0")/100,
+        amount: double.parse(json["Amount"] ?? "0") / 100,
         email: json['Email'] ?? "",
         payerName: json["PayerName"] ?? "",
         payerPhone: json["PayerPhone"] ?? "",
         paymentCode: json['PaymentCode'] ?? "",
+        
         refId: json['ReferenceID'] ?? "",
         txnId: json['TransactionID'] ?? "",
         serviceType: json['ServiceType'] ?? "",

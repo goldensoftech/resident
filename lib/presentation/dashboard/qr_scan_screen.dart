@@ -56,10 +56,10 @@ class _QRScanScreenState extends State<QRScanScreen>
 
   makeNQRPayment(context, {required NqrCodeData data}) async {
 
-   // await UtilFunctions().getLocation(context);
+   await UtilFunctions().getLocation(context);
 
-    // await TransactionBackend()
-    //     .makeNQRPayment(context, data: data, bankDetails: selectedAccount!);
+    await TransactionBackend()
+        .makeNQRPayment(context, data: data, bankDetails: selectedAccount!);
   }
 
   @override

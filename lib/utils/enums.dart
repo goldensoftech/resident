@@ -14,4 +14,4 @@ enum PaymentStatus { failed, pending, paid, completed, initiated, processing }
 
 enum NotificationType { transaction, notification }
 
-enum FieldType { text, alphanumeric, number, email, singleselect, multiselect }
+enum FieldType { text, alphanumeric, number, email, singleselect, multiselect, date, multiselectwithprice }

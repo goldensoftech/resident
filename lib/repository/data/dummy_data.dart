@@ -720,29 +720,23 @@ class DummyData {
   ];
   final List<Map<String, dynamic>> shortcutItems = [
     {
-      'title': 'Send Money',
-      'logoUrl': sendIcon,
+      'title': 'Generate RRR',
+      'logoUrl': billsInactvIcon,
       'color': AppColors.cream,
-      'pageToGo': const ComingSoonScreen()
+      'pageToGo': const GenerateRRRScreen()
     },
     {
-      'title': 'Virtual Account',
-      'logoUrl': pCard,
+      'title': 'Book Flight',
+      'logoUrl': flightIcon,
       'color': AppColors.deepWine,
-      'pageToGo': const ComingSoonScreen()
+      'pageToGo': const FlightTicketScreen()
     },
     {
-      'title': 'Virtual Card',
-      'logoUrl': cardInactvIcon,
-      'color': AppColors.deepBlue,
-      'pageToGo': const ComingSoonScreen()
+      'title': 'QR Scan',
+      'logoUrl': scanIcon,
+      'color': AppColors.deepGreen,
+      'pageToGo': const QRScanScreen()
     },
-    // {
-    //   'title': 'QR Scan',
-    //   'logoUrl': scanIcon,
-    //   'color': AppColors.deepGreen,
-    //   'pageToGo': const QRScanScreen()
-    // },
   ];
   final List<Map<String, dynamic>> rrrItems = [
     {'title': 'Generate RRR', 'pageToGo': const GenerateRRRScreen()},

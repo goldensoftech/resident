@@ -246,7 +246,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     String signTemp =
         "account_name=${bankDetails.accountName}&account_number=${bankDetails.accountNumber}&address=add&bank_no=${bankDetails.bankCode}&" +
             "contact=${ResponseData.loginResponse!.user!.lastName}&email=${ResponseData.loginResponse!.user!.userName}" +
-            "&institution_number=${data.institutionNumber}&m_fee_bearer=0&name=${data.merchantName}&phone=0${ResponseData.loginResponse!.user!.phoneNumber}&timestamp=$timeStamp&tin=999177001$apiKey";
+            "&institution_number=${data.institutionNumber}&m_fee_bearer=0&name=${data.merchantName}&phone=${ResponseData.loginResponse!.user!.phoneNumber}&timestamp=$timeStamp&tin=999177001$apiKey";
 
     print("Sign Details");
     print(signTemp);
@@ -271,7 +271,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
                 "institution_number": institutionNumber,
                 "m_fee_bearer": "0",
                 "name": data.merchantName,
-                "phone": "0${ResponseData.loginResponse!.user!.phoneNumber}",
+                "phone": "${ResponseData.loginResponse!.user!.phoneNumber}",
                 "timestamp": timeStamp,
                 "tin": "999177001",
                 "sign": authSign
@@ -307,7 +307,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
           "error", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
-          "Network failure", "Please check your internet connection", context);
+          "Network failure", "Please check your internet connection", context);   
       //navigateReplace(context, const Dashboard());
     } on Exception catch (e) {
       logger.e(e);
@@ -537,11 +537,14 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
 // 241016232209006037960828520400
     final mchRes =
         await createMerchant(context, data: data, bankDetails: bankDetails);
+        print("Completed Merchant");
     if (mchRes != null) {
       await bindMerchant(context,
           merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
+           print("Completed bind Merchant");
       final subMchRes = await createSubMerchant(context,
           merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
+           print("Completed sub Merchant");
 
       if (subMchRes != null) {
         final dynamicQR = await createDynamicQR(context,
@@ -549,19 +552,22 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
             orderNo: data.orderSn,
             data: data,
             subMchNo: subMchRes.subMchNo,
-            bankDetails: bankDetails);
+            bankDetails: bankDetails); print("Completed Dynamic QR");
         if (dynamicQR != null) {
           if (!data.isDynamic) {
             await payWithDynamicNQR(context,
                 data: data,
                 orderSn: dynamicQR.orderSn,
+                
                 bankDetails: bankDetails);
+                 print("Completed paywithdynamic ");
           } else {
             await payWithStaticNQR(context,
                 merchantNo: subMchRes.mchNo,
                 subMchNo: subMchRes.subMchNo,
                 data: data,
                 bankDetails: bankDetails);
+                 print("Completed paywithstatic ");
           }
           // await payWithDynamicNQR(context,
           //     data: data,
@@ -1046,6 +1052,8 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     required String email,
     required String phoneNumber,
     required String customerId,
+    required List<dynamic> customFieldsMultiSelectWithPrice,
+    
     required List<Map<String, dynamic>> customFields,
   }) async {
     const url = "$host$baseUrl${isRemitaUrl}rmtinitiatetransaction";
@@ -1060,8 +1068,42 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       "payment_gateway": "REMITA",
       "metadata": {
         "customFields": customFields,
+        "customFieldsMultiSelectWithPrice": customFieldsMultiSelectWithPrice,
+       
       },
     };
+    print(payload);
+// {
+//   {billPaymentProductId: 36528175,
+//    amount: 190000.0,
+//     name: femi, 
+//    email: femi@gmial.com,
+//     phoneNumber: 08063288677, 
+//    customerId: 11111,
+//     transaction_type: Remita,
+//     payment_gateway: REMITA,
+//      metadata: {
+//       customFields: [
+//         {
+//           variable_name: matric_no, 
+//           value: 170404110}, 
+//           {
+//             variable_name: amount_item_list,
+//              value: Items: 1 x ₦100000.00, 1 x ₦90000.00
+// : Total: ₦190000.00
+// }],
+//  customFieldsMultiSelectWithPrice: [
+//   {variable_name: amount_item_list, 
+//   value: [{
+//     unitPrice: 100000.0, 
+//     fixedPrice: true, quantity: 1,
+//      code: FIRST YEAR, itemName: FIRST YEAR,
+//       selectedListId: 36528169, selected: true
+//       }, {
+//         unitPrice: 90000.0, fixedPrice: true, quantity: 1, 
+//         code: FOURTH YEAR, itemName: FOURTH YEAR, 
+//         selectedListId: 36528172, selected: true}]}], customFieldsMultiSelect: []}}
+// };
 
     try {
       await AuthBackend().checkAndUpdateToken(context);
@@ -1088,8 +1130,8 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
     } on NoSuchMethodError catch (_) {
-      sendErrorMessage(
-          "NoSuchMethodError", 'please check your credentials and try again.', context);
+      sendErrorMessage("NoSuchMethodError",
+          'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
           "Network failure", "Please check your internet connection", context);
@@ -1189,7 +1231,11 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   }
 
   Future<List<RemitaCategory>> getRemitaCategories(context) async {
-    const url = "$host$baseUrl${isRemitaUrl}rmtbillercategorybyid";
+    //USE FOR FILTERIG
+    // const url = "$host$baseUrl${isRemitaUrl}rmtbillercategorybyid";
+
+    const url = "$host$baseUrl${isRemitaUrl}rmtbillers";
+
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnectionApi = await client

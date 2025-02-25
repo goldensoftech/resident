@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+
 import 'package:resident/app_export.dart';
 
 
@@ -23,40 +24,40 @@ class UtilFunctions with ErrorSnackBar, CustomAlerts {
     }
   }
 
-//   Future<void> getLocation(context) async {
-//     // Check if location permission is granted
-//     ResponseData.userLocation =
-//         UserLocation(latitude: "9.55679", longitude: "9.692809");
+  Future<void> getLocation(context) async {
+    // Check if location permission is granted
+    ResponseData.userLocation =
+        UserLocation(latitude: "9.55679", longitude: "9.692809");
 
-//     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//     if (!serviceEnabled) {
-//       await Geolocator.openLocationSettings();
-//       sendErrorMessage("Error", "Location services are disabled", context);
-//       throw Future.error('Location services are disabled.');
-//     }
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      sendErrorMessage("Error", "Location services are disabled", context);
+      throw Future.error('Location services are disabled.');
+    }
 
-//     LocationPermission permission = await Geolocator.checkPermission();
-//     if (permission == LocationPermission.denied) {
-//       permission = await Geolocator.requestPermission();
-//       if (permission == LocationPermission.denied) {
-//         throw Future.error('Location permissions are denied');
-//       }
-//     }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Future.error('Location permissions are denied');
+      }
+    }
 
-//     if (permission == LocationPermission.deniedForever) {
-//       sendErrorMessage("Error", "Location access is disabled", context);
-//       throw Future.error('Location permissions are permanently denied.');
-//     }
+    if (permission == LocationPermission.deniedForever) {
+      sendErrorMessage("Error", "Location access is disabled", context);
+      throw Future.error('Location permissions are permanently denied.');
+    }
 
-//     // Get the current location
-//     Position position = await Geolocator.getCurrentPosition(
-//       desiredAccuracy: LocationAccuracy.high,
-//     );
+ // Get the current location
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
-// ResponseData.userLocation?.latitude = position.latitude.abs().toStringAsFixed(5);
-// ResponseData.userLocation?.longitude = position.longitude.abs().toStringAsFixed(5);
+ResponseData.userLocation?.latitude = position.latitude.abs().toStringAsFixed(5);
+ResponseData.userLocation?.longitude = position.longitude.abs().toStringAsFixed(5);
 
-//   }
+  }
 
   String generateDemoNumber() {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
