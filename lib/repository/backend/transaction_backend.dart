@@ -129,6 +129,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<void> payWithDynamicNQR(context,
       {required NqrCodeData data,
       required String orderSn,
+      required bool isDemo,
       required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     String latitude = ResponseData.userLocation!.latitude;
@@ -139,7 +140,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
         "institution_number=${data.institutionNumber}&order_amount=${data.orderAmount}&order_sn=$orderSn&" +
             "timestamp=$timeStamp&user_account_name=${bankDetails.accountName}&user_account_number=${bankDetails.accountNumber}&" +
             "user_bank_no=${bankDetails.bankCode}&user_bank_verification_number=${bankDetails.bvn}&" +
-            "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$apiKey";
+            "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$nqrKey";
     print("Sign Details");
     print(signTemp);
     var bytes = utf8.encode(signTemp);
@@ -147,23 +148,43 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     String authSign = digest.toString().toUpperCase();
 
     print(authSign);
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "amount": "588",
+        "channel": "1",
+        "institution_number": "I0000001154",
+        "mch_no": "M0000034942",
+        "order_no": "202502220101492811481193723125",
+        "sub_mch_no": "S0000150653",
+        "timestamp": "1740227248",
+        "user_account_name": "Ake Mobolaji Temabo",
+        "user_account_number": "1780004070",
+        "user_bank_no": "999998",
+        "user_bank_verification_number": "22222222226",
+        "user_gps": "9.55679,9.692809",
+        "user_kyc_level": "1",
+        "sign": "04FDDA0BF6A2A42727904F3046A6A7BF"
+      };
+    } else {
+      payload = {
+        "institution_number": data.institutionNumber,
+        "order_amount": data.orderAmount,
+        "order_sn": orderSn,
+        "timestamp": timeStamp,
+        "user_account_name": bankDetails.accountName,
+        "user_account_number": bankDetails.accountNumber,
+        "user_bank_no": bankDetails.bankCode,
+        "user_bank_verification_number": bankDetails.bvn,
+        "user_gps": "$latitude,$longitude",
+        "user_kyc_level": bankDetails.kycLevel,
+        "sign": authSign
+      };
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client.post(Uri.parse(url),
-          headers: headersContent,
-          body: json.encode({
-            "institution_number": data.institutionNumber,
-            "order_amount": data.orderAmount,
-            "order_sn": orderSn,
-            "timestamp": timeStamp,
-            "user_account_name": bankDetails.accountName,
-            "user_account_number": bankDetails.accountNumber,
-            "user_bank_no": bankDetails.bankCode,
-            "user_bank_verification_number": bankDetails.bvn,
-            "user_gps": "$latitude,$longitude",
-            "user_kyc_level": bankDetails.kycLevel,
-            "sign": authSign
-          }));
+          headers: headersContent, body: json.encode(payload));
 
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -239,43 +260,68 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     return [];
   }
 
+  String generateMd5(String input) {
+    return md5.convert(utf8.encode(input)).toString().toUpperCase();
+  }
+
   Future<MerchantResponse?> createMerchant(context,
-      {required NqrCodeData data, required UserBankDetails bankDetails}) async {
+      {required NqrCodeData data,
+      bool isDemo = false,
+      required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     const url = "$host$baseUrl${nqrUrl}nqr_createmerchant";
     String signTemp =
         "account_name=${bankDetails.accountName}&account_number=${bankDetails.accountNumber}&address=add&bank_no=${bankDetails.bankCode}&" +
             "contact=${ResponseData.loginResponse!.user!.lastName}&email=${ResponseData.loginResponse!.user!.userName}" +
-            "&institution_number=${data.institutionNumber}&m_fee_bearer=0&name=${data.merchantName}&phone=${ResponseData.loginResponse!.user!.phoneNumber}&timestamp=$timeStamp&tin=999177001$apiKey";
+            "&institution_number=${data.institutionNumber}&m_fee_bearer=0&name=${data.merchantName}&phone=${ResponseData.loginResponse!.user!.phoneNumber}&timestamp=$timeStamp&tin=999177001$nqrKey";
 
     print("Sign Details");
     print(signTemp);
-    var bytes = utf8.encode(signTemp);
-    var digest = md5.convert(bytes);
-    String authSign = digest.toString().toUpperCase();
+    // var bytes = utf8.encode(signTemp);
+    // var digest = md5.convert(bytes);
+    String authSign = generateMd5(signTemp);
 
     print(authSign);
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "account_name": "AkeMobolaji",
+        "account_number": "1780004070",
+        "address": "add",
+        "bank_no": "999998",
+        "contact": "somfy",
+        "email": "somfy@qq.com",
+        "institution_number": "I0000001154",
+        "m_fee_bearer": "0",
+        "name": "testmerchant",
+        "phone": "8065654329",
+        "timestamp": "1740220407",
+        "tin": "999177001",
+        "sign": "E0158378B195E34CBDE67670DEFA4CF2"
+      };
+    } else {
+      payload = {
+        "account_name": bankDetails.accountName,
+        "account_number": bankDetails.accountNumber,
+        "address": "add",
+        "bank_no": bankDetails.bankCode,
+        "contact": ResponseData.loginResponse!.user!.lastName,
+        "email": ResponseData.loginResponse!.user!.userName,
+        "institution_number": institutionNumber,
+        "m_fee_bearer": "0",
+        "name": data.merchantName,
+        "phone": "${ResponseData.loginResponse!.user!.phoneNumber}",
+        "timestamp": timeStamp,
+        "tin": "999177001",
+        "sign": authSign
+      };
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
 
       final httpConnnectionApi = await client
           .post(Uri.parse(url),
-              headers: headersContent,
-              body: json.encode({
-                "account_name": bankDetails.accountName,
-                "account_number": bankDetails.accountNumber,
-                "address": "add",
-                "bank_no": bankDetails.bankCode,
-                "contact": ResponseData.loginResponse!.user!.lastName,
-                "email": ResponseData.loginResponse!.user!.userName,
-                "institution_number": institutionNumber,
-                "m_fee_bearer": "0",
-                "name": data.merchantName,
-                "phone": "${ResponseData.loginResponse!.user!.phoneNumber}",
-                "timestamp": timeStamp,
-                "tin": "999177001",
-                "sign": authSign
-              }))
+              headers: headersContent, body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -307,7 +353,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
           "error", 'please check your credentials and try again.', context);
     } on TimeoutException catch (_) {
       sendErrorMessage(
-          "Network failure", "Please check your internet connection", context);   
+          "Network failure", "Please check your internet connection", context);
       //navigateReplace(context, const Dashboard());
     } on Exception catch (e) {
       logger.e(e);
@@ -318,31 +364,45 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<BindMchResponse?> bindMerchant(context,
       {required String merchantNo,
       required NqrCodeData data,
+      required bool isDemo,
       required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     const url = "$host$baseUrl${nqrUrl}nqr_bindmerchant";
     String signTemp =
         "account_name=${bankDetails.accountName}&account_number=${bankDetails.accountNumber}&" +
             "bank_no=${bankDetails.bankCode}&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
-            "timestamp=$timeStamp$apiKey";
+            "timestamp=$timeStamp$nqrKey";
     var bytes = utf8.encode(signTemp);
     var digest = md5.convert(bytes);
     String authSign = digest.toString().toUpperCase();
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "account_name": "Ake Mobolaji Temabo",
+        "account_number": "1780004070",
+        "bank_no": "999998",
+        "institution_number": "I0000001154",
+        "mch_no": "M0000034942",
+        "timestamp": "1740222218",
+        "sign": "D68D7E57655C7CEC99C4782E56D842D5"
+      };
+    } else {
+      payload = {
+        "account_name": bankDetails.accountName,
+        "account_number": bankDetails.accountNumber,
+        "bank_no": bankDetails.bankCode,
+        "institution_number": data.institutionNumber,
+        "mch_no": data.merchantNo,
+        "timestamp": timeStamp,
+        "sign": authSign
+      };
+    }
 
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
           .post(Uri.parse(url),
-              headers: headersContent,
-              body: json.encode({
-                "account_name": bankDetails.accountName,
-                "account_number": bankDetails.accountNumber,
-                "bank_no": bankDetails.bankCode,
-                "institution_number": data.institutionNumber,
-                "mch_no": data.merchantNo,
-                "timestamp": timeStamp,
-                "sign": authSign
-              }))
+              headers: headersContent, body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -379,34 +439,50 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<SubMchResponse?> createSubMerchant(context,
       {required String merchantNo,
       required NqrCodeData data,
+      required bool isDemo,
       required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     const url = "$host$baseUrl${nqrUrl}nqr_createsubmerchant";
     String signTemp =
         "email=${ResponseData.loginResponse!.user!.userName}&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
             "name=${data.merchantName}sub&phone_number=${ResponseData.loginResponse!.user!.phoneNumber}&" +
-            "sub_amount=588&sub_fixed=1&timestamp=$timeStamp$apiKey";
+            "sub_amount=588&sub_fixed=1&timestamp=$timeStamp$nqrKey";
     print("Sign Details");
     print(signTemp);
     var bytes = utf8.encode(signTemp);
     var digest = md5.convert(bytes);
     String authSign = digest.toString().toUpperCase();
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "email": "somfy@qq.com",
+        "institution_number": "I0000001154",
+        "mch_no": "M0000034942",
+        "name": "Cashier002",
+        "phone_number": "8065465465",
+        "sub_amount": "588",
+        "sub_fixed": "1",
+        "timestamp": "1740222635",
+        "sign": "DAD1453165942F9020E03599780FFFD1"
+      };
+    } else {
+      payload = {
+        "email": ResponseData.loginResponse!.user!.userName,
+        "institution_number": data.institutionNumber,
+        "mch_no": data.merchantNo,
+        "name": "${data.merchantName}sub",
+        "phone_number": ResponseData.loginResponse!.user!.phoneNumber,
+        "sub_amount": "588",
+        "sub_fixed": "1",
+        "timestamp": timeStamp,
+        "sign": authSign
+      };
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
           .post(Uri.parse(url),
-              headers: headersContent,
-              body: json.encode({
-                "email": ResponseData.loginResponse!.user!.userName,
-                "institution_number": data.institutionNumber,
-                "mch_no": data.merchantNo,
-                "name": "${data.merchantName}sub",
-                "phone_number": ResponseData.loginResponse!.user!.phoneNumber,
-                "sub_amount": "588",
-                "sub_fixed": "1",
-                "timestamp": timeStamp,
-                "sign": authSign
-              }))
+              headers: headersContent, body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -446,13 +522,14 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       {required String merchantNo,
       required String orderNo,
       required NqrCodeData data,
+      required bool isDemo,
       required String subMchNo,
       required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     const url = "$host$baseUrl${nqrUrl}nqr_createdynamicqr";
     String signTemp =
         "amount=${data.orderAmount}&channel=1&code_type=1&institution_number=${data.institutionNumber}&mch_no=${data.merchantNo}&" +
-            "order_no=$orderNo&order_type=4&sub_mch_no=${data.subMerchantNo}&timestamp=$timeStamp&unique_id=KRD1234$apiKey";
+            "order_no=$orderNo&order_type=4&sub_mch_no=${data.subMerchantNo}&timestamp=$timeStamp&unique_id=KRD1234$nqrKey";
     print("Sign Details");
     print(signTemp);
     var bytes = utf8.encode(signTemp);
@@ -461,6 +538,36 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
 
     print(authSign);
     print("Payload");
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "amount": "500",
+        "channel": "1",
+        "code_type": "1",
+        "institution_number": "I0000001154",
+        "mch_no": "M0000034942",
+        "order_no": "202502220101492811481193723124",
+        "order_type": "4",
+        "sub_mch_no": "S0000150653",
+        "timestamp": "1740222857",
+        "unique_id": "KRD1235",
+        "sign": "6A8A60A46C6CFB22F2FA7EB82FF7A253"
+      };
+    } else {
+      payload = {
+        "amount": data.orderAmount,
+        "channel": "1",
+        "code_type": "1",
+        "institution_number": data.institutionNumber,
+        "mch_no": data.merchantNo,
+        "order_no": orderNo,
+        "order_type": "4",
+        "sub_mch_no": data.subMerchantNo,
+        "timestamp": timeStamp,
+        "unique_id": "KRD1234",
+        "sign": authSign
+      };
+    }
 
     print({
       "amount": data.orderAmount,
@@ -479,20 +586,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
           .post(Uri.parse(url),
-              headers: headersContent,
-              body: json.encode({
-                "amount": data.orderAmount,
-                "channel": "1",
-                "code_type": "1",
-                "institution_number": data.institutionNumber,
-                "mch_no": data.merchantNo,
-                "order_no": orderNo,
-                "order_type": "4",
-                "sub_mch_no": data.subMerchantNo,
-                "timestamp": timeStamp,
-                "unique_id": "KRD1234",
-                "sign": authSign
-              }))
+              headers: headersContent, body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -525,7 +619,15 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   }
 
   Future<void> makeNQRPayment(context,
-      {required UserBankDetails bankDetails, required NqrCodeData data}) async {
+      {required UserBankDetails bankDetails,
+      bool isDemo = false,
+      required NqrCodeData data}) async {
+    if (isDemo) {
+      data.institutionNumber = "I0000001154";
+      bankDetails.accountName = "AkeMobolaji";
+      bankDetails.accountName = "1780004070";
+      bankDetails.accountName = "999998";
+    }
     data.orderSn = "202410140101492811481193723128";
     data.institutionNumber = institutionNumber;
     data.subMerchantNo = "S0000007261";
@@ -535,39 +637,57 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     print("Length :${data.orderSn.length}");
     //241016232209006037960828520400
 // 241016232209006037960828520400
-    final mchRes =
-        await createMerchant(context, data: data, bankDetails: bankDetails);
-        print("Completed Merchant");
+    final bankAcc = await fetchBankDetails(context,
+        accountNumber: bankDetails.accountNumber,
+        isDemo: isDemo,
+        bankNumber: bankDetails.bankCode);
+    if (bankAcc != null) {
+      bankDetails = bankAcc;
+    } else {
+      return;
+    }
+    final mchRes = await createMerchant(context,
+        data: data, isDemo: isDemo, bankDetails: bankDetails);
+    print("Completed Merchant");
     if (mchRes != null) {
       await bindMerchant(context,
-          merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
-           print("Completed bind Merchant");
+          merchantNo: mchRes.mchNo,
+          isDemo: isDemo,
+          data: data,
+          bankDetails: bankDetails);
+      print("Completed bind Merchant");
       final subMchRes = await createSubMerchant(context,
-          merchantNo: mchRes.mchNo, data: data, bankDetails: bankDetails);
-           print("Completed sub Merchant");
+          merchantNo: mchRes.mchNo,
+          isDemo: isDemo,
+          data: data,
+          bankDetails: bankDetails);
+      print("Completed sub Merchant");
 
       if (subMchRes != null) {
         final dynamicQR = await createDynamicQR(context,
             merchantNo: subMchRes.mchNo,
             orderNo: data.orderSn,
             data: data,
+            isDemo: isDemo,
             subMchNo: subMchRes.subMchNo,
-            bankDetails: bankDetails); print("Completed Dynamic QR");
+            bankDetails: bankDetails);
+        print("Completed Dynamic QR");
         if (dynamicQR != null) {
           if (!data.isDynamic) {
             await payWithDynamicNQR(context,
                 data: data,
                 orderSn: dynamicQR.orderSn,
-                
+                isDemo: isDemo,
                 bankDetails: bankDetails);
-                 print("Completed paywithdynamic ");
+            print("Completed paywithdynamic ");
           } else {
             await payWithStaticNQR(context,
                 merchantNo: subMchRes.mchNo,
                 subMchNo: subMchRes.subMchNo,
+                isDemo: isDemo,
                 data: data,
                 bankDetails: bankDetails);
-                 print("Completed paywithstatic ");
+            print("Completed paywithstatic ");
           }
           // await payWithDynamicNQR(context,
           //     data: data,
@@ -582,6 +702,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       {required String merchantNo,
       required String subMchNo,
       required NqrCodeData data,
+      required bool isDemo,
       required UserBankDetails bankDetails}) async {
     String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     const url = "$host$baseUrl${nqrUrl}nqr_createstaticqr_transaction";
@@ -591,33 +712,53 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
         "mch_no=${data.merchantNo}&order_no=${data.orderSn}&sub_mch_no=${data.subMerchantNo}&timestamp=$timeStamp&" +
         "user_account_name=${bankDetails.accountName}&user_account_number=${bankDetails.accountNumber}&" +
         "user_bank_no=${bankDetails.bankCode}&user_bank_verification_number=${bankDetails.bvn}&" +
-        "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$apiKey";
+        "user_gps=$latitude,$longitude&user_kyc_level=${bankDetails.kycLevel}$nqrKey";
     print("Sign Details");
     print(signTemp);
     var bytes = utf8.encode(signTemp);
     var digest = md5.convert(bytes);
     String authSign = digest.toString().toUpperCase();
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "amount": "588",
+        "channel": "1",
+        "institution_number": "I0000001154",
+        "mch_no": "M0000034942",
+        "order_no": "202502220101492811481193723125",
+        "sub_mch_no": "S0000150653",
+        "timestamp": "1740227248",
+        "user_account_name": "Ake Mobolaji Temabo",
+        "user_account_number": "1780004070",
+        "user_bank_no": "999998",
+        "user_bank_verification_number": "22222222226",
+        "user_gps": "9.55679,9.692809",
+        "user_kyc_level": "1",
+        "sign": "04FDDA0BF6A2A42727904F3046A6A7BF"
+      };
+    } else {
+      payload = {
+        "amount": data.orderAmount,
+        "channel": "1",
+        "institution_number": data.institutionNumber,
+        "mch_no": data.merchantNo,
+        "order_no": data.orderSn,
+        "sub_mch_no": data.subMerchantNo,
+        "timestamp": timeStamp,
+        "user_account_name": bankDetails.accountName,
+        "user_account_number": bankDetails.accountNumber,
+        "user_bank_no": bankDetails.bankCode,
+        "user_bank_verification_number": bankDetails.bvn,
+        "user_gps": "$latitude,$longitude",
+        "user_kyc_level": bankDetails.kycLevel,
+        "sign": authSign
+      };
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
           .post(Uri.parse(url),
-              headers: headersContent,
-              body: json.encode({
-                "amount": data.orderAmount,
-                "channel": "1",
-                "institution_number": data.institutionNumber,
-                "mch_no": data.merchantNo,
-                "order_no": data.orderSn,
-                "sub_mch_no": data.subMerchantNo,
-                "timestamp": timeStamp,
-                "user_account_name": bankDetails.accountName,
-                "user_account_number": bankDetails.accountNumber,
-                "user_bank_no": bankDetails.bankCode,
-                "user_bank_verification_number": bankDetails.bvn,
-                "user_gps": "$latitude,$longitude",
-                "user_kyc_level": bankDetails.kycLevel,
-                "sign": authSign
-              }))
+              headers: headersContent, body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
@@ -661,7 +802,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     }
   }
 
-  String getPaymentSign(
+  String getPaymetSign(
       {required String timeStamp, required UserBankDetails bankDetails}) {
     String signTemp =
         "account_number=${bankDetails.accountNumber}&bank_number=${bankDetails.bankCode}&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
@@ -814,38 +955,49 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   }
 
   Future<UserBankDetails?> fetchBankDetails(context,
-      {required String accountNumber, required String bankNumber}) async {
-    String timeStamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+      {required String accountNumber,
+      required bool isDemo,
+      required String bankNumber}) async {
+    String stamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
+    String timeStamp = stamp;
     const url = "$host$baseUrl${nqrUrl}nqr_queryaccount";
-    String signTemp =
-        "account_number=$accountNumber&bank_number=$bankNumber&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
-    // Convert signTemp to bytes and apply MD5
-    var bytes = utf8.encode(signTemp);
-    var digest = md5.convert(bytes);
 
-    String sign = digest.toString().toUpperCase();
+    String signTemp =
+        "account_number=1780004070&bank_number=999998&channel=1&institution_number=I0000001154&timestamp=1726205920$nqrKey";
+    //     "account_number=$accountNumber&bank_number=$bankNumber&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
+    // Convert signTemp to bytes and apply MD5
+    // var bytes = utf8.encode(signTemp);
+    // var digest = md5.convert(bytes);
+    String sign = generateMd5(signTemp);
     print("Bank Number $bankNumber");
     print("Account Number $accountNumber");
-    print({
-      "account_number": accountNumber,
-      "bank_number": bankNumber,
-      "channel": "1",
-      "institution_number": institutionNumber,
-      "timestamp": timeStamp,
-      "sign": sign
-    });
+    print("Sign $sign");
+    dynamic payload;
+    if (isDemo) {
+      payload = {
+        "account_number": "1780004070",
+        "bank_number": "999998",
+        "channel": "1",
+        "institution_number": "I0000001154",
+        "timestamp": "1726205920",
+        "sign": "F28F3455134EBBF33096497CCEC83809"
+      };
+    } else {
+      payload = {
+        "account_number": accountNumber,
+        "bank_number": bankNumber,
+        "channel": "1",
+        "institution_number": institutionNumber,
+        "timestamp": timeStamp,
+        "sign": sign
+      };
+    }
+
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client.post(Uri.parse(url),
-          headers: headersContent,
-          body: json.encode({
-            "account_number": accountNumber,
-            "bank_number": bankNumber,
-            "channel": "1",
-            "institution_number": "I0000001154",
-            "timestamp": timeStamp,
-            "sign": sign
-          }));
+          headers: headersContent, body: json.encode(payload));
+
       if (httpConnnectionApi.statusCode == 200) {
         var resBody = json.decode(httpConnnectionApi.body);
         logger.i(resBody);
@@ -858,7 +1010,10 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
               kycLevel: resBody['KYCLevel'],
               channelCode: resBody['ChannelCode']);
         } else {
-          sendErrorMessage("Error", resBody['ReturnMsg'], context);
+          sendErrorMessage(
+              "Error",
+              resBody['ReturnMsg'] ?? resBody['message'] ?? resBody['error'],
+              context);
         }
       }
     } on SocketException catch (_) {
@@ -1009,15 +1164,15 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
                 "paymentIdentifier": details.paymentIdentifier,
                 "rrr": details.rrr,
                 "amount": details.amount,
-                "channel": "MOBILE",
-                "paymentOption": "CASH",
+                "channel": "WEB",
+                "paymentOption": "CARD",
               }),
               headers: headersContent)
           .timeout(const Duration(seconds: 60));
       print("*****PAYLOAD*******");
 
       var resBody = json.decode(httpConnectionApi.body);
-      logger.i(".......Preprocessing Initiating payment......");
+      logger.i(".......Processing Initiating payment......");
       print(resBody);
       if (httpConnectionApi.statusCode == 200) {
         if (resBody['status'] == "00" || resBody['status'] == "99") {
@@ -1053,7 +1208,6 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     required String phoneNumber,
     required String customerId,
     required List<dynamic> customFieldsMultiSelectWithPrice,
-    
     required List<Map<String, dynamic>> customFields,
   }) async {
     const url = "$host$baseUrl${isRemitaUrl}rmtinitiatetransaction";
@@ -1069,39 +1223,38 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       "metadata": {
         "customFields": customFields,
         "customFieldsMultiSelectWithPrice": customFieldsMultiSelectWithPrice,
-       
       },
     };
     print(payload);
 // {
 //   {billPaymentProductId: 36528175,
 //    amount: 190000.0,
-//     name: femi, 
+//     name: femi,
 //    email: femi@gmial.com,
-//     phoneNumber: 08063288677, 
+//     phoneNumber: 08063288677,
 //    customerId: 11111,
 //     transaction_type: Remita,
 //     payment_gateway: REMITA,
 //      metadata: {
 //       customFields: [
 //         {
-//           variable_name: matric_no, 
-//           value: 170404110}, 
+//           variable_name: matric_no,
+//           value: 170404110},
 //           {
 //             variable_name: amount_item_list,
 //              value: Items: 1 x ₦100000.00, 1 x ₦90000.00
 // : Total: ₦190000.00
 // }],
 //  customFieldsMultiSelectWithPrice: [
-//   {variable_name: amount_item_list, 
+//   {variable_name: amount_item_list,
 //   value: [{
-//     unitPrice: 100000.0, 
+//     unitPrice: 100000.0,
 //     fixedPrice: true, quantity: 1,
 //      code: FIRST YEAR, itemName: FIRST YEAR,
 //       selectedListId: 36528169, selected: true
 //       }, {
-//         unitPrice: 90000.0, fixedPrice: true, quantity: 1, 
-//         code: FOURTH YEAR, itemName: FOURTH YEAR, 
+//         unitPrice: 90000.0, fixedPrice: true, quantity: 1,
+//         code: FOURTH YEAR, itemName: FOURTH YEAR,
 //         selectedListId: 36528172, selected: true}]}], customFieldsMultiSelect: []}}
 // };
 
@@ -1122,7 +1275,8 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
           final rrrData = RemitaDetails.fromJson(data);
           return rrrData;
         } else {
-          sendErrorMessage("Error", resBody['description'], context);
+          sendErrorMessage(
+              "Error", resBody['description'] ?? resBody['message'], context);
           return null;
         }
       }

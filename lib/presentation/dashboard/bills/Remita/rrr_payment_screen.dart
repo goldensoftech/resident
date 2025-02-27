@@ -19,7 +19,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
   LookupDetails? lookupDetails;
   Future<void>? _request;
   Future<void> lookupRRR(context) async {
-    String rrr = _rrrController.text;
+    String rrr = _rrrController.text.trim();
     lookupDetails = await TransactionBackend().lookUpRemitta(context, rrr: rrr);
     setState(() {
       lookupDetails;
@@ -35,7 +35,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
           GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
             child: Scaffold(
-                appBar: customAppBar(title: "RRR Payment"),
+                appBar: customAppBar(title: "Lookup RRR Payment"),
                 backgroundColor: AppColors.whiteA700,
                 body: Form(
                   key: _formKey,
@@ -124,7 +124,7 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                 txnId: lookupDetails!.rrrData.rrr,
                                 serviceType: lookupDetails!.detials.serviceName,
                                 status: lookupDetails!.status,
-                                data:lookupDetails!.detials.metadata ,
+                                data: lookupDetails!.detials.metadata,
                                 txnDate:
                                     lookupDetails!.detials.metadata!.txnDate!,
                                 type: TransactionType.remita);
@@ -422,6 +422,9 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                                       .detials
                                                                       .serviceName ??
                                                                   "Remita Payment",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
@@ -487,7 +490,71 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                       ),
                                                     ],
                                                   ),
-                                                  
+                                                  if (lookupDetails!
+                                                          .detials
+                                                          .metadata!
+                                                          .receiptUrl !=
+                                                      null)
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      2.0,
+                                                                  vertical: 15),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                'Receipt',
+                                                                style: TextStyle(
+                                                                    color: AppColors
+                                                                        .grey500,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700),
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap: () => launchUrl(Uri.parse(
+                                                                    lookupDetails!
+                                                                        .detials
+                                                                        .metadata!
+                                                                        .receiptUrl!)),
+                                                                child: Text(
+                                                                  'View Receipt',
+                                                                  // "${lookupDetails!.detials.metadata!.receiptUrl??}}",
+                                                                  style: TextStyle(
+                                                                      color: AppColors
+                                                                          .appGold,
+                                                                      decorationColor:
+                                                                          AppColors
+                                                                              .appGold,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .underline,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700),
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Divider(
+                                                          height: 1,
+                                                          thickness: .5,
+                                                          color:
+                                                              AppColors.grey400,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   const Spacer(),
                                                   SizedBox(
                                                     width:
@@ -517,7 +584,6 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                           //             lookupDetails!
                                                           //                 .detials);
 
-                                                       
                                                           await Pay().withRemita(
                                                               context,
                                                               rrrData:

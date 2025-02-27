@@ -422,11 +422,11 @@ class Pay with ErrorSnackBar, CustomAlerts {
 			key:
 			"U09MRHw0MDgxOTUzOHw2ZDU4NGRhMmJhNzVlOTRiYmYyZjBlMmM1YzUyNzYwZTM0YzRjNGI4ZTgyNzJjY2NjYTBkMDM0ZDUyYjZhZWI2ODJlZTZjMjU0MDNiODBlMzI4YWNmZGY2OWQ2YjhiYzM2N2RhMmI1YWEwYTlmMTFiYWI2OWQxNTc5N2YyZDk4NA==",
 			processRrr: true,
-		   channel: "IBANK,USSD,CARD",
+		
 			email: "${details.customerEmail}",
-			narration: "",
-			merchantName: 'Uju',
-             transactionCategoryId: '438969057',
+			narration: "${details.serviceName}",
+			merchantName: '${details.payerName}',
+             
 			extendedData: { 
 				customFields: [ 
 					{ 

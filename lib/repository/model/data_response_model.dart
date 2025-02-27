@@ -1,4 +1,5 @@
 import 'package:resident/utils/enums.dart';
+import 'package:intl/intl.dart';
 
 class DataItem {
   String title;
@@ -73,8 +74,8 @@ class Metadata {
 
   factory Metadata.fromJson(dynamic json) {
     return Metadata(
-        txnDate:
-            json['transactionDate'] ?? DateTime.parse(json['transactionDate']),
+        txnDate: DateFormat("EEE MMM dd HH:mm:ss 'WAT' yyyy")
+            .parse(json['transactionDate']),
         receiptUrl: json['receiptUrl']);
   }
 }

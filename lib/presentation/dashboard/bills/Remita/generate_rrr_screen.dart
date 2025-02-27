@@ -122,18 +122,19 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     //     "value": selectedOptions.toList(),
     //   });
     // });
+    if (ResponseData.loginResponse!=null && ResponseData.loginResponse!.isLoggedIn == true) {
+      _emailController.text = ResponseData.loginResponse!.user!.userName!;
+      _phoneController.text = ResponseData.loginResponse!.user!.phoneNumber!;
+      _nameController.text="${ResponseData.loginResponse!.user!.firstName!} ${ResponseData.loginResponse!.user!.lastName!}";
+    }
 
     rrrDetails = await TransactionBackend().initiateRemitaPayment(context,
         billPaymentProductId: selectedProduct!.productId,
         amount: double.parse(_amountController.text),
         customFieldsMultiSelectWithPrice: customFieldsMultiSelectWithPrice,
         customerId: "11111",
-        email: ResponseData.loginResponse!.isLoggedIn == true
-            ? ResponseData.loginResponse!.user!.userName!
-            : _emailController.text,
-        phoneNumber: ResponseData.loginResponse!.isLoggedIn == true
-            ? ResponseData.loginResponse!.user!.phoneNumber!
-            : _phoneController.text,
+        email: _emailController.text,
+        phoneNumber: _phoneController.text,
         customFields: customFields,
         name: _nameController.text);
     setState(() {
@@ -1761,23 +1762,30 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                                   FontWeight
                                                                       .w700),
                                                         ),
-                                                        SizedBox(
-                                                          height: 20,
-                                                          width: displaySize
-                                                                  .width *
-                                                              .5,
-                                                          child: Text(
-                                                            selectedProduct!
-                                                                .productName,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: TextStyle(
-                                                                color: AppColors
-                                                                    .baseBlack,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700),
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .centerRight,
+                                                          child: SizedBox(
+                                                            height: 20,
+                                                            width: displaySize
+                                                                    .width *
+                                                                .5,
+                                                            child: Text(
+                                                              selectedProduct!
+                                                                  .productName,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                  color: AppColors
+                                                                      .baseBlack,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700),
+                                                            ),
                                                           ),
                                                         )
                                                       ],

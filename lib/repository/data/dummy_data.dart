@@ -741,8 +741,8 @@ class DummyData {
   final List<Map<String, dynamic>> rrrItems = [
     {'title': 'Generate RRR', 'pageToGo': const GenerateRRRScreen()},
     {'title': 'RRR Payment', 'pageToGo': const RRRPaymentScreen()},
-    {'title': 'Payment Status', 'pageToGo': const PaymentStatusScreen()},
-    {'title': 'Transaction History', 'pageToGo': const RRRTxHistoryScreen()},
+    // {'title': 'Payment Status', 'pageToGo': const PaymentStatusScreen()},
+    // {'title': 'Transaction History', 'pageToGo': const RRRTxHistoryScreen()},
   ];
   final List<Map<String, dynamic>> billItems = [
     {

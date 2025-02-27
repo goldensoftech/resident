@@ -51,6 +51,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
     FocusScope.of(context).unfocus();
     bankDetails = await TransactionBackend().fetchBankDetails(context,
         accountNumber: _accountNumberController.text,
+        isDemo:false,
         bankNumber: selectedBank!.code);
     setState(() {
       bankDetails;

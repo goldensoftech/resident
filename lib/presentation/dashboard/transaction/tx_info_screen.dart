@@ -90,7 +90,7 @@ class _TransactionInfoScreenState extends State<TransactionInfoScreen>
                             child: Text(
                               '${widget.tx.type == TransactionType.remita ? 'View' : 'Share'} Receipt',
                               style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 8.0,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.whiteA700),
                             ),

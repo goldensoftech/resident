@@ -46,6 +46,7 @@ dependencies:
   flutter_phoenix: ^1.1.1
   app_version_update: ^6.0.0
   geolocator: ^13.0.2
+  crypto: ^3.0.6
 
   
 

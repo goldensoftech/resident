@@ -17,7 +17,6 @@ const String nqrUrl = "/api/nqr/v1/";
 const String headerType = 'application/json';
 const String siteUrl = "residentfintech.com";
 
-
 //Remita
 const String remitaKey =
     "U09MRHw0MDgxOTUzOHw2ZDU4NGRhMmJhNzVlOTRiYmYyZjBlMmM1YzUyNzYwZTM0YzRjNGI4ZTgyNzJjY2NjYTBkMDM0ZDUyYjZhZWI2ODJlZTZjMjU0MDNiODBlMzI4YWNmZGY2OWQ2YjhiYzM2N2RhMmI1YWEwYTlmMTFiYWI2OWQxNTc5N2YyZDk4NA==";
@@ -28,7 +27,8 @@ const String paystackKey = "sk_live_ee7a54c6ef156ec43efb7a1187bfead2bbc6ad86";
 
 //NIBSS
 // Institution_Number - I0000001154
-const String institutionNumber = "I0000000001";
+const String institutionNumber = "I0000001154";
+const String nqrKey = "NjEHRaKYrjkWDBNeeyY7nrZkyf5dNj5Q";
 const String apiKey = "QER5HKWePAFeFRM7RD8wPjwdWAfWPQHR";
 const String authCode = "";
 const String verificationURL =
