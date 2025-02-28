@@ -732,7 +732,7 @@ class DummyData {
       'pageToGo': const FlightTicketScreen()
     },
     {
-      'title': 'QR Scan',
+      'title': 'QR Payment',
       'logoUrl': scanIcon,
       'color': AppColors.deepGreen,
       'pageToGo': const QRScanScreen()

@@ -200,22 +200,13 @@ class _HomeScreenState extends State<HomeScreen>
                                           mainAxisSpacing: 1,
                                           crossAxisCount:
                                               //DummyData().shortcutItems.length,
-                                              (!(AuthBackend.isLoggedIn() &&
-                                                      ResponseData
-                                                              .loginResponse!
-                                                              .user!
-                                                              .bvnStatus ==
-                                                          true))
+                                              ((AuthBackend.isLoggedIn()))
                                                   ? 3
                                                   : 2),
                                   shrinkWrap: true,
                                   // itemCount: DummyData().shortcutItems.length,
-                                  itemCount: (!(AuthBackend.isLoggedIn() &&
-                                          ResponseData.loginResponse!.user!
-                                                  .bvnStatus ==
-                                              true))
-                                      ? 3
-                                      : 2,
+                                  itemCount:
+                                      ((AuthBackend.isLoggedIn())) ? 3 : 2,
                                   itemBuilder: (ctx, index) {
                                     final shortCut =
                                         DummyData().shortcutItems[index];
@@ -224,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           ResponseData.loginResponse!.user!
                                                   .bvnStatus ==
                                               true)) {
-                                        return SizedBox.shrink();
+                                        return const SizedBox.shrink();
                                       }
                                     }
 
@@ -244,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen>
                               const SizedBox(
                                 height: 5,
                               ),
-                              Padding(
+                              const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                                 child: AdvertItem(),
                               ),

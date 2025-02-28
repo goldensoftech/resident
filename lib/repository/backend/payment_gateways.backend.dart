@@ -257,8 +257,8 @@ class Pay with ErrorSnackBar, CustomAlerts {
               title: "Successful",
               description: "Your Remita payment was successful.",
               goToPage: const Dashboard());
-          // await TransactionBackend()
-          //     .processRemitaPayment(context, details: rrrData);
+          await TransactionBackend()
+              .processRemitaPayment(context, details: rrrData);
         } else if (message.message == 'error') {
           sendErrorMessage("Error", "Payment not successful", context);
           navigateBack(context);

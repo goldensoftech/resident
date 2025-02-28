@@ -16,14 +16,14 @@ class _QRScanScreenState extends State<QRScanScreen>
   UserBankDetails? selectedAccount;
   final TextEditingController _mechantNameController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
- // final MobileScannerController _scannerController = MobileScannerController();
+  final MobileScannerController _scannerController = MobileScannerController();
   final _formKey = GlobalKey<FormState>();
 
   Future<void>? _request;
   // String demo =
   //     "0002010102121531**999166**999166****M000000000126720019NG.COM.NIBSS-PLC.QR0111S000000000102309991662005210922520163783561015204000053035665402105802NG5913Test Merchant6007Nigeria6304A54A"; //NibssQRModel? nqrData;
-  String rawData =
-      "0002010102121531**999166**999166****M000388764026710018NG.COM.NIBSSPLC.QR0111S000308541502301100132408202220597679531513345204000053035665406200.005802NG5911MTN NIGERIA6007Nigeria6304EFAE";
+  // String rawData =
+  //     "0002010102121531**999166**999166****M000388764026710018NG.COM.NIBSSPLC.QR0111S000308541502301100132408202220597679531513345204000053035665406200.005802NG5911MTN NIGERIA6007Nigeria6304EFAE";
 
   NqrCodeData? getMerchantDetails(context, String? qrdata) {
     // await AuthBackend().setDefaultUser();
@@ -55,8 +55,7 @@ class _QRScanScreenState extends State<QRScanScreen>
   }
 
   makeNQRPayment(context, {required NqrCodeData data}) async {
-
-   await UtilFunctions().getLocation(context);
+    await UtilFunctions().getLocation(context);
 
     await TransactionBackend()
         .makeNQRPayment(context, data: data, bankDetails: selectedAccount!);
@@ -78,7 +77,7 @@ class _QRScanScreenState extends State<QRScanScreen>
 
   @override
   void dispose() {
-  //  _scannerController.dispose();
+    //  _scannerController.dispose();
     super.dispose();
   }
 
@@ -444,264 +443,283 @@ class _QRScanScreenState extends State<QRScanScreen>
                   onPressed: selectedAccount == null
                       ? null
                       : () async {
-                          NqrCodeData? nqrdata =
-                              getMerchantDetails(context, rawData!);
-                        //  _scannerController.stop();
-                          //  navigateBack(context);
-                          if (nqrdata != null) {
-                            showModalBottomSheet(
-                                context: context,
-                                backgroundColor: AppColors.whiteA700,
-                                showDragHandle: true,
-                                enableDrag: true,
-                                isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10))),
-                                builder: (ctx) {
-                                  return Container(
-                                      color: AppColors.whiteA700,
-                                      constraints: BoxConstraints(
-                                          maxHeight: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.5),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0, vertical: 10),
-                                      child: Scrollbar(
-                                          radius: const Radius.circular(5),
-                                          child: Form(
-                                            key: _formKey,
-                                            child: ListView(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 0,
-                                                        horizontal: 10),
-                                                children: [
-                                                  Align(
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "Making payment to",
+                          _scanResult = null;
+                          _scannerController.start();
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (ctx) {
+                                return BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: SimpleDialog(
+                                    insetPadding: EdgeInsets.zero,
+                                    contentPadding: EdgeInsets.zero,
+
+                                    //   children: [],
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.r)),
+                                    children: [
+                                      Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 13.w, vertical: 20.h),
+                                          decoration: BoxDecoration(
+                                              color: AppColors.whiteA700,
+                                              borderRadius:
+                                                  BorderRadius.circular(10.r)),
+                                          // height: displaySize.height * .6,
+                                          width: displaySize.width * .9,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const Spacer(),
+                                                    Text(
+                                                      'Scan Payment QR',
                                                       style: TextStyle(
-                                                          fontSize: 18,
-                                                          color: AppColors
-                                                              .baseBlack,
+                                                          fontSize: 16,
                                                           fontWeight:
-                                                              FontWeight.w600),
+                                                              FontWeight.w700,
+                                                          color: AppColors
+                                                              .black900),
                                                     ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Text(
-                                                    "Merchant Name",
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color:
-                                                            AppColors.baseBlack,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  TextFormField(
-                                                    controller:
-                                                        _mechantNameController,
-                                                    readOnly: true,
-                                                    keyboardType: TextInputType
-                                                        .emailAddress,
-                                                    onChanged: (value) {
-                                                      setState(() {});
-                                                    },
-                                                    validator: (value) {
-                                                      if (value == null ||
-                                                          value.isEmpty) {
-                                                        return 'Please enter your name';
-                                                      }
-                                                      return null;
-                                                    },
-                                                    style: const TextStyle(
-                                                        height: 1),
-                                                    cursorOpacityAnimates: true,
-                                                    cursorWidth: 1,
-                                                    cursorColor: Colors.black,
-                                                    decoration: InputDecoration(
-                                                      contentPadding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              vertical: 0,
-                                                              horizontal: 12),
-                                                      //labelStyle: const TextStyle(color: Colors.black54),
-                                                      hintText: 'Payer Name',
-                                                      filled: true,
-                                                      fillColor:
-                                                          AppColors.lightGrey,
-                                                      hintStyle: TextStyle(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: AppColors
-                                                              .grey700),
-
-                                                      border:
-                                                          OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide
-                                                                      .none,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8.r)),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.r),
-                                                        borderSide:
-                                                            BorderSide.none,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Text(
-                                                    "Amount",
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        color:
-                                                            AppColors.baseBlack,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  TextFormField(
-                                                    controller:
-                                                        _amountController,
-                                                    readOnly:
-                                                        !nqrdata.isDynamic,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    onChanged: (value) {
-                                                      setState(() {});
-                                                    },
-                                                    validator: (value) {
-                                                      if (value == null ||
-                                                          value.isEmpty) {
-                                                        return 'Please amount';
-                                                      }
-                                                      return null;
-                                                    },
-                                                    style: const TextStyle(
-                                                        height: 1),
-                                                    cursorOpacityAnimates: true,
-                                                    cursorWidth: 1,
-                                                    cursorColor: Colors.black,
-                                                    decoration: InputDecoration(
-                                                      contentPadding:
-                                                          const EdgeInsets
-                                                              .symmetric(
-                                                              vertical: 0,
-                                                              horizontal: 12),
-                                                      //labelStyle: const TextStyle(color: Colors.black54),
-                                                      hintText: 'Amount',
-                                                      filled: nqrdata.isDynamic,
-                                                      fillColor:
-                                                          AppColors.lightGrey,
-                                                      hintStyle: TextStyle(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: AppColors
-                                                              .grey700),
-
-                                                      border: OutlineInputBorder(
-                                                          borderSide: BorderSide(
-                                                              width: 1.w,
-                                                              color: AppColors
-                                                                  .formGrey),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.r)),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.r),
-                                                        borderSide: BorderSide(
+                                                    const Spacer(),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 20.0),
+                                                      child: InkWell(
+                                                          onTap: () {
+                                                            _scannerController
+                                                                .stop();
+                                                            navigateBack(ctx);
+                                                          },
+                                                          child: Icon(
+                                                            Icons
+                                                                .cancel_outlined,
                                                             color: AppColors
-                                                                .appGold),
-                                                      ),
+                                                                .black900,
+                                                          )),
                                                     ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 30,
-                                                  ),
-                                                  SizedBox(
-                                                      width: displaySize.width *
-                                                          0.7,
-                                                      child: ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                              elevation: 0,
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      vertical:
-                                                                          14),
+                                                  ]),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              SizedBox(
+                                                height: displaySize.height * .4,
+                                                width: displaySize.width * .8,
+                                                child: MobileScanner(
+                                                  onDetect: (value) async {
+                                                    if (value
+                                                        .barcodes.isNotEmpty) {
+                                                      // Get the first barcode only
+                                                      Barcode barcode =
+                                                          value.barcodes.first;
+
+                                                      // Check if the barcode contains a rawValue
+                                                      if (barcode.rawValue !=
+                                                          null) {
+                                                        _scanResult =
+                                                            barcode.rawValue;
+                                                        setState(() {});
+                                                        print(
+                                                            "Raw Value: $_scanResult");
+
+                                                        // Pass the rawValue to getMerchantDetails function
+                                                        NqrCodeData? nqrdata =
+                                                            getMerchantDetails(
+                                                                context,
+                                                                _scanResult!);
+                                                        _scannerController
+                                                            .stop();
+                                                        navigateBack(ctx);
+                                                        if (nqrdata != null) {
+                                                          showModalBottomSheet(
+                                                              context: context,
                                                               backgroundColor:
                                                                   AppColors
-                                                                      .appGold,
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
+                                                                      .whiteA700,
+                                                              showDragHandle:
+                                                                  true,
+                                                              enableDrag: true,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              shape: const RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.only(
+                                                                      topLeft: Radius
                                                                           .circular(
-                                                                              12))),
-                                                          onPressed: () async {
-                                                            if (!_formKey
-                                                                .currentState!
-                                                                .validate()) {
-                                                              return;
-                                                            }
-                                                            navigateBack(ctx);
+                                                                              10),
+                                                                      topRight:
+                                                                          Radius.circular(
+                                                                              10))),
+                                                              builder: (ctx) {
+                                                                return Container(
+                                                                    color: AppColors
+                                                                        .whiteA700,
+                                                                    constraints: BoxConstraints(
+                                                                        maxHeight: MediaQuery.of(context).size.height *
+                                                                            0.5),
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            10.0,
+                                                                        vertical:
+                                                                            10),
+                                                                    child: Scrollbar(
+                                                                        radius: const Radius.circular(5),
+                                                                        child: Form(
+                                                                          key:
+                                                                              _formKey,
+                                                                          child: ListView(
+                                                                              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                                                              children: [
+                                                                                Align(
+                                                                                  alignment: Alignment.center,
+                                                                                  child: Text(
+                                                                                    "Making payment to",
+                                                                                    style: TextStyle(fontSize: 18, color: AppColors.baseBlack, fontWeight: FontWeight.w600),
+                                                                                  ),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height: 20,
+                                                                                ),
+                                                                                Text(
+                                                                                  "Merchant Name",
+                                                                                  style: TextStyle(fontSize: 14, color: AppColors.baseBlack, fontWeight: FontWeight.w600),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height: 5,
+                                                                                ),
+                                                                                TextFormField(
+                                                                                  controller: _mechantNameController,
+                                                                                  readOnly: true,
+                                                                                  keyboardType: TextInputType.emailAddress,
+                                                                                  onChanged: (value) {
+                                                                                    setState(() {});
+                                                                                  },
+                                                                                  validator: (value) {
+                                                                                    if (value == null || value.isEmpty) {
+                                                                                      return 'Please enter your name';
+                                                                                    }
+                                                                                    return null;
+                                                                                  },
+                                                                                  style: const TextStyle(height: 1),
+                                                                                  cursorOpacityAnimates: true,
+                                                                                  cursorWidth: 1,
+                                                                                  cursorColor: Colors.black,
+                                                                                  decoration: InputDecoration(
+                                                                                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                                                                                    //labelStyle: const TextStyle(color: Colors.black54),
+                                                                                    hintText: 'Payer Name',
+                                                                                    filled: true,
+                                                                                    fillColor: AppColors.lightGrey,
+                                                                                    hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.grey700),
 
-                                                            setState(() {
-                                                              _request =
-                                                                  makeNQRPayment(
-                                                                context,
-                                                                data: nqrdata,
-                                                              );
-                                                            });
+                                                                                    border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8.r)),
+                                                                                    focusedBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(8.r),
+                                                                                      borderSide: BorderSide.none,
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height: 20,
+                                                                                ),
+                                                                                Text(
+                                                                                  "Amount",
+                                                                                  style: TextStyle(fontSize: 14, color: AppColors.baseBlack, fontWeight: FontWeight.w600),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height: 5,
+                                                                                ),
+                                                                                TextFormField(
+                                                                                  controller: _amountController,
+                                                                                  readOnly: !nqrdata.isDynamic,
+                                                                                  keyboardType: TextInputType.number,
+                                                                                  onChanged: (value) {
+                                                                                    setState(() {});
+                                                                                  },
+                                                                                  validator: (value) {
+                                                                                    if (value == null || value.isEmpty) {
+                                                                                      return 'Please amount';
+                                                                                    }
+                                                                                    return null;
+                                                                                  },
+                                                                                  style: const TextStyle(height: 1),
+                                                                                  cursorOpacityAnimates: true,
+                                                                                  cursorWidth: 1,
+                                                                                  cursorColor: Colors.black,
+                                                                                  decoration: InputDecoration(
+                                                                                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                                                                                    //labelStyle: const TextStyle(color: Colors.black54),
+                                                                                    hintText: 'Amount',
+                                                                                    filled: nqrdata.isDynamic,
+                                                                                    fillColor: AppColors.lightGrey,
+                                                                                    hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.grey700),
 
-                                                            await _request;
+                                                                                    border: OutlineInputBorder(borderSide: BorderSide(width: 1.w, color: AppColors.formGrey), borderRadius: BorderRadius.circular(8.r)),
+                                                                                    focusedBorder: OutlineInputBorder(
+                                                                                      borderRadius: BorderRadius.circular(8.r),
+                                                                                      borderSide: BorderSide(color: AppColors.appGold),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height: 30,
+                                                                                ),
+                                                                                SizedBox(
+                                                                                    width: displaySize.width * 0.7,
+                                                                                    child: ElevatedButton(
+                                                                                        style: ElevatedButton.styleFrom(elevation: 0, padding: const EdgeInsets.symmetric(vertical: 14), backgroundColor: AppColors.appGold, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                                                                                        onPressed: () async {
+                                                                                          if (!_formKey.currentState!.validate()) {
+                                                                                            return;
+                                                                                          }
+                                                                                          navigateBack(ctx);
 
-                                                            // showTxConfirmationAlert(
-                                                            //   context,
-                                                            //   type: TransactionType.data,
-                                                            // ),
-                                                          },
-                                                          child: Text(
-                                                            'Make Payment',
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: AppColors
-                                                                    .whiteA700),
-                                                          )))
-                                                ]),
-                                          )));
-                                });
-                          } else {
-                            sendErrorMessage(
-                                "Error", "NQR Platform not suported", context);
-                          }
-                      
+                                                                                          setState(() {
+                                                                                            _request = makeNQRPayment(
+                                                                                              context,
+                                                                                              data: nqrdata,
+                                                                                            );
+                                                                                          });
+
+                                                                                          await _request;
+
+                                                                                          // showTxConfirmationAlert(
+                                                                                          //   context,
+                                                                                          //   type: TransactionType.data,
+                                                                                          // ),
+                                                                                        },
+                                                                                        child: Text(
+                                                                                          'Make Payment',
+                                                                                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.whiteA700),
+                                                                                        )))
+                                                                              ]),
+                                                                        )));
+                                                              });
+                                                        } else {
+                                                          sendErrorMessage(
+                                                              "Error",
+                                                              "NQR Platform not suported",
+                                                              context);
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  controller:
+                                                      _scannerController,
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                    ],
+                                  ),
+                                );
+                              });
                         },
                   child: Text(
                     'Open Scanner',

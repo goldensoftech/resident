@@ -307,7 +307,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
         "bank_no": bankDetails.bankCode,
         "contact": ResponseData.loginResponse!.user!.lastName,
         "email": ResponseData.loginResponse!.user!.userName,
-        "institution_number": institutionNumber,
+        "institution_number": data.institutionNumber,
         "m_fee_bearer": "0",
         "name": data.merchantName,
         "phone": "${ResponseData.loginResponse!.user!.phoneNumber}",
@@ -627,12 +627,21 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       bankDetails.accountName = "AkeMobolaji";
       bankDetails.accountName = "1780004070";
       bankDetails.accountName = "999998";
+    } else {
+      if (ResponseData.loginResponse != null) {
+        if (!ResponseData.loginResponse!.user!.bvnStatus!) {
+          sendErrorMessage("Verification Response",
+              "Account KYC information does not match bank details", context);
+          return;
+        }
+      }
     }
-    data.orderSn = "202410140101492811481193723128";
-    data.institutionNumber = institutionNumber;
-    data.subMerchantNo = "S0000007261";
-    data.orderAmount = "200";
-    data.merchantNo = "M0000005463";
+
+    // data.orderSn = "202410140101492811481193723128";
+    // data.institutionNumber = institutionNumber;
+    // data.subMerchantNo = "S0000007261";
+    // data.orderAmount = "200";
+    // data.merchantNo = "M0000005463";
 
     print("Length :${data.orderSn.length}");
     //241016232209006037960828520400
@@ -640,6 +649,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     final bankAcc = await fetchBankDetails(context,
         accountNumber: bankDetails.accountNumber,
         isDemo: isDemo,
+        instNumber: data.institutionNumber,
         bankNumber: bankDetails.bankCode);
     if (bankAcc != null) {
       bankDetails = bankAcc;
@@ -898,12 +908,14 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       {required UserBankDetails userBankDetails,
       required String bankCode}) async {
     const url = "$host$baseUrl${nqrUrl}nqr_addaccount";
-    // if (!ResponseData.loginResponse!.user!.bvnStatus! ||
-    //     ResponseData.loginResponse!.user!.bvn != userBankDetails.bvn) {
-    //   sendErrorMessage("Verification Response",
-    //       "Account KYC information does not match bank details", context);
-    //   return false;
-    // }
+    if (ResponseData.loginResponse != null) {
+      if (!ResponseData.loginResponse!.user!.bvnStatus! ||
+          ResponseData.loginResponse!.user!.bvn != userBankDetails.bvn) {
+        sendErrorMessage("Verification Response",
+            "Account KYC information does not match bank details", context);
+        return false;
+      }
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnnectionApi = await client
@@ -957,14 +969,15 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
   Future<UserBankDetails?> fetchBankDetails(context,
       {required String accountNumber,
       required bool isDemo,
+      String? instNumber,
       required String bankNumber}) async {
     String stamp = "${DateTime.now().millisecondsSinceEpoch ~/ 1000}";
     String timeStamp = stamp;
     const url = "$host$baseUrl${nqrUrl}nqr_queryaccount";
 
     String signTemp =
-        "account_number=1780004070&bank_number=999998&channel=1&institution_number=I0000001154&timestamp=1726205920$nqrKey";
-    //     "account_number=$accountNumber&bank_number=$bankNumber&channel=1&institution_number=$institutionNumber&timestamp=$timeStamp$apiKey";
+        //"account_number=1780004070&bank_number=999998&channel=1&institution_number=I0000001154&timestamp=1726205920$nqrKey";
+        "account_number=$accountNumber&bank_number=$bankNumber&channel=1&institution_number=${instNumber ?? institutionNumber}&timestamp=$timeStamp$apiKey";
     // Convert signTemp to bytes and apply MD5
     // var bytes = utf8.encode(signTemp);
     // var digest = md5.convert(bytes);
@@ -987,7 +1000,7 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
         "account_number": accountNumber,
         "bank_number": bankNumber,
         "channel": "1",
-        "institution_number": institutionNumber,
+        "institution_number": instNumber ?? institutionNumber,
         "timestamp": timeStamp,
         "sign": sign
       };
