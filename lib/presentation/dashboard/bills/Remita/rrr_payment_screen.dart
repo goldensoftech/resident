@@ -584,14 +584,33 @@ class _RRRPaymentScreenState extends State<RRRPaymentScreen>
                                                           //             lookupDetails!
                                                           //                 .detials);
 
-                                                          await Pay().withRemita(
+                                                          //  await Pay()
+                                                          //                                                           .withPaystack(
+                                                          //                                                               context,
+                                                          //                                                               isRemtaPay:
+                                                          //                                                                   true,
+                                                          //                                                               rrrDetails:
+                                                          //                                                                   rrrDetails!,
+                                                          //                                                               details:
+                                                          //                                                                   details);
+
+                                                          await Pay().withPaystack(
                                                               context,
-                                                              rrrData:
+                                                              isRemtaPay: true,
+                                                              rrrDetails:
                                                                   lookupDetails!
                                                                       .rrrData,
                                                               details:
                                                                   lookupDetails!
                                                                       .detials);
+                                                          // await Pay().withRemita(
+                                                          //     context,
+                                                          //     rrrData:
+                                                          //         lookupDetails!
+                                                          //             .rrrData,
+                                                          //     details:
+                                                          //         lookupDetails!
+                                                          //             .detials);
                                                           //navigateBack(context);
                                                           // navigatePush(
                                                           //     context,

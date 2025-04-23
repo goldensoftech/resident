@@ -25,7 +25,7 @@ class _AccountScreenState extends State<AccountScreen>
                       isVerification: true,
                       pageToGo: KycScreen()),
                   profileTile(
-                      title: "Account Profile",
+                      title: "Profile Information",
                       pageToGo: const AccountProfileScreen()),
                   profileTile(
                       title: "Reset Password", pageToGo: const ResetPasswordScreen()),

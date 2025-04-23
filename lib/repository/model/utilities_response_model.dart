@@ -98,7 +98,7 @@ class LookupDetails {
         detials: PaymentDetails(
             metadata: Metadata.fromJson(json['metadata']),
             customerId: json["phoneNumber"],
-            customerEmail: json['email'],
+            customerEmail: json['email'] ?? "femiadubuola7@gmail.com",
             amount: double.parse(json['amount'].toString()),
             customerMobile: json['phoneNumber'],
             payerName: json['name'],

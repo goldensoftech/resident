@@ -53,17 +53,7 @@ class PaymentDetails {
       this.paymentGateway,
       required this.transactionType});
 
-  // factory PaymentDetails.fromJson(dynamic json) {
-  //   return PaymentDetails(
-  //       amount: json['amount'],
-  //       customerEmail: json['CustomerEmail'],
-  //       customerId: json['CustomerId'],
-  //       customerMobile: json['CsutomerMobile'],
-  //       payerName: json['PayerName'],
-  //       paymentCode: json['PaymentCode'],
-  //       paymentGateway: json['Payment_gateway'],
-  //       transactionType: json['transation_type']);
-  // }
+
 }
 
 class Metadata {
@@ -73,9 +63,10 @@ class Metadata {
   Metadata({this.txnDate, this.receiptUrl});
 
   factory Metadata.fromJson(dynamic json) {
+    String dateString = json['transactionDate'];
+    String dateOnly = dateString.split('T')[0];
     return Metadata(
-        txnDate: DateFormat("EEE MMM dd HH:mm:ss 'WAT' yyyy")
-            .parse(json['transactionDate']),
+        txnDate: DateTime.parse(dateOnly),
         receiptUrl: json['receiptUrl']);
   }
 }

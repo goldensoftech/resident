@@ -23,7 +23,7 @@ const String remitaKey =
 
 //Paystack
 const String paystackKey = "sk_live_ee7a54c6ef156ec43efb7a1187bfead2bbc6ad86";
-//"sk_test_71f5f04fc1b65f02a56f5746c0e0fa484b0bc234";
+const String testPayStack ="sk_test_71f5f04fc1b65f02a56f5746c0e0fa484b0bc234";
 
 //NIBSS
 // Institution_Number - I0000001154

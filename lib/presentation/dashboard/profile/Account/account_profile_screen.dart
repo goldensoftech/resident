@@ -1,6 +1,5 @@
 import 'package:resident/app_export.dart';
 
-
 class AccountProfileScreen extends StatefulWidget {
   const AccountProfileScreen({super.key});
 
@@ -17,7 +16,7 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phonecontroller = TextEditingController();
   String initialCountry = 'NG';
-  
+
   Future<void>? _request;
   @override
   void initState() {
@@ -31,17 +30,17 @@ class _AccountProfileScreenState extends State<AccountProfileScreen>
       _firstNameController.text = ResponseData.loginResponse!.user!.firstName!;
       _secondNameController.text = ResponseData.loginResponse!.user!.lastName!;
       _emailController.text = ResponseData.loginResponse!.user!.userName!;
-_phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
-    //   number = intlPhone.PhoneNumber(
-    //       isoCode: 'NG',
-    //       phoneNumber:
-    //           ResponseData.loginResponse!.user!.phoneNumber!.startsWith("0000")
-    //               ? ""
-    //               : ResponseData.loginResponse!.user!.phoneNumber!);
-    // } else {
-    //   number = intlPhone.PhoneNumber(
-    //     isoCode: 'NG',
-    //   );
+      _phonecontroller.text = ResponseData.loginResponse!.user!.phoneNumber!;
+      //   number = intlPhone.PhoneNumber(
+      //       isoCode: 'NG',
+      //       phoneNumber:
+      //           ResponseData.loginResponse!.user!.phoneNumber!.startsWith("0000")
+      //               ? ""
+      //               : ResponseData.loginResponse!.user!.phoneNumber!);
+      // } else {
+      //   number = intlPhone.PhoneNumber(
+      //     isoCode: 'NG',
+      //   );
     }
   }
 
@@ -63,7 +62,7 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
               onTap: () => FocusScope.of(context).unfocus(),
               child: Scaffold(
                   backgroundColor: AppColors.whiteA700,
-                  appBar: profileAppBar(title: "Account Profile"),
+                  appBar: profileAppBar(title: "Profile"),
                   body: Form(
                     key: _formKey,
                     child: ListView(
@@ -90,6 +89,7 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                                   TextFormField(
                                     controller: _firstNameController,
                                     keyboardType: TextInputType.text,
+                                    readOnly: true,
                                     onChanged: (value) {
                                       setState(() {});
                                     },
@@ -149,6 +149,7 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                                   TextFormField(
                                     controller: _secondNameController,
                                     keyboardType: TextInputType.text,
+                                    readOnly: true,
                                     onChanged: (value) {
                                       setState(() {});
                                     },
@@ -261,7 +262,7 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                             const SizedBox(
                               height: 5,
                             ),
-                           TextFormField(
+                            TextFormField(
                               controller: _phonecontroller,
                               readOnly: true,
                               keyboardType: TextInputType.number,
@@ -269,7 +270,9 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                                 setState(() {});
                               },
                               validator: (value) {
-                                if (value == null || value.length<10||value.length>11) {
+                                if (value == null ||
+                                    value.length < 10 ||
+                                    value.length > 11) {
                                   return 'Please enter a valid phone address';
                                 }
                                 return null;
@@ -331,6 +334,7 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                               style: const TextStyle(height: 1),
                               cursorOpacityAnimates: true,
                               cursorWidth: 1,
+                              readOnly: true,
                               cursorColor: Colors.black,
                               decoration: InputDecoration(
                                 filled: true,
@@ -359,33 +363,33 @@ _phonecontroller.text=ResponseData.loginResponse!.user!.phoneNumber!;
                   ),
                   persistentFooterAlignment: AlignmentDirectional.bottomCenter,
                   persistentFooterButtons: [
-                    SizedBox(
-                      width: displaySize.width * 0.7,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: AppColors.appGold,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12))),
-                        onPressed: () async {
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-                          setState(() {
-                            _request = updateProfile(context);
-                          });
-                          await _request;
-                        },
-                        child: Text(
-                          'Continue',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.whiteA700),
-                        ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: displaySize.width * 0.7,
+                    //   child: ElevatedButton(
+                    //     style: ElevatedButton.styleFrom(
+                    //         elevation: 0,
+                    //         padding: const EdgeInsets.symmetric(vertical: 14),
+                    //         backgroundColor: AppColors.appGold,
+                    //         shape: RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(12))),
+                    //     onPressed: () async {
+                    //       if (!_formKey.currentState!.validate()) {
+                    //         return;
+                    //       }
+                    //       setState(() {
+                    //         _request = updateProfile(context);
+                    //       });
+                    //       await _request;
+                    //     },
+                    //     child: Text(
+                    //       'Continue',
+                    //       style: TextStyle(
+                    //           fontSize: 14,
+                    //           fontWeight: FontWeight.bold,
+                    //           color: AppColors.whiteA700),
+                    //     ),
+                    //   ),
+                    // ),
                   ]),
             ),
             FutureBuilder(

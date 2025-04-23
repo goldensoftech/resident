@@ -122,10 +122,12 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
     //     "value": selectedOptions.toList(),
     //   });
     // });
-    if (ResponseData.loginResponse!=null && ResponseData.loginResponse!.isLoggedIn == true) {
+    if (ResponseData.loginResponse != null &&
+        ResponseData.loginResponse!.isLoggedIn == true) {
       _emailController.text = ResponseData.loginResponse!.user!.userName!;
       _phoneController.text = ResponseData.loginResponse!.user!.phoneNumber!;
-      _nameController.text="${ResponseData.loginResponse!.user!.firstName!} ${ResponseData.loginResponse!.user!.lastName!}";
+      _nameController.text =
+          "${ResponseData.loginResponse!.user!.firstName!} ${ResponseData.loginResponse!.user!.lastName!}";
     }
 
     rrrDetails = await TransactionBackend().initiateRemitaPayment(context,
@@ -1923,11 +1925,15 @@ class _GenerateRRRScreenState extends State<GenerateRRRScreen>
                                                         // //         context,
                                                         // //         details:
                                                         // //             details);
-                                                        await Pay().withRemita(
-                                                            context,
-                                                            rrrData:
-                                                                rrrDetails!,
-                                                            details: details);
+                                                        await Pay()
+                                                            .withPaystack(
+                                                                context,
+                                                                isRemtaPay:
+                                                                    true,
+                                                                rrrDetails:
+                                                                    rrrDetails!,
+                                                                details:
+                                                                    details);
                                                       }
                                                     },
                                                     child: Text(

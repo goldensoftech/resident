@@ -909,12 +909,12 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
       required String bankCode}) async {
     const url = "$host$baseUrl${nqrUrl}nqr_addaccount";
     if (ResponseData.loginResponse != null) {
-      if (!ResponseData.loginResponse!.user!.bvnStatus! ||
-          ResponseData.loginResponse!.user!.bvn != userBankDetails.bvn) {
-        sendErrorMessage("Verification Response",
-            "Account KYC information does not match bank details", context);
-        return false;
-      }
+      // if (!ResponseData.loginResponse!.user!.bvnStatus! ||
+      //     ResponseData.loginResponse!.user!.bvn != userBankDetails.bvn) {
+      //   sendErrorMessage("Verification Response",
+      //       "Account KYC information does not match bank details", context);
+      //   return false;
+      // }
     }
     try {
       await AuthBackend().checkAndUpdateToken(context);
@@ -1716,30 +1716,57 @@ class TransactionBackend with ErrorSnackBar, CustomAlerts {
     return null;
   }
 
-  Future<String> getPaystackUrl(
-    context, {
-    required PaymentDetails details,
-  }) async {
+  Future<String> getPaystackUrl(context,
+      {required PaymentDetails details,
+      bool? isRemitaPay,
+      RemitaDetails? rrrData}) async {
     const url = "https://api.paystack.co/transaction/initialize";
     String result = "";
+    dynamic payload;
+    if (isRemitaPay == true) {
+      details.ref = Pay().getReference();
+      payload = {
+        "amount":
+            double.parse('${rrrData!.amount + ((details.surcharge ?? 0) / 100)}')
+                    .toInt() *
+                100,
+        "email": details.customerEmail.toString(),
+        "reference": details.ref,
+        "callback_url": "https://www.residentfintech.com/",
+        "metadata": {
+          "paymentIdentifier": rrrData!.paymentIdentifier,
+          "rrr": rrrData.rrr,
+          "amount": double.parse(
+                      '${rrrData!.amount + ((details.surcharge ?? 0) / 100)}')
+                  .toInt() *
+              100,
+          "paymentFor": "RRR",
+          "requestReference": details.ref,
+          "payment_gateway": "PAYSTACK",
+          "cancel_action": "https://www.google.com/"
+        }
+      };
+    } else {
+      payload = {
+        "amount":
+            double.parse('${details.amount + ((details.surcharge ?? 0) / 100)}')
+                    .toInt() *
+                100,
+        "email": details.customerEmail.toString(),
+        "reference": details.ref,
+        "callback_url": "https://www.residentfintech.com/",
+        "metadata": {"cancel_action": "https://www.google.com/"}
+      };
+    }
     try {
       await AuthBackend().checkAndUpdateToken(context);
       final httpConnectionApi = await client
           .post(Uri.parse(url),
               headers: {
-                'Authorization': 'Bearer $paystackKey',
+                'Authorization': 'Bearer $testPayStack',
                 'Content-Type': 'application/json',
               },
-              body: json.encode({
-                "amount": double.parse(
-                            '${details.amount + ((details.surcharge ?? 0) / 100)}')
-                        .toInt() *
-                    100,
-                "email": details.customerEmail.toString(),
-                "reference": details.ref,
-                "callback_url": "https://www.residentfintech.com/",
-                "metadata": {"cancel_action": "https://www.google.com/"}
-              }))
+              body: json.encode(payload))
           .timeout(const Duration(seconds: 60));
       var resBody = jsonDecode(httpConnectionApi.body.toString());
       logger.i(resBody);

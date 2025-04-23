@@ -49,9 +49,15 @@ class Pay with ErrorSnackBar, CustomAlerts {
     return constantDigit + currentDate + uniqueRandomNumber;
   }
 
-  Future<void> withPaystack(context, {required PaymentDetails details}) async {
+  Future<void> withPaystack(context, {required PaymentDetails details,
+  bool? isRemtaPay, 
+   RemitaDetails? rrrDetails}) async {
+   
     var authUrl =
-        await TransactionBackend().getPaystackUrl(context, details: details);
+        await TransactionBackend().getPaystackUrl(context,
+        isRemitaPay: isRemtaPay,
+        rrrData: rrrDetails, 
+         details: details);
     WebViewController _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))

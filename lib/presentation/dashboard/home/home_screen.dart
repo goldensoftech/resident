@@ -211,9 +211,9 @@ class _HomeScreenState extends State<HomeScreen>
                                     final shortCut =
                                         DummyData().shortcutItems[index];
                                     if (shortCut['title'] == "QR sScan") {
-                                      if (!(AuthBackend.isLoggedIn() &&
+                                      if ((AuthBackend.isLoggedIn() &&
                                           ResponseData.loginResponse!.user!
-                                                  .bvnStatus ==
+                                                  .bvnStatus !=
                                               true)) {
                                         return const SizedBox.shrink();
                                       }

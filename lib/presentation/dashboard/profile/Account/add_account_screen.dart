@@ -51,7 +51,7 @@ class _AddAccountScreenState extends State<AddAccountScreen>
     FocusScope.of(context).unfocus();
     bankDetails = await TransactionBackend().fetchBankDetails(context,
         accountNumber: _accountNumberController.text,
-        isDemo:false,
+        isDemo: false,
         bankNumber: selectedBank!.code);
     setState(() {
       bankDetails;
@@ -59,12 +59,12 @@ class _AddAccountScreenState extends State<AddAccountScreen>
   }
 
   addBankDetails(context) async {
-   
     isAccountAdded = await TransactionBackend().addBankDetails(context,
         userBankDetails: bankDetails!, bankCode: selectedBank!.code);
     setState(() {
       isAccountAdded;
-    }); FocusScope.of(context).unfocus();
+    });
+    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -255,36 +255,32 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                                     leading: Container(
                                                       padding:
                                                           const EdgeInsets.all(
-                                                              5),
+                                                              10),
                                                       decoration: BoxDecoration(
                                                         shape: BoxShape.circle,
                                                         color: AppColors
                                                             .grey200, // Background color
                                                       ),
-                                                      child: ClipOval(
-                                                        child:
-                                                            data.logoUrl != null
-                                                                ? Image.network(
-                                                                    data.logoUrl!,
-                                                                    height: 40,
-                                                                    width: 40,
-                                                                    fit: BoxFit
-                                                                        .cover, // Ensures the image covers the container
-                                                                    filterQuality:
-                                                                        FilterQuality
-                                                                            .high,
-                                                                  )
-                                                                : Image.asset(
-                                                                    logoPng,
-                                                                    height: 20,
-                                                                    width: 20,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    filterQuality:
-                                                                        FilterQuality
-                                                                            .high,
-                                                                  ),
-                                                      ),
+                                                      child: data.logoUrl !=
+                                                              null
+                                                          ? Image.network(
+                                                              data.logoUrl!,
+
+                                                              fit: BoxFit
+                                                                  .cover, // Ensures the image covers the container
+                                                              filterQuality:
+                                                                  FilterQuality
+                                                                      .high,
+                                                            )
+                                                          : Image.asset(
+                                                              logoPng,
+                                                              height: 20,
+                                                              width: 20,
+                                                              fit: BoxFit.cover,
+                                                              filterQuality:
+                                                                  FilterQuality
+                                                                      .high,
+                                                            ),
                                                     ),
                                                     title: Text(
                                                       data.name,
@@ -332,8 +328,6 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                     bottom: 5,
                                     right: 5,
                                   ),
-                                  height: 10,
-                                  width: 10,
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 5, horizontal: 2),
                                   decoration: BoxDecoration(
@@ -342,22 +336,25 @@ class _AddAccountScreenState extends State<AddAccountScreen>
                                         AppColors.grey200, // Background color
                                   ),
                                   child: ClipOval(
-                                    child: selectedBank!.logoUrl != null
-                                        ? Image.network(
-                                            selectedBank!.logoUrl!,
-                                            // height: 20,
-                                            // width: 20,
-                                            fit: BoxFit
-                                                .cover, // Ensures the image covers the container
-                                            filterQuality: FilterQuality.high,
-                                          )
-                                        : Image.asset(
-                                            logoPng,
-                                            height: 15,
-                                            width: 15,
-                                            fit: BoxFit.fill,
-                                            filterQuality: FilterQuality.high,
-                                          ),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      child: selectedBank!.logoUrl != null
+                                          ? Image.network(
+                                              selectedBank!.logoUrl!,
+                                              // height: 20,
+                                              // width: 20,
+                                              fit: BoxFit
+                                                  .fill, // Ensures the image covers the container
+                                              filterQuality: FilterQuality.high,
+                                            )
+                                          : Image.asset(
+                                              logoPng,
+                                              height: 15,
+                                              width: 15,
+                                              fit: BoxFit.fill,
+                                              filterQuality: FilterQuality.high,
+                                            ),
+                                    ),
                                   ),
                                 )
                               : null,
